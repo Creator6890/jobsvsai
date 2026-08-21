@@ -11,3 +11,8 @@ coverage/
 *.log
 .DS_Store
 ingestion/data/onet/
+# Deployment state and local secrets
+.deploy-state
+.env.production
+*.dump
+*.dump.sha256

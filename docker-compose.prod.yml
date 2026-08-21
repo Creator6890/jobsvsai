@@ -1,10 +1,89 @@
+# Production overlay. Use with the base file, never alone:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# What this overlay changes:
+#   * no database, cache or application port is published to the host — Caddy is the only
+#     ingress, and it is the only service that binds 80/443
+#   * source bind mounts are removed so containers run the image they were built from
+#   * migrations are NOT mounted into docker-entrypoint-initdb.d; they are applied by
+#     scripts/migrate.sh, which works on a database that already holds data
+#   * restart policies, health checks and resource limits sized for 2 vCPU / 8 GB RAM
+#
+# Budget for a KVM 2 (2 vCPU, 8 GB): Postgres 2.5G, frontend 1G, backend 1.5G, worker 1G,
+# Redis 512M, Caddy 256M. Roughly 6.75G ceiling, leaving headroom for the host and for
+# build spikes. Reservations are deliberately modest so the stack still starts under load.
+
 services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
+      API_DOMAIN: ${API_DOMAIN:?API_DOMAIN is required}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?LETSENCRYPT_EMAIL is required}
+    depends_on:
+      frontend: { condition: service_healthy }
+      backend: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 256M }
+        reservations: { memory: 64M }
+    logging: &default_logging
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
   postgres:
     ports: !reset []
     restart: unless-stopped
+    # Replace the mount list rather than resetting it: the initdb hook must go (it only
+    # ever runs on an empty data directory, and scripts/migrate.sh owns schema changes on a
+    # live database), but the data volume must stay or Postgres would write into the
+    # container's ephemeral layer and lose everything on the next recreate.
+    volumes: !override
+      - postgres_data:/var/lib/postgresql/data
+    command:
+      - postgres
+      - -c
+      - shared_buffers=1GB
+      - -c
+      - effective_cache_size=3GB
+      - -c
+      - work_mem=16MB
+      - -c
+      - maintenance_work_mem=256MB
+      - -c
+      - max_connections=100
+    deploy:
+      resources:
+        limits: { cpus: "1.50", memory: 2560M }
+        reservations: { memory: 512M }
+    logging: *default_logging
+
   redis:
     ports: !reset []
     restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "384mb", "--maxmemory-policy", "noeviction"]
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 512M }
+        reservations: { memory: 64M }
+    logging: *default_logging
+
   backend:
     ports: !reset []
     restart: unless-stopped
@@ -12,10 +91,49 @@ services:
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
     environment:
       ENVIRONMENT: production
+      CORS_ORIGINS: ${CORS_ORIGINS:?CORS_ORIGINS is required}
+    deploy:
+      resources:
+        limits: { cpus: "1.00", memory: 1536M }
+        reservations: { memory: 256M }
+    logging: *default_logging
+
   worker:
     restart: unless-stopped
     volumes: !reset []
+    environment:
+      ENVIRONMENT: production
+    healthcheck:
+      # The worker exposes no port; prove liveness by reaching Redis the way RQ does.
+      test: ["CMD", "python", "-c", "import os,redis;redis.from_url(os.environ['REDIS_URL']).ping()"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    deploy:
+      resources:
+        limits: { cpus: "1.00", memory: 1024M }
+        reservations: { memory: 128M }
+    logging: *default_logging
+
   frontend:
+    # Closed to the host: Caddy reaches it over the compose network.
+    ports: !reset []
     restart: unless-stopped
     environment:
       ENVIRONMENT: production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+    deploy:
+      resources:
+        limits: { cpus: "1.00", memory: 1024M }
+        reservations: { memory: 256M }
+    logging: *default_logging
+
+volumes:
+  caddy_data:
+  caddy_config:

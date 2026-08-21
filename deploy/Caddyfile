@@ -1,0 +1,81 @@
+# Caddy is the only process bound to 80/443. Everything else reaches the internet through
+# it, over the compose network. Certificates are obtained and renewed from Let's Encrypt
+# automatically; there is no certbot step and no cron entry to forget.
+#
+# Domains come from the environment so the same file serves staging and production:
+#   SITE_DOMAIN=jobsvsai.com  API_DOMAIN=api.jobsvsai.com  LETSENCRYPT_EMAIL=...
+
+{
+	email {$LETSENCRYPT_EMAIL}
+	# Admin API listens inside the container only; the health check uses it.
+	admin 127.0.0.1:2019
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# Caddy advertises itself by default; no reason to help fingerprinting.
+		-Server
+	}
+}
+
+(compression) {
+	encode zstd gzip
+}
+
+# Apex serves the site. www redirects rather than duplicating it, so there is exactly one
+# canonical origin for SEO and for the sitemap Next.js generates.
+{$SITE_DOMAIN} {
+	import security_headers
+	import compression
+
+	# The Next.js image optimiser and static chunks are content-addressed and immutable.
+	@immutable path /_next/static/* /_next/image*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	reverse_proxy frontend:3000 {
+		health_uri /api/health
+		health_interval 30s
+		health_timeout 5s
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+www.{$SITE_DOMAIN} {
+	import security_headers
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}
+
+# The API is reachable only on its own hostname. Nothing proxies /api/* from the site
+# domain, so the browser origin and the API origin stay distinct and CORS stays meaningful.
+{$API_DOMAIN} {
+	import security_headers
+	import compression
+
+	# The internal data console is not part of the public API surface. It is served from
+	# the site domain (behind the app's own basic auth); block it here so there is no
+	# second, unauthenticated path to it.
+	@console path /admin /admin/*
+	respond @console 404
+
+	reverse_proxy backend:8000 {
+		health_uri /health
+		health_interval 30s
+		health_timeout 5s
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
