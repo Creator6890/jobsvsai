@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobsVsAI — Will AI Take Your Job?</title>
+  <meta name="description" content="Explore AI exposure, replacement risk, and safer career paths." />
+  <style>
+    :root{
+      --purple:#6d28d9;
+      --purple-2:#7c3aed;
+      --purple-3:#a855f7;
+      --ink:#111111;
+      --muted:#696974;
+      --line:#e9e9ef;
+      --soft:#f7f7fb;
+      --red:#ef4444;
+      --green:#16a34a;
+      --shadow:0 20px 60px rgba(32,20,77,.12);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:#fff;
+    }
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit}
+
+    .container{width:min(1180px, calc(100% - 40px));margin:0 auto}
+
+    .header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:#fff;
+      border-bottom:1px solid rgba(17,17,17,.06);
+    }
+    .nav{
+      min-height:84px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:28px;
+    }
+    .logo{
+      font-weight:900;
+      font-size:34px;
+      letter-spacing:-2.2px;
+      white-space:nowrap;
+    }
+    .logo .vs,.logo .com{color:var(--purple-2)}
+    .nav-links{display:flex;align-items:center;gap:34px;font-size:14px;font-weight:600}
+    .nav-cta{
+      border:0;
+      background:linear-gradient(135deg,var(--purple),var(--purple-2));
+      color:#fff;
+      padding:13px 20px;
+      border-radius:12px;
+      font-weight:800;
+      box-shadow:0 8px 26px rgba(109,40,217,.22);
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 75% 18%, rgba(168,85,247,.9) 0 1px, transparent 1.3px) 0 0/13px 13px,
+        radial-gradient(circle at 85% 14%, rgba(255,255,255,.08), transparent 28%),
+        linear-gradient(135deg,#6d28d9 0%,#3b0ca8 48%,#26056e 100%);
+      color:#fff;
+      padding:72px 0 86px;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 28%,rgba(0,0,0,.10));
+    }
+    .hero-inner{position:relative;z-index:1}
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      font-size:13px;
+      font-weight:700;
+      color:#f7f1ff;
+      margin-bottom:22px;
+    }
+    h1{
+      font-size:clamp(48px,7vw,92px);
+      line-height:.95;
+      margin:0;
+      letter-spacing:-4px;
+      max-width:760px;
+    }
+    h1 .accent{color:#d8b4fe}
+    .hero-copy{
+      margin:20px 0 28px;
+      max-width:620px;
+      font-size:18px;
+      line-height:1.55;
+      color:#eee8ff;
+    }
+
+    .search-wrap{width:100%;max-width:100%;margin-top:24px}
+    .search-shell{
+      display:flex;
+      width:100%;
+      min-height:72px;
+      background:#fff;
+      border-radius:16px;
+      padding:6px;
+      box-shadow:0 18px 40px rgba(24,7,64,.22);
+    }
+    .search-main{display:flex;align-items:center;gap:14px;flex:1;padding:0 18px;color:#353544}
+    .search-main svg{flex:0 0 auto}
+    .search-main input{border:0;outline:none;width:100%;font-size:20px;background:transparent;color:#23232b}
+    .search-button{
+      border:0;
+      min-width:170px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#7c3aed,#5b21b6);
+      color:#fff;
+      font-weight:800;
+      font-size:17px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .search-button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,58,237,.35)}
+
+    .result-state{
+      margin-top:26px;
+      opacity:1;
+      transform:translateY(0);
+      transition:.45s ease;
+    }
+    .result-state.hidden{opacity:0;transform:translateY(24px);pointer-events:none;height:0;overflow:hidden;margin:0}
+    .loading-state{
+      display:none;
+      margin:26px 0 0;
+      min-height:86px;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      color:#fff;
+      font-weight:800;
+    }
+    .loading-state.active{display:flex}
+    .pulse{
+      width:46px;height:46px;border-radius:50%;
+      border:4px solid rgba(255,255,255,.18);
+      border-top-color:#fff;
+      animation:spin .85s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .job-card{
+      background:#fff;
+      color:var(--ink);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:0 28px 70px rgba(31,8,79,.30);
+      border:1px solid rgba(255,255,255,.55);
+    }
+    .job-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px}
+    .job-title-wrap{display:flex;align-items:center;gap:14px}
+    .avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,#7c3aed,#5b21b6)}
+    .job-title{font-size:24px;font-weight:850;letter-spacing:-.7px}
+    .job-sub{color:#7b7b88;font-size:14px;margin-top:2px}
+    .bookmark{width:42px;height:42px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;color:#555}
+
+    .score-grid{display:grid;grid-template-columns:180px 180px 1fr;gap:22px;align-items:stretch}
+    .score-box{border:1px solid var(--line);border-radius:16px;padding:18px}
+    .score-label{font-size:12px;color:#696974;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+    .score-value{font-size:58px;line-height:1;color:var(--purple-2);font-weight:900;letter-spacing:-3px;margin-top:10px}
+    .score-value small{font-size:18px;color:#6b6b78;font-weight:600;letter-spacing:0}
+    .pill{display:inline-flex;padding:5px 10px;border-radius:999px;background:#f0e7ff;color:var(--purple-2);font-size:12px;font-weight:800;margin-top:10px}
+    .verdict{border-left:1px solid var(--line);padding:12px 0 12px 24px}
+    .verdict-tag{display:inline-block;background:#f2e9ff;color:var(--purple-2);padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase}
+    .verdict h3{font-size:22px;margin:12px 0 8px;letter-spacing:-.5px}
+    .verdict p{margin:0;color:#5f5f6b;line-height:1.55}
+
+    .tasks{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+    .tasks-title{font-size:12px;color:#696974;font-weight:800;text-transform:uppercase;margin-bottom:16px}
+    .task{display:grid;grid-template-columns:190px 1fr 88px;gap:16px;align-items:center;margin:15px 0;font-size:14px}
+    .bar{height:7px;background:#eeeef3;border-radius:999px;overflow:hidden}
+    .fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#7c3aed,#a855f7)}
+    .task-level{color:var(--purple-2);font-weight:800;text-align:right}
+    .card-link{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);text-align:center;color:var(--purple-2);font-weight:850}
+
+    .rankings{padding:54px 0 70px;background:#fff}
+    .section-kicker{text-align:center;color:var(--purple-2);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+    .section-title{text-align:center;font-size:38px;letter-spacing:-1.4px;margin:8px 0}
+    .section-sub{text-align:center;color:#73737f;margin:0 0 30px}
+    .ranking-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .rank-card{border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 12px 30px rgba(17,17,17,.04)}
+    .rank-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .rank-head h3{margin:0;font-size:18px}
+    .view-all{font-size:13px;color:var(--purple-2);font-weight:800}
+    .rank-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;padding:11px 0;border-top:1px solid #f1f1f4;align-items:center}
+    .rank-row:first-of-type{border-top:0}
+    .badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:850}
+    .badge.red{background:#fee2e2;color:#dc2626}
+    .badge.green{background:#dcfce7;color:#15803d}
+
+    .cta-wrap{padding:0 0 54px}
+    .cta{
+      background:radial-gradient(circle at 70% 50%, rgba(124,58,237,.35), transparent 28%),#111;
+      color:#fff;border-radius:18px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px
+    }
+    .cta h3{font-size:26px;margin:0 0 6px;letter-spacing:-.7px}
+    .cta h3 span{color:#a855f7}
+    .cta p{margin:0;color:#d1d1d7}
+    .cta button{border:0;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;padding:15px 22px;border-radius:12px;font-weight:850}
+
+    footer{border-top:1px solid var(--line);padding:34px 0 42px}
+    .footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:34px}
+    .footer-brand p{color:#6f6f7b;max-width:280px;line-height:1.55;font-size:14px}
+    .footer-col h4{margin:0 0 14px;font-size:14px}
+    .footer-col a{display:block;color:#686873;font-size:13px;margin:10px 0}
+    .newsletter{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:14px}
+    .newsletter input{border:0;outline:none;flex:1;padding:11px;background:#fff;min-width:0}
+    .newsletter button{border:0;background:var(--purple-2);color:#fff;width:44px}
+    .copyright{text-align:center;color:#9a9aa4;font-size:12px;margin-top:24px}
+
+    @media (max-width: 900px){
+      .nav-links{display:none}
+      .nav{min-height:72px}
+      .logo{font-size:29px}
+      .hero{padding:58px 0 68px}
+      h1{letter-spacing:-3px}
+      .score-grid{grid-template-columns:1fr 1fr}
+      .verdict{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);padding:18px 0 0}
+      .ranking-grid{grid-template-columns:1fr}
+      .footer-grid{grid-template-columns:1fr 1fr}
+      .footer-brand{grid-column:1/-1}
+    }
+    @media (max-width: 620px){
+      .container{width:min(100% - 24px,1180px)}
+      .header .nav-cta{display:none}
+      .hero{padding-top:44px}
+      h1{font-size:55px;letter-spacing:-2.8px}
+      .hero-copy{font-size:16px}
+      .search-shell{display:block;padding:6px}
+      .search-main{min-height:58px}
+      .search-button{width:100%;min-height:52px}
+      .job-card{padding:18px}
+      .score-grid{grid-template-columns:1fr}
+      .verdict{grid-column:auto}
+      .task{grid-template-columns:1fr 70px}
+      .task .bar{grid-column:1/-1;order:3}
+      .task-level{text-align:right}
+      .cta{align-items:flex-start;flex-direction:column}
+      .footer-grid{grid-template-columns:1fr}
+      .section-title{text-align:left;font-size:30px}
+      .section-sub,.section-kicker{text-align:left}
+    }
+  
+/* Mobile-first hardening */
+@media(max-width:620px){
+  body{overflow-x:hidden}
+  .container{width:calc(100% - 28px)}
+  .header{position:sticky;top:0}
+  .nav{min-height:68px;gap:12px}
+  .logo{font-size:28px;letter-spacing:-1.8px}
+  .nav-links,.nav-cta{display:none!important}
+  .page{padding:28px 0 64px}
+  .purple-hero{padding:34px 0 30px}
+  .purple-hero .page-head{margin-bottom:0}
+  .page-head{display:block;margin-bottom:20px}
+  .page h1,.purple-hero h1{font-size:clamp(38px,12vw,52px);line-height:.98;letter-spacing:-2.4px;margin-top:8px}
+  .lead{font-size:16px;line-height:1.5}
+  .eyebrow{font-size:10px;line-height:1.35}
+  .section{padding:20px 0}
+  .section-title{font-size:26px;line-height:1.05;letter-spacing:-1px}
+  .section-copy{font-size:15px;line-height:1.55;margin-bottom:16px}
+  .card{border-radius:18px;padding:18px;box-shadow:0 8px 26px rgba(17,17,17,.04)}
+  .grid-2,.grid-3,.grid-4,.form-grid,.option-grid,.kpis{grid-template-columns:1fr!important;gap:12px}
+  .visual-grid{display:block}.visual-grid>*{margin-bottom:12px}
+  .score{font-size:50px;letter-spacing:-2.5px}
+  .metric-value{font-size:30px}
+  .metric{padding:15px}
+  .hero-search-wrap{padding:22px 16px;border-radius:22px;margin-left:-2px;margin-right:-2px}
+  .searchbox{display:flex;flex-direction:column;min-height:auto;border-radius:14px}
+  .searchbox input{width:100%;height:58px;padding:0 15px;font-size:16px}
+  .searchbox button{width:100%;height:52px;padding:0 16px;border-radius:0 0 13px 13px}
+  .btn-primary,.btn-secondary,.btn-dark{min-height:48px;display:inline-flex;align-items:center;justify-content:center;width:100%}
+  .tabs{gap:7px;margin:14px 0;overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;min-height:40px;padding:10px 13px}
+  .chip{font-size:11px}
+  .footer{padding:26px 0}.footer-inner{align-items:flex-start;flex-direction:column;gap:12px}
+  .stat-band{gap:18px}.stat-band strong{font-size:24px}
+  .compare-vs{width:50px;height:50px;font-size:19px;margin:4px auto}
+  .note{padding:15px;font-size:14px}
+  .field input,.field select,.field textarea{font-size:16px;min-height:48px}
+  .option{padding:15px;min-height:54px}
+  .admin-main{padding:18px 14px}.admin-shell{grid-template-columns:1fr}.sidebar{display:none}
+  .job-row{grid-template-columns:32px minmax(0,1fr) auto;gap:9px;padding:13px 0}
+  .job-row>*:nth-child(3),.job-row>*:nth-child(4),.job-row>*:nth-child(5){display:none}
+  /* Keep dense tables usable without crushing columns */
+  .card:has(table){overflow-x:auto;-webkit-overflow-scrolling:touch;padding:14px}
+  table{min-width:620px}
+  th,td{padding:12px 10px;font-size:13px;white-space:nowrap}
+  /* Remove hover movement on touch layouts */
+  .card:hover{transform:none}
+}
+@media(max-width:390px){
+  .container{width:calc(100% - 22px)}
+  .logo{font-size:26px}
+  .page h1,.purple-hero h1{font-size:39px}
+  .card{padding:16px}
+  .score{font-size:46px}
+  .section-title{font-size:24px}
+}
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="container nav">
+      <a class="logo" href="#">jobs<span class="vs">vs</span>ai<span class="com">.com</span></a>
+      <nav class="nav-links">
+        <a href="#rankings">Rankings</a>
+        <a href="#">Career Finder</a>
+        <a href="#">Methodology</a>
+        <a href="#">About</a>
+      </nav>
+      <button class="nav-cta">Find My Best Career →</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="eyebrow">⚡ AI is transforming every career.</div>
+        <h1>Will AI<br/>take your job<span class="accent">?</span></h1>
+        <p class="hero-copy">Get your AI Exposure and Replacement Risk score, see what’s changing, and discover your safest career moves.</p>
+
+        <div class="search-wrap" id="searchWrap">
+          <form class="search-shell" id="jobSearchForm">
+            <div class="search-main">
+              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.7-4.7m2.2-5.3a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="#55586A" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input id="jobInput" value="Graphic Designer" placeholder="Search your job or profession..." autocomplete="off" />
+            </div>
+            <button class="search-button" type="submit">Check My Job</button>
+          </form>
+        </div>
+
+        <div class="loading-state" id="loadingState">
+          <div class="pulse"></div>
+          <div>Analyzing tasks, AI exposure and market signals…</div>
+        </div>
+
+        <div class="result-state" id="resultState">
+          <article class="job-card">
+            <div class="job-top">
+              <div class="job-title-wrap">
+                <div class="avatar">GD</div>
+                <div>
+                  <div class="job-title" id="resultJobTitle">Graphic Designer</div>
+                  <div class="job-sub">Creative & Design</div>
+                </div>
+              </div>
+              <div class="bookmark">♡</div>
+            </div>
+
+            <div class="score-grid">
+              <div class="score-box">
+                <div class="score-label">AI Exposure</div>
+                <div class="score-value">84<small>/100</small></div>
+                <div class="pill">Very High</div>
+              </div>
+              <div class="score-box">
+                <div class="score-label">Replacement Risk</div>
+                <div class="score-value">71<small>/100</small></div>
+                <div class="pill">High</div>
+              </div>
+              <div class="verdict">
+                <span class="verdict-tag">Verdict</span>
+                <h3>High risk of AI impact.</h3>
+                <p>Routine design and editing tasks are highly automatable, but human creativity, strategy and direction remain essential.</p>
+              </div>
+            </div>
+
+            <div class="tasks">
+              <div class="tasks-title">Impact by key task</div>
+              <div class="task"><div>Design Execution</div><div class="bar"><div class="fill" style="width:86%"></div></div><div class="task-level">Very High</div></div>
+              <div class="task"><div>Image Editing</div><div class="bar"><div class="fill" style="width:78%"></div></div><div class="task-level">High</div></div>
+              <div class="task"><div>Client Communication</div><div class="bar"><div class="fill" style="width:46%"></div></div><div class="task-level">Medium</div></div>
+              <div class="task"><div>Strategy & Direction</div><div class="bar"><div class="fill" style="width:31%"></div></div><div class="task-level">Low</div></div>
+            </div>
+            <div class="card-link">See full analysis →</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="rankings" id="rankings">
+      <div class="container">
+        <div class="section-kicker">See how jobs compare</div>
+        <h2 class="section-title">Rankings at a glance</h2>
+        <p class="section-sub">Explore the most affected jobs—and the ones built to last.</p>
+
+        <div class="ranking-grid">
+          <div class="rank-card">
+            <div class="rank-head"><h3>Most Exposed Jobs</h3><a class="view-all" href="#">View all →</a></div>
+            <div class="rank-row"><span>1</span><span>Telemarketer</span><span class="badge red">92/100</span></div>
+            <div class="rank-row"><span>2</span><span>Data Entry Clerk</span><span class="badge red">89/100</span></div>
+            <div class="rank-row"><span>3</span><span>Transcriptionist</span><span class="badge red">87/100</span></div>
+            <div class="rank-row"><span>4</span><span>Proofreader</span><span class="badge red">86/100</span></div>
+            <div class="rank-row"><span>5</span><span>Graphic Designer</span><span class="badge red">84/100</span></div>
+          </div>
+          <div class="rank-card">
+            <div class="rank-head"><h3>Most AI-Resistant Jobs</h3><a class="view-all" href="#">View all →</a></div>
+            <div class="rank-row"><span>1</span><span>Nurse Practitioner</span><span class="badge green">22/100</span></div>
+            <div class="rank-row"><span>2</span><span>Emergency Management Director</span><span class="badge green">22/100</span></div>
+            <div class="rank-row"><span>3</span><span>Petroleum Engineer</span><span class="badge green">24/100</span></div>
+            <div class="rank-row"><span>4</span><span>Physicist</span><span class="badge green">24/100</span></div>
+            <div class="rank-row"><span>5</span><span>Aircraft Mechanic</span><span class="badge green">26/100</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-wrap">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h3>Find a <span>safer</span> career path.</h3>
+            <p>Discover roles with lower AI risk and build a future that lasts.</p>
+          </div>
+          <button>Find My Best Career →</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="logo">jobs<span class="vs">vs</span>ai<span class="com">.com</span></div>
+        <p>We measure how AI is changing work and help you figure out what to do next.</p>
+      </div>
+      <div class="footer-col"><h4>Product</h4><a href="#">Rankings</a><a href="#">Career Finder</a><a href="#">Job Comparisons</a></div>
+      <div class="footer-col"><h4>Resources</h4><a href="#">Methodology</a><a href="#">Blog</a><a href="#">Glossary</a><a href="#">FAQs</a></div>
+      <div class="footer-col"><h4>Company</h4><a href="#">About Us</a><a href="#">Contact</a><a href="#">Careers</a><a href="#">Privacy Policy</a></div>
+      <div class="footer-col"><h4>Newsletter</h4><p style="font-size:13px;color:#686873;line-height:1.5;margin:0">Get the latest updates on AI, jobs and the future of work.</p><div class="newsletter"><input placeholder="Enter your email"/><button>→</button></div></div>
+    </div>
+    <div class="copyright">© 2026 JobsVsAI.com. All rights reserved.</div>
+  </footer>
+
+  <script>
+    const form = document.getElementById('jobSearchForm');
+    const searchWrap = document.getElementById('searchWrap');
+    const loading = document.getElementById('loadingState');
+    const result = document.getElementById('resultState');
+    const input = document.getElementById('jobInput');
+    const title = document.getElementById('resultJobTitle');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = input.value.trim() || 'Graphic Designer';
+      result.classList.add('hidden');
+      searchWrap.style.opacity = '.72';
+      searchWrap.style.transform = 'scale(.995)';
+      loading.classList.add('active');
+
+      setTimeout(() => {
+        title.textContent = value;
+        loading.classList.remove('active');
+        searchWrap.style.display = 'none';
+        result.classList.remove('hidden');
+      }, 1200);
+    });
+  </script>
+<script>document.querySelectorAll('.option').forEach(el=>el.addEventListener('click',()=>{el.parentElement.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
+</script></body>
+</html>

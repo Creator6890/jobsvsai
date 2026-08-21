@@ -1,0 +1,5634 @@
+[
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/",
+    "name": "home",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Will AItake your job?",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 133,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 150,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Accountant",
+        "w": 98,
+        "h": 36
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Accountant",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Financial Advisor",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Nurse Practitioner",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "UX Researcher",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Aircraft Mechanic",
+        "w": 156,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Brand Strategist",
+        "w": 156,
+        "h": 25
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 1981
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/jobs/graphic-designer",
+    "name": "job",
+    "status": 200,
+    "errors": [],
+    "title": "Graphic Designer: AI exposure & replacement risk — JobsVsAI",
+    "h1": "Graphic Designer",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "Read methodology →",
+        "w": 336,
+        "h": 25
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 488,
+      "w": 360,
+      "h": 4850
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/rankings",
+    "name": "rankings",
+    "status": 200,
+    "errors": [],
+    "title": "AI job rankings — JobsVsAI",
+    "h1": "How jobs rank against AI.",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "rect": {
+          "x": 289.796875,
+          "y": 497.796875,
+          "width": 189.625,
+          "height": 43,
+          "top": 497.796875,
+          "right": 479.421875,
+          "bottom": 540.796875,
+          "left": 289.796875
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "rect": {
+          "x": 487.421875,
+          "y": 497.796875,
+          "width": 184.84375,
+          "height": 43,
+          "top": 497.796875,
+          "right": 672.265625,
+          "bottom": 540.796875,
+          "left": 487.421875
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "active",
+        "text": "Most exposed",
+        "w": 121,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Most AI-resistant",
+        "w": 141,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "w": 190,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "w": 185,
+        "h": 43
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 398,
+      "w": 360,
+      "h": 997
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/career-finder",
+    "name": "finder",
+    "status": 200,
+    "errors": [],
+    "title": "Career Finder — JobsVsAI",
+    "h1": "Find your smartest next move.",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 447,
+      "w": 360,
+      "h": 652
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/compare",
+    "name": "compare",
+    "status": 200,
+    "errors": [],
+    "title": "Compare careers — JobsVsAI",
+    "h1": "Put two careers head to head.",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 398,
+      "w": 360,
+      "h": 801
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/methodology",
+    "name": "methodology",
+    "status": 200,
+    "errors": [],
+    "title": "Methodology — JobsVsAI",
+    "h1": "How JobsVsAI scores work.",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 398,
+      "w": 360,
+      "h": 4015
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/about",
+    "name": "about",
+    "status": 200,
+    "errors": [],
+    "title": "About — JobsVsAI",
+    "h1": "AI is changing work.People need a map.",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 523,
+      "w": 360,
+      "h": 1821
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/admin",
+    "name": "admin",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "JobsVsAI engine",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row admin-row-head",
+        "text": "DimensionRaw valueWeightContributionStatus",
+        "rect": {
+          "x": 39,
+          "y": 1303.296875,
+          "width": 680,
+          "height": 42,
+          "top": 1303.296875,
+          "right": 719,
+          "bottom": 1345.296875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Weight",
+        "rect": {
+          "x": 356.84375,
+          "y": 1316.609375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1316.609375,
+          "right": 467.5625,
+          "bottom": 1332.96875,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Contribution",
+        "rect": {
+          "x": 482.5625,
+          "y": 1316.609375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1316.609375,
+          "right": 593.28125,
+          "bottom": 1332.96875,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 608.28125,
+          "y": 1316.609375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1316.609375,
+          "right": 719,
+          "bottom": 1332.96875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "Task exposure82.445%37.08Valid",
+        "rect": {
+          "x": 39,
+          "y": 1345.296875,
+          "width": 680,
+          "height": 56,
+          "top": 1345.296875,
+          "right": 719,
+          "bottom": 1401.296875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "45%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1363.875,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1363.875,
+          "right": 467.5625,
+          "bottom": 1383.703125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "37.08",
+        "rect": {
+          "x": 482.5625,
+          "y": 1363.875,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1363.875,
+          "right": 593.28125,
+          "bottom": 1383.703125,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Valid",
+        "rect": {
+          "x": 608.28125,
+          "y": 1360.796875,
+          "width": 110.71875,
+          "height": 26,
+          "top": 1360.796875,
+          "right": 719,
+          "bottom": 1386.796875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 617.28125,
+          "y": 1370.796875,
+          "width": 6,
+          "height": 6,
+          "top": 1370.796875,
+          "right": 623.28125,
+          "bottom": 1376.796875,
+          "left": 617.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "AI capability proximity91.215%13.68Valid",
+        "rect": {
+          "x": 39,
+          "y": 1401.296875,
+          "width": 680,
+          "height": 56,
+          "top": 1401.296875,
+          "right": 719,
+          "bottom": 1457.296875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "15%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1419.875,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1419.875,
+          "right": 467.5625,
+          "bottom": 1439.703125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "13.68",
+        "rect": {
+          "x": 482.5625,
+          "y": 1419.875,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1419.875,
+          "right": 593.28125,
+          "bottom": 1439.703125,
+          "left": 482.5625
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      },
+      {
+        "tag": "A",
+        "cls": "text-link small",
+        "text": "Open system →",
+        "w": 96,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 1664
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 1664
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/admin/jobs",
+    "name": "admin-jobs",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Occupations",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row occupation-admin-row admin-row-head",
+        "text": "OccupationExposureRiskUpdatedStatus",
+        "rect": {
+          "x": 39,
+          "y": 357.53125,
+          "width": 680,
+          "height": 42,
+          "top": 357.53125,
+          "right": 719,
+          "bottom": 399.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Exposure",
+        "rect": {
+          "x": 260.65625,
+          "y": 370.84375,
+          "width": 103.34375,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 364,
+          "bottom": 387.203125,
+          "left": 260.65625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Risk",
+        "rect": {
+          "x": 379,
+          "y": 370.84375,
+          "width": 103.328125,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 482.328125,
+          "bottom": 387.203125,
+          "left": 379
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Updated",
+        "rect": {
+          "x": 497.328125,
+          "y": 370.84375,
+          "width": 103.328125,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 600.65625,
+          "bottom": 387.203125,
+          "left": 497.328125
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 615.65625,
+          "y": 370.84375,
+          "width": 103.34375,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 719,
+          "bottom": 387.203125,
+          "left": 615.65625
+        }
+      },
+      {
+        "tag": "A",
+        "cls": "admin-row occupation-admin-row",
+        "text": "Graphic DesignerCreative & Design84712026-08-20Scored",
+        "rect": {
+          "x": 39,
+          "y": 399.53125,
+          "width": 680,
+          "height": 56,
+          "top": 399.53125,
+          "right": 719,
+          "bottom": 455.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "84",
+        "rect": {
+          "x": 260.65625,
+          "y": 418.109375,
+          "width": 103.34375,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 364,
+          "bottom": 437.9375,
+          "left": 260.65625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "71",
+        "rect": {
+          "x": 379,
+          "y": 418.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 482.328125,
+          "bottom": 437.9375,
+          "left": 379
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "2026-08-20",
+        "rect": {
+          "x": 497.328125,
+          "y": 418.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 600.65625,
+          "bottom": 437.9375,
+          "left": 497.328125
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Scored",
+        "rect": {
+          "x": 615.65625,
+          "y": 415.03125,
+          "width": 103.34375,
+          "height": 26,
+          "top": 415.03125,
+          "right": 719,
+          "bottom": 441.03125,
+          "left": 615.65625
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 624.65625,
+          "y": 425.03125,
+          "width": 6,
+          "height": 6,
+          "top": 425.03125,
+          "right": 630.65625,
+          "bottom": 431.03125,
+          "left": 624.65625
+        }
+      },
+      {
+        "tag": "A",
+        "cls": "admin-row occupation-admin-row",
+        "text": "Software DeveloperTechnology72492026-08-20Scored",
+        "rect": {
+          "x": 39,
+          "y": 455.53125,
+          "width": 680,
+          "height": 56,
+          "top": 455.53125,
+          "right": 719,
+          "bottom": 511.53125,
+          "left": 39
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 887
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 887
+    }
+  },
+  {
+    "width": 360,
+    "height": 844,
+    "route": "/admin/jobs/graphic-designer",
+    "name": "admin-inspector",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Graphic Designer",
+    "innerWidth": 360,
+    "scrollWidth": 360,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row admin-row-head",
+        "text": "FactorRaw valueWeightContributionStatus",
+        "rect": {
+          "x": 39,
+          "y": 1347.796875,
+          "width": 680,
+          "height": 42,
+          "top": 1347.796875,
+          "right": 719,
+          "bottom": 1389.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Weight",
+        "rect": {
+          "x": 356.84375,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 467.5625,
+          "bottom": 1377.46875,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Contribution",
+        "rect": {
+          "x": 482.5625,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 593.28125,
+          "bottom": 1377.46875,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 608.28125,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 719,
+          "bottom": 1377.46875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "Task exposure6445%28.80Valid",
+        "rect": {
+          "x": 39,
+          "y": 1389.796875,
+          "width": 680,
+          "height": 56,
+          "top": 1389.796875,
+          "right": 719,
+          "bottom": 1445.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "45%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1408.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1408.375,
+          "right": 467.5625,
+          "bottom": 1428.203125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "28.80",
+        "rect": {
+          "x": 482.5625,
+          "y": 1408.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1408.375,
+          "right": 593.28125,
+          "bottom": 1428.203125,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Valid",
+        "rect": {
+          "x": 608.28125,
+          "y": 1405.296875,
+          "width": 110.71875,
+          "height": 26,
+          "top": 1405.296875,
+          "right": 719,
+          "bottom": 1431.296875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 617.28125,
+          "y": 1415.296875,
+          "width": 6,
+          "height": 6,
+          "top": 1415.296875,
+          "right": 623.28125,
+          "bottom": 1421.296875,
+          "left": 617.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "AI capability proximity8915%13.35Valid",
+        "rect": {
+          "x": 39,
+          "y": 1445.796875,
+          "width": 680,
+          "height": 56,
+          "top": 1445.796875,
+          "right": 719,
+          "bottom": 1501.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "15%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1464.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1464.375,
+          "right": 467.5625,
+          "bottom": 1484.203125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "13.35",
+        "rect": {
+          "x": 482.5625,
+          "y": 1464.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1464.375,
+          "right": 593.28125,
+          "bottom": 1484.203125,
+          "left": 482.5625
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 1709
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 360,
+      "h": 1709
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/",
+    "name": "home",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Will AItake your job?",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 133,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 150,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Accountant",
+        "w": 98,
+        "h": 36
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Accountant",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Cybersecurity Analyst",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Financial Advisor",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Nurse Practitioner",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "UX Researcher",
+        "w": 186,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Aircraft Mechanic",
+        "w": 186,
+        "h": 25
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 1997
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/jobs/graphic-designer",
+    "name": "job",
+    "status": 200,
+    "errors": [],
+    "title": "Graphic Designer: AI exposure & replacement risk — JobsVsAI",
+    "h1": "Graphic Designer",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "Read methodology →",
+        "w": 366,
+        "h": 25
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 477,
+      "w": 390,
+      "h": 4770
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/rankings",
+    "name": "rankings",
+    "status": 200,
+    "errors": [],
+    "title": "AI job rankings — JobsVsAI",
+    "h1": "How jobs rank against AI.",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "rect": {
+          "x": 289.796875,
+          "y": 506.234375,
+          "width": 189.625,
+          "height": 43,
+          "top": 506.234375,
+          "right": 479.421875,
+          "bottom": 549.234375,
+          "left": 289.796875
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "rect": {
+          "x": 487.421875,
+          "y": 506.234375,
+          "width": 184.84375,
+          "height": 43,
+          "top": 506.234375,
+          "right": 672.265625,
+          "bottom": 549.234375,
+          "left": 487.421875
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "active",
+        "text": "Most exposed",
+        "w": 121,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Most AI-resistant",
+        "w": 141,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "w": 190,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "w": 185,
+        "h": 43
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 406,
+      "w": 390,
+      "h": 997
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/career-finder",
+    "name": "finder",
+    "status": 200,
+    "errors": [],
+    "title": "Career Finder — JobsVsAI",
+    "h1": "Find your smartest next move.",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 435,
+      "w": 390,
+      "h": 652
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/compare",
+    "name": "compare",
+    "status": 200,
+    "errors": [],
+    "title": "Compare careers — JobsVsAI",
+    "h1": "Put two careers head to head.",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 406,
+      "w": 390,
+      "h": 801
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/methodology",
+    "name": "methodology",
+    "status": 200,
+    "errors": [],
+    "title": "Methodology — JobsVsAI",
+    "h1": "How JobsVsAI scores work.",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 381,
+      "w": 390,
+      "h": 3916
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/about",
+    "name": "about",
+    "status": 200,
+    "errors": [],
+    "title": "About — JobsVsAI",
+    "h1": "AI is changing work.People need a map.",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 540,
+      "w": 390,
+      "h": 1795
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/admin",
+    "name": "admin",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "JobsVsAI engine",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row admin-row-head",
+        "text": "DimensionRaw valueWeightContributionStatus",
+        "rect": {
+          "x": 39,
+          "y": 1278.5,
+          "width": 680,
+          "height": 42,
+          "top": 1278.5,
+          "right": 719,
+          "bottom": 1320.5,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Weight",
+        "rect": {
+          "x": 356.84375,
+          "y": 1291.8125,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1291.8125,
+          "right": 467.5625,
+          "bottom": 1308.171875,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Contribution",
+        "rect": {
+          "x": 482.5625,
+          "y": 1291.8125,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1291.8125,
+          "right": 593.28125,
+          "bottom": 1308.171875,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 608.28125,
+          "y": 1291.8125,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1291.8125,
+          "right": 719,
+          "bottom": 1308.171875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "Task exposure82.445%37.08Valid",
+        "rect": {
+          "x": 39,
+          "y": 1320.5,
+          "width": 680,
+          "height": 56,
+          "top": 1320.5,
+          "right": 719,
+          "bottom": 1376.5,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "45%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1339.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1339.078125,
+          "right": 467.5625,
+          "bottom": 1358.90625,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "37.08",
+        "rect": {
+          "x": 482.5625,
+          "y": 1339.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1339.078125,
+          "right": 593.28125,
+          "bottom": 1358.90625,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Valid",
+        "rect": {
+          "x": 608.28125,
+          "y": 1336,
+          "width": 110.71875,
+          "height": 26,
+          "top": 1336,
+          "right": 719,
+          "bottom": 1362,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 617.28125,
+          "y": 1346,
+          "width": 6,
+          "height": 6,
+          "top": 1346,
+          "right": 623.28125,
+          "bottom": 1352,
+          "left": 617.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "AI capability proximity91.215%13.68Valid",
+        "rect": {
+          "x": 39,
+          "y": 1376.5,
+          "width": 680,
+          "height": 56,
+          "top": 1376.5,
+          "right": 719,
+          "bottom": 1432.5,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "15%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1395.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1395.078125,
+          "right": 467.5625,
+          "bottom": 1414.90625,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "13.68",
+        "rect": {
+          "x": 482.5625,
+          "y": 1395.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1395.078125,
+          "right": 593.28125,
+          "bottom": 1414.90625,
+          "left": 482.5625
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      },
+      {
+        "tag": "A",
+        "cls": "text-link small",
+        "text": "Open system →",
+        "w": 96,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 1640
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 1640
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/admin/jobs",
+    "name": "admin-jobs",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Occupations",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row occupation-admin-row admin-row-head",
+        "text": "OccupationExposureRiskUpdatedStatus",
+        "rect": {
+          "x": 39,
+          "y": 357.53125,
+          "width": 680,
+          "height": 42,
+          "top": 357.53125,
+          "right": 719,
+          "bottom": 399.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Risk",
+        "rect": {
+          "x": 379,
+          "y": 370.84375,
+          "width": 103.328125,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 482.328125,
+          "bottom": 387.203125,
+          "left": 379
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Updated",
+        "rect": {
+          "x": 497.328125,
+          "y": 370.84375,
+          "width": 103.328125,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 600.65625,
+          "bottom": 387.203125,
+          "left": 497.328125
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 615.65625,
+          "y": 370.84375,
+          "width": 103.34375,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 719,
+          "bottom": 387.203125,
+          "left": 615.65625
+        }
+      },
+      {
+        "tag": "A",
+        "cls": "admin-row occupation-admin-row",
+        "text": "Graphic DesignerCreative & Design84712026-08-20Scored",
+        "rect": {
+          "x": 39,
+          "y": 399.53125,
+          "width": 680,
+          "height": 56,
+          "top": 399.53125,
+          "right": 719,
+          "bottom": 455.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "71",
+        "rect": {
+          "x": 379,
+          "y": 418.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 482.328125,
+          "bottom": 437.9375,
+          "left": 379
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "2026-08-20",
+        "rect": {
+          "x": 497.328125,
+          "y": 418.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 600.65625,
+          "bottom": 437.9375,
+          "left": 497.328125
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Scored",
+        "rect": {
+          "x": 615.65625,
+          "y": 415.03125,
+          "width": 103.34375,
+          "height": 26,
+          "top": 415.03125,
+          "right": 719,
+          "bottom": 441.03125,
+          "left": 615.65625
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 624.65625,
+          "y": 425.03125,
+          "width": 6,
+          "height": 6,
+          "top": 425.03125,
+          "right": 630.65625,
+          "bottom": 431.03125,
+          "left": 624.65625
+        }
+      },
+      {
+        "tag": "A",
+        "cls": "admin-row occupation-admin-row",
+        "text": "Software DeveloperTechnology72492026-08-20Scored",
+        "rect": {
+          "x": 39,
+          "y": 455.53125,
+          "width": 680,
+          "height": 56,
+          "top": 455.53125,
+          "right": 719,
+          "bottom": 511.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "49",
+        "rect": {
+          "x": 379,
+          "y": 474.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 474.109375,
+          "right": 482.328125,
+          "bottom": 493.9375,
+          "left": 379
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "2026-08-20",
+        "rect": {
+          "x": 497.328125,
+          "y": 474.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 474.109375,
+          "right": 600.65625,
+          "bottom": 493.9375,
+          "left": 497.328125
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 887
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 887
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "route": "/admin/jobs/graphic-designer",
+    "name": "admin-inspector",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Graphic Designer",
+    "innerWidth": 390,
+    "scrollWidth": 390,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row admin-row-head",
+        "text": "FactorRaw valueWeightContributionStatus",
+        "rect": {
+          "x": 39,
+          "y": 1347.796875,
+          "width": 680,
+          "height": 42,
+          "top": 1347.796875,
+          "right": 719,
+          "bottom": 1389.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Weight",
+        "rect": {
+          "x": 356.84375,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 467.5625,
+          "bottom": 1377.46875,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Contribution",
+        "rect": {
+          "x": 482.5625,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 593.28125,
+          "bottom": 1377.46875,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 608.28125,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 719,
+          "bottom": 1377.46875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "Task exposure6445%28.80Valid",
+        "rect": {
+          "x": 39,
+          "y": 1389.796875,
+          "width": 680,
+          "height": 56,
+          "top": 1389.796875,
+          "right": 719,
+          "bottom": 1445.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "45%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1408.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1408.375,
+          "right": 467.5625,
+          "bottom": 1428.203125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "28.80",
+        "rect": {
+          "x": 482.5625,
+          "y": 1408.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1408.375,
+          "right": 593.28125,
+          "bottom": 1428.203125,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Valid",
+        "rect": {
+          "x": 608.28125,
+          "y": 1405.296875,
+          "width": 110.71875,
+          "height": 26,
+          "top": 1405.296875,
+          "right": 719,
+          "bottom": 1431.296875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 617.28125,
+          "y": 1415.296875,
+          "width": 6,
+          "height": 6,
+          "top": 1415.296875,
+          "right": 623.28125,
+          "bottom": 1421.296875,
+          "left": 617.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "AI capability proximity8915%13.35Valid",
+        "rect": {
+          "x": 39,
+          "y": 1445.796875,
+          "width": 680,
+          "height": 56,
+          "top": 1445.796875,
+          "right": 719,
+          "bottom": 1501.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "15%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1464.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1464.375,
+          "right": 467.5625,
+          "bottom": 1484.203125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "13.35",
+        "rect": {
+          "x": 482.5625,
+          "y": 1464.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1464.375,
+          "right": 593.28125,
+          "bottom": 1484.203125,
+          "left": 482.5625
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 1709
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 390,
+      "h": 1709
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/",
+    "name": "home",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Will AItake your job?",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 133,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 150,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Accountant",
+        "w": 98,
+        "h": 36
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Accountant",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Cybersecurity Analyst",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Financial Advisor",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Nurse Practitioner",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "UX Researcher",
+        "w": 226,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Aircraft Mechanic",
+        "w": 226,
+        "h": 25
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 1954
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/jobs/graphic-designer",
+    "name": "job",
+    "status": 200,
+    "errors": [],
+    "title": "Graphic Designer: AI exposure & replacement risk — JobsVsAI",
+    "h1": "Graphic Designer",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "Read methodology →",
+        "w": 406,
+        "h": 25
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 488,
+      "w": 430,
+      "h": 4735
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/rankings",
+    "name": "rankings",
+    "status": 200,
+    "errors": [],
+    "title": "AI job rankings — JobsVsAI",
+    "h1": "How jobs rank against AI.",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "rect": {
+          "x": 289.796875,
+          "y": 492.6875,
+          "width": 189.625,
+          "height": 43,
+          "top": 492.6875,
+          "right": 479.421875,
+          "bottom": 535.6875,
+          "left": 289.796875
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "rect": {
+          "x": 487.421875,
+          "y": 492.6875,
+          "width": 184.84375,
+          "height": 43,
+          "top": 492.6875,
+          "right": 672.265625,
+          "bottom": 535.6875,
+          "left": 487.421875
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "active",
+        "text": "Most exposed",
+        "w": 121,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Most AI-resistant",
+        "w": 141,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "w": 190,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "w": 185,
+        "h": 43
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 42,
+        "h": 40
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 393,
+      "w": 430,
+      "h": 997
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/career-finder",
+    "name": "finder",
+    "status": 200,
+    "errors": [],
+    "title": "Career Finder — JobsVsAI",
+    "h1": "Find your smartest next move.",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 452,
+      "w": 430,
+      "h": 652
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/compare",
+    "name": "compare",
+    "status": 200,
+    "errors": [],
+    "title": "Compare careers — JobsVsAI",
+    "h1": "Put two careers head to head.",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 393,
+      "w": 430,
+      "h": 801
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/methodology",
+    "name": "methodology",
+    "status": 200,
+    "errors": [],
+    "title": "Methodology — JobsVsAI",
+    "h1": "How JobsVsAI scores work.",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 393,
+      "w": 430,
+      "h": 3866
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/about",
+    "name": "about",
+    "status": 200,
+    "errors": [],
+    "title": "About — JobsVsAI",
+    "h1": "AI is changing work.People need a map.",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 537,
+      "w": 430,
+      "h": 1795
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/admin",
+    "name": "admin",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "JobsVsAI engine",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row admin-row-head",
+        "text": "DimensionRaw valueWeightContributionStatus",
+        "rect": {
+          "x": 39,
+          "y": 1278.5,
+          "width": 680,
+          "height": 42,
+          "top": 1278.5,
+          "right": 719,
+          "bottom": 1320.5,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Weight",
+        "rect": {
+          "x": 356.84375,
+          "y": 1291.8125,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1291.8125,
+          "right": 467.5625,
+          "bottom": 1308.171875,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Contribution",
+        "rect": {
+          "x": 482.5625,
+          "y": 1291.8125,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1291.8125,
+          "right": 593.28125,
+          "bottom": 1308.171875,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 608.28125,
+          "y": 1291.8125,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1291.8125,
+          "right": 719,
+          "bottom": 1308.171875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "Task exposure82.445%37.08Valid",
+        "rect": {
+          "x": 39,
+          "y": 1320.5,
+          "width": 680,
+          "height": 56,
+          "top": 1320.5,
+          "right": 719,
+          "bottom": 1376.5,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "45%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1339.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1339.078125,
+          "right": 467.5625,
+          "bottom": 1358.90625,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "37.08",
+        "rect": {
+          "x": 482.5625,
+          "y": 1339.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1339.078125,
+          "right": 593.28125,
+          "bottom": 1358.90625,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Valid",
+        "rect": {
+          "x": 608.28125,
+          "y": 1336,
+          "width": 110.71875,
+          "height": 26,
+          "top": 1336,
+          "right": 719,
+          "bottom": 1362,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 617.28125,
+          "y": 1346,
+          "width": 6,
+          "height": 6,
+          "top": 1346,
+          "right": 623.28125,
+          "bottom": 1352,
+          "left": 617.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "AI capability proximity91.215%13.68Valid",
+        "rect": {
+          "x": 39,
+          "y": 1376.5,
+          "width": 680,
+          "height": 56,
+          "top": 1376.5,
+          "right": 719,
+          "bottom": 1432.5,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "15%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1395.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1395.078125,
+          "right": 467.5625,
+          "bottom": 1414.90625,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "13.68",
+        "rect": {
+          "x": 482.5625,
+          "y": 1395.078125,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1395.078125,
+          "right": 593.28125,
+          "bottom": 1414.90625,
+          "left": 482.5625
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      },
+      {
+        "tag": "A",
+        "cls": "text-link small",
+        "text": "Open system →",
+        "w": 96,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 1640
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 1640
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/admin/jobs",
+    "name": "admin-jobs",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Occupations",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row occupation-admin-row admin-row-head",
+        "text": "OccupationExposureRiskUpdatedStatus",
+        "rect": {
+          "x": 39,
+          "y": 357.53125,
+          "width": 680,
+          "height": 42,
+          "top": 357.53125,
+          "right": 719,
+          "bottom": 399.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Risk",
+        "rect": {
+          "x": 379,
+          "y": 370.84375,
+          "width": 103.328125,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 482.328125,
+          "bottom": 387.203125,
+          "left": 379
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Updated",
+        "rect": {
+          "x": 497.328125,
+          "y": 370.84375,
+          "width": 103.328125,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 600.65625,
+          "bottom": 387.203125,
+          "left": 497.328125
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 615.65625,
+          "y": 370.84375,
+          "width": 103.34375,
+          "height": 16.359375,
+          "top": 370.84375,
+          "right": 719,
+          "bottom": 387.203125,
+          "left": 615.65625
+        }
+      },
+      {
+        "tag": "A",
+        "cls": "admin-row occupation-admin-row",
+        "text": "Graphic DesignerCreative & Design84712026-08-20Scored",
+        "rect": {
+          "x": 39,
+          "y": 399.53125,
+          "width": 680,
+          "height": 56,
+          "top": 399.53125,
+          "right": 719,
+          "bottom": 455.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "71",
+        "rect": {
+          "x": 379,
+          "y": 418.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 482.328125,
+          "bottom": 437.9375,
+          "left": 379
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "2026-08-20",
+        "rect": {
+          "x": 497.328125,
+          "y": 418.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 418.109375,
+          "right": 600.65625,
+          "bottom": 437.9375,
+          "left": 497.328125
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Scored",
+        "rect": {
+          "x": 615.65625,
+          "y": 415.03125,
+          "width": 103.34375,
+          "height": 26,
+          "top": 415.03125,
+          "right": 719,
+          "bottom": 441.03125,
+          "left": 615.65625
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 624.65625,
+          "y": 425.03125,
+          "width": 6,
+          "height": 6,
+          "top": 425.03125,
+          "right": 630.65625,
+          "bottom": 431.03125,
+          "left": 624.65625
+        }
+      },
+      {
+        "tag": "A",
+        "cls": "admin-row occupation-admin-row",
+        "text": "Software DeveloperTechnology72492026-08-20Scored",
+        "rect": {
+          "x": 39,
+          "y": 455.53125,
+          "width": 680,
+          "height": 56,
+          "top": 455.53125,
+          "right": 719,
+          "bottom": 511.53125,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "49",
+        "rect": {
+          "x": 379,
+          "y": 474.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 474.109375,
+          "right": 482.328125,
+          "bottom": 493.9375,
+          "left": 379
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "2026-08-20",
+        "rect": {
+          "x": 497.328125,
+          "y": 474.109375,
+          "width": 103.328125,
+          "height": 19.828125,
+          "top": 474.109375,
+          "right": 600.65625,
+          "bottom": 493.9375,
+          "left": 497.328125
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 887
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 887
+    }
+  },
+  {
+    "width": 430,
+    "height": 844,
+    "route": "/admin/jobs/graphic-designer",
+    "name": "admin-inspector",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Graphic Designer",
+    "innerWidth": 430,
+    "scrollWidth": 430,
+    "horizontalOverflow": false,
+    "outside": [
+      {
+        "tag": "DIV",
+        "cls": "admin-row admin-row-head",
+        "text": "FactorRaw valueWeightContributionStatus",
+        "rect": {
+          "x": 39,
+          "y": 1347.796875,
+          "width": 680,
+          "height": 42,
+          "top": 1347.796875,
+          "right": 719,
+          "bottom": 1389.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Weight",
+        "rect": {
+          "x": 356.84375,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 467.5625,
+          "bottom": 1377.46875,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Contribution",
+        "rect": {
+          "x": 482.5625,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 593.28125,
+          "bottom": 1377.46875,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "B",
+        "cls": "",
+        "text": "Status",
+        "rect": {
+          "x": 608.28125,
+          "y": 1361.109375,
+          "width": 110.71875,
+          "height": 16.359375,
+          "top": 1361.109375,
+          "right": 719,
+          "bottom": 1377.46875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "Task exposure6445%28.80Valid",
+        "rect": {
+          "x": 39,
+          "y": 1389.796875,
+          "width": 680,
+          "height": 56,
+          "top": 1389.796875,
+          "right": 719,
+          "bottom": 1445.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "45%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1408.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1408.375,
+          "right": 467.5625,
+          "bottom": 1428.203125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "28.80",
+        "rect": {
+          "x": 482.5625,
+          "y": 1408.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1408.375,
+          "right": 593.28125,
+          "bottom": 1428.203125,
+          "left": 482.5625
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "status ok",
+        "text": "Valid",
+        "rect": {
+          "x": 608.28125,
+          "y": 1405.296875,
+          "width": 110.71875,
+          "height": 26,
+          "top": 1405.296875,
+          "right": 719,
+          "bottom": 1431.296875,
+          "left": 608.28125
+        }
+      },
+      {
+        "tag": "I",
+        "cls": "",
+        "text": "",
+        "rect": {
+          "x": 617.28125,
+          "y": 1415.296875,
+          "width": 6,
+          "height": 6,
+          "top": 1415.296875,
+          "right": 623.28125,
+          "bottom": 1421.296875,
+          "left": 617.28125
+        }
+      },
+      {
+        "tag": "DIV",
+        "cls": "admin-row",
+        "text": "AI capability proximity8915%13.35Valid",
+        "rect": {
+          "x": 39,
+          "y": 1445.796875,
+          "width": 680,
+          "height": 56,
+          "top": 1445.796875,
+          "right": 719,
+          "bottom": 1501.796875,
+          "left": 39
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "15%",
+        "rect": {
+          "x": 356.84375,
+          "y": 1464.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1464.375,
+          "right": 467.5625,
+          "bottom": 1484.203125,
+          "left": 356.84375
+        }
+      },
+      {
+        "tag": "SPAN",
+        "cls": "",
+        "text": "13.35",
+        "rect": {
+          "x": 482.5625,
+          "y": 1464.375,
+          "width": 110.71875,
+          "height": 19.828125,
+          "top": 1464.375,
+          "right": 593.28125,
+          "bottom": 1484.203125,
+          "left": 482.5625
+        }
+      }
+    ],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 121,
+        "h": 26
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 1709
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 430,
+      "h": 1709
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/",
+    "name": "home",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Will AItake your job?",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 133,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 150,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Accountant",
+        "w": 98,
+        "h": 36
+      },
+      {
+        "tag": "A",
+        "cls": "text-link desktop-only",
+        "text": "Explore all rankings →",
+        "w": 174,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 173,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Accountant",
+        "w": 173,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 173,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Cybersecurity Analyst",
+        "w": 173,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Financial Advisor",
+        "w": 173,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Nurse Practitioner",
+        "w": 173,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "UX Researcher",
+        "w": 173,
+        "h": 25
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 77,
+      "w": 768,
+      "h": 1423
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/jobs/graphic-designer",
+    "name": "job",
+    "status": 200,
+    "errors": [],
+    "title": "Graphic Designer: AI exposure & replacement risk — JobsVsAI",
+    "h1": "Graphic Designer",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "Read methodology →",
+        "w": 347,
+        "h": 25
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 358,
+      "w": 768,
+      "h": 3367
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/rankings",
+    "name": "rankings",
+    "status": 200,
+    "errors": [],
+    "title": "AI job rankings — JobsVsAI",
+    "h1": "How jobs rank against AI.",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "active",
+        "text": "Most exposed",
+        "w": 121,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Most AI-resistant",
+        "w": 141,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "w": 190,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "w": 185,
+        "h": 43
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 388,
+      "w": 768,
+      "h": 987
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/career-finder",
+    "name": "finder",
+    "status": 200,
+    "errors": [],
+    "title": "Career Finder — JobsVsAI",
+    "h1": "Find your smartest next move.",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 387,
+      "w": 768,
+      "h": 658
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/compare",
+    "name": "compare",
+    "status": 200,
+    "errors": [],
+    "title": "Compare careers — JobsVsAI",
+    "h1": "Put two careers head to head.",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 388,
+      "w": 768,
+      "h": 692
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/methodology",
+    "name": "methodology",
+    "status": 200,
+    "errors": [],
+    "title": "Methodology — JobsVsAI",
+    "h1": "How JobsVsAI scores work.",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 360,
+      "w": 768,
+      "h": 2839
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/about",
+    "name": "about",
+    "status": 200,
+    "errors": [],
+    "title": "About — JobsVsAI",
+    "h1": "AI is changing work.People need a map.",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 441,
+      "w": 768,
+      "h": 1422
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/admin",
+    "name": "admin",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "JobsVsAI engine",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      },
+      {
+        "tag": "A",
+        "cls": "text-link small",
+        "text": "Open system →",
+        "w": 96,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 768,
+      "h": 1354
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 768,
+      "h": 1354
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/admin/jobs",
+    "name": "admin-jobs",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Occupations",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 768,
+      "h": 860
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 768,
+      "h": 860
+    }
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "route": "/admin/jobs/graphic-designer",
+    "name": "admin-inspector",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Graphic Designer",
+    "innerWidth": 768,
+    "scrollWidth": 768,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "none",
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 768,
+      "h": 1399
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 768,
+      "h": 1399
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/",
+    "name": "home",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Will AItake your job?",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 133,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 150,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Accountant",
+        "w": 98,
+        "h": 36
+      },
+      {
+        "tag": "A",
+        "cls": "text-link desktop-only",
+        "text": "Explore all rankings →",
+        "w": 174,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 301,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Accountant",
+        "w": 301,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 301,
+        "h": 25
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 77,
+      "w": 1024,
+      "h": 1433
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/jobs/graphic-designer",
+    "name": "job",
+    "status": 200,
+    "errors": [],
+    "title": "Graphic Designer: AI exposure & replacement risk — JobsVsAI",
+    "h1": "Graphic Designer",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "Read methodology →",
+        "w": 168,
+        "h": 25
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 376,
+      "w": 1024,
+      "h": 2949
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/rankings",
+    "name": "rankings",
+    "status": 200,
+    "errors": [],
+    "title": "AI job rankings — JobsVsAI",
+    "h1": "How jobs rank against AI.",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "active",
+        "text": "Most exposed",
+        "w": 121,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Most AI-resistant",
+        "w": 141,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "w": 190,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "w": 185,
+        "h": 43
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 406,
+      "w": 1024,
+      "h": 987
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/career-finder",
+    "name": "finder",
+    "status": 200,
+    "errors": [],
+    "title": "Career Finder — JobsVsAI",
+    "h1": "Find your smartest next move.",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 377,
+      "w": 1024,
+      "h": 665
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/compare",
+    "name": "compare",
+    "status": 200,
+    "errors": [],
+    "title": "Compare careers — JobsVsAI",
+    "h1": "Put two careers head to head.",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 406,
+      "w": 1024,
+      "h": 630
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/methodology",
+    "name": "methodology",
+    "status": 200,
+    "errors": [],
+    "title": "Methodology — JobsVsAI",
+    "h1": "How JobsVsAI scores work.",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 378,
+      "w": 1024,
+      "h": 2421
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/about",
+    "name": "about",
+    "status": 200,
+    "errors": [],
+    "title": "About — JobsVsAI",
+    "h1": "AI is changing work.People need a map.",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 477,
+      "w": 1024,
+      "h": 1229
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/admin",
+    "name": "admin",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "JobsVsAI engine",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      },
+      {
+        "tag": "A",
+        "cls": "text-link small",
+        "text": "Open system →",
+        "w": 96,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "flex",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 225,
+      "h": 1217
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 1024,
+      "h": 1217
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 225,
+      "y": 68,
+      "w": 799,
+      "h": 1217
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/admin/jobs",
+    "name": "admin-jobs",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Occupations",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "flex",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 225,
+      "h": 874
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 1024,
+      "h": 874
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 225,
+      "y": 68,
+      "w": 799,
+      "h": 874
+    }
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "route": "/admin/jobs/graphic-designer",
+    "name": "admin-inspector",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Graphic Designer",
+    "innerWidth": 1024,
+    "scrollWidth": 1024,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "flex",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 225,
+      "h": 1261
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 1024,
+      "h": 1261
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 225,
+      "y": 68,
+      "w": 799,
+      "h": 1261
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/",
+    "name": "home",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Will AItake your job?",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 133,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 150,
+        "h": 36
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Accountant",
+        "w": 98,
+        "h": 36
+      },
+      {
+        "tag": "A",
+        "cls": "text-link desktop-only",
+        "text": "Explore all rankings →",
+        "w": 174,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Graphic Designer",
+        "w": 399,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Accountant",
+        "w": 399,
+        "h": 25
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Software Developer",
+        "w": 399,
+        "h": 25
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 77,
+      "w": 1440,
+      "h": 1524
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/jobs/graphic-designer",
+    "name": "job",
+    "status": 200,
+    "errors": [],
+    "title": "Graphic Designer: AI exposure & replacement risk — JobsVsAI",
+    "h1": "Graphic Designer",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "See this transition →",
+        "w": 160,
+        "h": 21
+      },
+      {
+        "tag": "A",
+        "cls": "text-link",
+        "text": "Read methodology →",
+        "w": 168,
+        "h": 25
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 398,
+      "w": 1440,
+      "h": 2962
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/rankings",
+    "name": "rankings",
+    "status": 200,
+    "errors": [],
+    "title": "AI job rankings — JobsVsAI",
+    "h1": "How jobs rank against AI.",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "active",
+        "text": "Most exposed",
+        "w": 121,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Most AI-resistant",
+        "w": 141,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Highest replacement risk",
+        "w": 190,
+        "h": 43
+      },
+      {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "Lowest replacement risk",
+        "w": 185,
+        "h": 43
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      },
+      {
+        "tag": "A",
+        "cls": "button secondary",
+        "text": "View →",
+        "w": 90,
+        "h": 40
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 521,
+      "w": 1440,
+      "h": 987
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/career-finder",
+    "name": "finder",
+    "status": 200,
+    "errors": [],
+    "title": "Career Finder — JobsVsAI",
+    "h1": "Find your smartest next move.",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 491,
+      "w": 1440,
+      "h": 665
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/compare",
+    "name": "compare",
+    "status": 200,
+    "errors": [],
+    "title": "Compare careers — JobsVsAI",
+    "h1": "Put two careers head to head.",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 521,
+      "w": 1440,
+      "h": 630
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/methodology",
+    "name": "methodology",
+    "status": 200,
+    "errors": [],
+    "title": "Methodology — JobsVsAI",
+    "h1": "How JobsVsAI scores work.",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 492,
+      "w": 1440,
+      "h": 2424
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/about",
+    "name": "about",
+    "status": 200,
+    "errors": [],
+    "title": "About — JobsVsAI",
+    "h1": "AI is changing work.People need a map.",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Rankings",
+        "w": 63,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Compare",
+        "w": 62,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "Methodology",
+        "w": 94,
+        "h": 23
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "About",
+        "w": 43,
+        "h": 23
+      }
+    ],
+    "headerHeight": 77,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": null,
+    "adminLayout": null,
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 0,
+      "y": 520,
+      "w": 1440,
+      "h": 1252
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/admin",
+    "name": "admin",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "JobsVsAI engine",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      },
+      {
+        "tag": "A",
+        "cls": "text-link small",
+        "text": "Open system →",
+        "w": 96,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "flex",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 225,
+      "h": 1222
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 1440,
+      "h": 1222
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 225,
+      "y": 68,
+      "w": 1215,
+      "h": 1222
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/admin/jobs",
+    "name": "admin-jobs",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Occupations",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "flex",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 225,
+      "h": 932
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 1440,
+      "h": 932
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 225,
+      "y": 68,
+      "w": 1215,
+      "h": 932
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "route": "/admin/jobs/graphic-designer",
+    "name": "admin-inspector",
+    "status": 200,
+    "errors": [],
+    "title": "JobsVsAI — Career intelligence for the AI era",
+    "h1": "Graphic Designer",
+    "innerWidth": 1440,
+    "scrollWidth": 1440,
+    "horizontalOverflow": false,
+    "outside": [],
+    "undersized": [
+      {
+        "tag": "A",
+        "cls": "logo",
+        "text": "jobsvsai.com",
+        "w": 133,
+        "h": 29
+      },
+      {
+        "tag": "A",
+        "cls": "",
+        "text": "View public site ↗",
+        "w": 110,
+        "h": 20
+      }
+    ],
+    "headerHeight": 68,
+    "desktopNav": null,
+    "mobileNav": null,
+    "adminSidebar": {
+      "display": "flex",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 225,
+      "h": 1266
+    },
+    "adminLayout": {
+      "display": "grid",
+      "visible": true,
+      "x": 0,
+      "y": 68,
+      "w": 1440,
+      "h": 1266
+    },
+    "main": {
+      "display": "block",
+      "visible": true,
+      "x": 225,
+      "y": 68,
+      "w": 1215,
+      "h": 1266
+    }
+  }
+]

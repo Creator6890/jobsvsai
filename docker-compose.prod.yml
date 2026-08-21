@@ -1,0 +1,21 @@
+services:
+  postgres:
+    ports: !reset []
+    restart: unless-stopped
+  redis:
+    ports: !reset []
+    restart: unless-stopped
+  backend:
+    ports: !reset []
+    restart: unless-stopped
+    volumes: !reset []
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+    environment:
+      ENVIRONMENT: production
+  worker:
+    restart: unless-stopped
+    volumes: !reset []
+  frontend:
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: production

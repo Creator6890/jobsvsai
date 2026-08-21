@@ -1,0 +1,1 @@
+document.querySelectorAll('.option').forEach(el=>el.addEventListener('click',()=>{el.parentElement.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));

@@ -1,0 +1,1 @@
+"""JobsVsAI API application."""

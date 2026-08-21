@@ -1,0 +1,13 @@
+.git
+.env
+**/.env
+**/.env.*
+**/node_modules
+**/.next
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+jobsvsai_phase1_ui_mobile_ready
+jobsvsai_phase1_ui_mobile_ready.zip
+*.log
+ingestion/data/onet/
