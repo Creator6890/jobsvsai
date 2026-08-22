@@ -16,3 +16,5 @@ ingestion/data/onet/
 .env.production
 *.dump
 *.dump.sha256
+
+*.tar.gz
