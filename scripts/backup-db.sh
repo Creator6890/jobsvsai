@@ -46,9 +46,29 @@ mv "$target.partial" "$target"
 chmod 600 "$target"
 
 echo "==> Verifying archive is readable"
-if ! docker compose $COMPOSE_FILES exec -T postgres pg_restore --list /dev/stdin < "$target" >/dev/null 2>&1; then
-  echo "!! Backup failed verification and has been removed: $target" >&2
-  rm -f "$target"
+# Verify against a real file inside the container rather than piping the archive to
+# pg_restore's stdin: a pipe is not seekable, and on some Docker hosts binary stdin is
+# mangled in transit, which fails a perfectly good dump.
+verify_path="/tmp/verify-$(basename "$target")"
+# Git Bash rewrites a bare /tmp/... argument into a Windows path. It leaves "service:/path"
+# alone, and it leaves a doubled leading slash alone, so `cp` takes the single-slash form
+# and `exec` takes the doubled one. Linux treats //tmp and /tmp identically.
+verify_path_exec="/$verify_path"
+verify_ok=1
+# shellcheck disable=SC2086
+docker compose $COMPOSE_FILES cp "$target" "postgres:$verify_path" >/dev/null 2>&1 || verify_ok=0
+if [ "$verify_ok" -eq 1 ]; then
+  # shellcheck disable=SC2086
+  docker compose $COMPOSE_FILES exec -T postgres pg_restore --list "$verify_path_exec" >/dev/null 2>&1 || verify_ok=0
+fi
+# shellcheck disable=SC2086
+docker compose $COMPOSE_FILES exec -T postgres rm -f "$verify_path_exec" >/dev/null 2>&1 || true
+
+if [ "$verify_ok" -ne 1 ]; then
+  # Quarantine rather than delete. An unverified archive may still be restorable, and a
+  # backup script that destroys its own output on a false negative is worse than useless.
+  mv "$target" "$target.unverified"
+  echo "!! Archive failed verification. Kept for inspection: $target.unverified" >&2
   exit 1
 fi
 

@@ -54,7 +54,20 @@ else
 fi
 
 echo "==> Verifying archive structure"
-dc exec -T postgres pg_restore --list /dev/stdin < "$archive" > /dev/null 2>&1 || {
+# The archive is copied into the container and read as a real file. Piping it to stdin
+# fails: a pipe is not seekable, and some Docker hosts mangle binary stdin in transit.
+# The same copy is then used for the restore itself, so the bytes are only moved once.
+staged="/tmp/restore-$(basename "$archive")"
+# Git Bash rewrites a bare /tmp/... argument into a Windows path. It leaves "service:/path"
+# alone, and it leaves a doubled leading slash alone, so `cp` takes the single-slash form
+# and `exec` takes the doubled one. Linux treats //tmp and /tmp identically.
+staged_exec="/$staged"
+dc cp "$archive" "postgres:$staged" >/dev/null 2>&1 || {
+  echo "!! Could not stage the archive inside the postgres container." >&2; exit 1; }
+cleanup_staged() { dc exec -T postgres rm -f "$staged_exec" >/dev/null 2>&1 || true; }
+trap cleanup_staged EXIT
+
+dc exec -T postgres pg_restore --list "$staged_exec" > /dev/null 2>&1 || {
   echo "!! Archive is not a readable PostgreSQL custom-format dump." >&2; exit 1; }
 
 # ------------------------------------------------------------------ disk space
@@ -122,7 +135,7 @@ echo "==> Restoring"
 # --clean --if-exists emits benign "does not exist" notices on an empty target, so the
 # outcome is judged by the verification below rather than by pg_restore's exit status.
 dc exec -T postgres pg_restore -U "$DB_USER" -d "$DB_NAME" \
-  --clean --if-exists --no-owner --no-privileges --single-transaction < "$archive" || true
+  --clean --if-exists --no-owner --no-privileges --single-transaction "$staged_exec" || true
 
 echo "==> Verifying restored state"
 psqlq -c "
