@@ -65,6 +65,46 @@ export const getOccupations = cache(async (): Promise<Occupation[]> => {
   }
 });
 
+// The rankings page needs five fields per occupation, not the full record. Fetching the
+// whole cohort through getOccupations() shipped every task list and verdict to the browser
+// — roughly 3.6 MB of RSC payload for a table that renders none of it. This reader asks the
+// dedicated rankings endpoint instead, which returns one flat row per occupation.
+//
+// The endpoint caps limit at 1000 and the published cohort is 507, so a single request
+// covers it. Revisit if the cohort ever approaches the cap.
+const RANKINGS_LIMIT = 1000;
+
+/** One row exactly as the API returns it: snake_case, numerics serialised as strings. */
+export type RankingApiRow = {
+  slug: string;
+  title: string;
+  category: string;
+  ai_exposure: string;
+  replacement_risk: string;
+};
+
+/** The shape the rankings UI consumes. Deliberately a subset of Occupation. */
+export type RankingOccupation = {
+  slug: string;
+  title: string;
+  category: string;
+  aiExposure: number;
+  replacementRisk: number;
+};
+
+export const getRankings = cache(async (): Promise<RankingOccupation[]> => {
+  const rows = await request<RankingApiRow[]>(`/rankings?limit=${RANKINGS_LIMIT}`);
+  return rows.map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    category: row.category,
+    // PostgreSQL numerics arrive as strings; the table shows whole numbers, matching the
+    // occupation page, which rounds the same way.
+    aiExposure: Math.round(Number(row.ai_exposure)),
+    replacementRisk: Math.round(Number(row.replacement_risk)),
+  }));
+});
+
 export async function searchOccupations(query: string): Promise<Occupation[]> {
   if (query.trim().length < 2) return [];
   return request<Occupation[]>(`/occupations/search?q=${encodeURIComponent(query.trim())}`);

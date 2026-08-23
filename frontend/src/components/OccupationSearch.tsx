@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import type { Occupation } from "@/types/occupation";
+import { trackEvent } from "@/lib/analytics";
 
 type SearchState = "idle" | "searching" | "not-found" | "error";
 
@@ -44,6 +45,10 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
       setSearchState("not-found");
       return;
     }
+    // Submit only — the debounced effect above runs on every keystroke and must stay
+    // silent. Fired before the lookup resolves so that searches returning nothing are
+    // still recorded; a term with no match is the more useful half of search analytics.
+    trackEvent("occupation_search", { search_term: trimmed });
     let job = selected ?? matches[0] ?? null;
     if (!job) {
       setSearchState("searching");
@@ -96,7 +101,15 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     <article className="search-result-card">
       <div className="result-heading"><div><span className="chip">{selected.category}</span><h2>{selected.title}</h2></div><button className="text-button" onClick={reset}>Search again</button></div>
       <div className="result-score-grid"><MiniScore label="AI Exposure" value={selected.aiExposure} /><MiniScore label="Replacement Risk" value={selected.replacementRisk} /><div className="result-verdict"><span className="metric-label">What it means</span><strong>{selected.verdict}</strong><p>{selected.summary}</p></div></div>
-      <Link className="button result-link" href={`/jobs/${selected.slug}`}>See the full analysis <span aria-hidden="true">→</span></Link>
+      <Link
+        className="button result-link"
+        href={`/jobs/${selected.slug}`}
+        onClick={() => trackEvent("occupation_open", {
+          occupation_slug: selected.slug,
+          occupation_title: selected.title,
+          source: "homepage_search",
+        })}
+      >See the full analysis <span aria-hidden="true">→</span></Link>
     </article>
   );
 
