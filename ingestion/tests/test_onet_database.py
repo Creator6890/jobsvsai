@@ -8,9 +8,10 @@ from ingestion.onet_import import RawRecord, _stage_source_versions
 
 
 def _database_url() -> str:
-    return os.getenv("DATABASE_URL", "postgresql://jobsvsai:change-me@postgres:5432/jobsvsai").replace(
-        "postgresql+asyncpg://", "postgresql://", 1,
-    )
+    """Resolve the test database URL. No default: an unset DATABASE_URL must fail, not
+    silently fall back to the development database."""
+    url = os.environ["DATABASE_URL"]
+    return url.replace("postgresql+asyncpg://", "postgresql://", 1)
 
 
 @pytest.mark.asyncio

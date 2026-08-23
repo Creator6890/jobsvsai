@@ -69,6 +69,8 @@ Until explicitly lifted by Akshay:
   absence is why `/career-finder` is excluded from the launch surface.
 - **No occupation-level Augmentation headline score.** Task-level augmentation only; the
   occupation-level column exists but is CHECK-pinned unpublishable.
+- **Never run pytest against the `jobsvsai` database.** Use `./scripts/run-tests.sh`, which
+  targets `jobsvsai_test`. The suite writes; see *Databases* below.
 
 ## The two score stores — do not confuse them
 
@@ -134,15 +136,19 @@ public. `backend/app/repositories/publication.py` holds the gate.
   `public_occupation_content_runs.promotion_run_id` is never written by
   `run_public_content.py`; recover the link through `verdict_snapshot_id` instead.
 - Test baselines depend on database state, so compare failure *sets*, not counts. On a
-  database without the O\*NET import and Phase 4/5 runs, 42 fail. On the current dev database
-  with all migrations applied and `backend/tests` mounted: **111 passed, 0 failed**.
+  database without the O\*NET import and Phase 4/5 runs (`create-test-db.sh --migrations`),
+  42 fail. On a `jobsvsai_test` cloned from the current dev database: **111 passed, 0
+  failed**.
 - `test_admin_phase5_exposes_filters_full_provenance_and_isolation` reads the ambient count
   of public occupations, which the session-scoped `published_occupations` fixture changes
   while it is alive. It asserts against the live count for that reason; the Phase 5
   guarantee it exists to protect is `runs_with_public_activations`, which stays pinned to 0.
 - The backend image bakes in a stale copy of `backend/tests`; the compose file does not mount
-  it. Mount it or test edits are invisible:
-  `-v "$PWD/backend/tests:/app/tests:ro"`.
+  it. `scripts/run-tests.sh` mounts it for you — if you invoke pytest by hand you must add
+  `-v "$PWD/backend/tests:/app/tests:ro"` or your test edits are invisible.
+- **pytest writes.** It creates fixture promotion runs, snapshots, contributions and
+  canonical identities, and it flips `occupation_publications` rows to exercise the gate.
+  That is why it must never point at `jobsvsai`. See *Databases* below.
 
 ## Commands
 
@@ -175,9 +181,16 @@ docker compose run --rm -e PYTHONPATH=/app/scoring worker \
 docker compose run --rm worker python -m ingestion.run_public_content \
     --run-version <new-run-version> --dry-run
 
-# Tests — mount backend/tests or you are running the image's stale copy
-docker compose run --rm -v "$PWD/backend/tests:/app/tests:ro" \
-    backend python -m pytest tests -q
+# Tests — ALWAYS via this script. It targets jobsvsai_test, never the dev database,
+# and prints the resolved host/database/environment before pytest connects.
+./scripts/run-tests.sh -q
+
+# One-time (or whenever you want a clean slate): build the isolated test database.
+./scripts/create-test-db.sh            # clone of the dev DB; full 111-test baseline
+./scripts/create-test-db.sh --migrations  # schema only, no ingested data
+
+# Any read-only look at the real database. Writes are rejected by the server.
+./scripts/psql-readonly.sh -c "SELECT count(*) FROM occupation_publications;"
 ```
 
 Current runs on the dev database: Phase 5 `phase5-bounded-corpus-v2-2026q3` (id 2), Phase 5B
@@ -190,6 +203,73 @@ All phase5 and phase6 tables are append-only by trigger.
 
 Admin console: `/admin/production-scores` inspects the production store read-only —
 candidate vs snapshot, derivations, versions, publication consistency, approval eligibility.
+
+## Databases — development vs test
+
+Two databases on the same local PostgreSQL server. They must never be confused.
+
+| | Development (`jobsvsai`) | Test (`jobsvsai_test`) |
+|---|---|---|
+| Holds | the promoted Phase 6 state — 507 public occupations, 1 real promotion run | a disposable clone |
+| Used by | the running stack (backend, worker, frontend) | pytest, and nothing else |
+| Writes allowed | only by deliberate, approved runs | freely; recreate whenever |
+| Carries `test_database_marker` | **no** | yes |
+
+**Never run pytest against `jobsvsai`.** The suite is not a read-only observer: it creates
+fixture promotion runs, production snapshots, factor and task contributions and canonical
+identities, and it flips `occupation_publications` rows to exercise the publication gate.
+Before the guard existed, `docker compose run backend pytest` inherited the development
+`DATABASE_URL` from `.env` and left rolled-back fixture runs in the real database.
+
+### Mac development workflow
+
+```bash
+docker compose up --build          # dev stack on jobsvsai; app at :3000, API at :8000
+./scripts/psql-readonly.sh         # inspect the dev database; server rejects any write
+```
+
+Use `psql-readonly.sh` for every verification or investigation pass. It sets
+`default_transaction_read_only=on`, so a mistyped statement fails instead of writing.
+
+### Test workflow
+
+```bash
+./scripts/create-test-db.sh        # build jobsvsai_test (clone of dev; full baseline)
+./scripts/run-tests.sh -q          # run the suite against it
+./scripts/run-tests.sh tests/test_integration.py -x   # extra args pass through to pytest
+```
+
+`create-test-db.sh` briefly stops backend/worker/frontend, because `CREATE DATABASE ...
+TEMPLATE` needs the source to have no connections, then restarts them. It only ever reads
+the development database. Use `--migrations` for a schema-only test database built from
+`migrations/*.sql` with no data copied at all.
+
+### Verifying which database a test run targets
+
+`run-tests.sh` prints the host, database name and environment before pytest opens a
+connection, and pytest's own header repeats the resolved target. Passwords are never
+printed. To check by hand:
+
+```bash
+./scripts/run-tests.sh --collect-only -q | head -5
+```
+
+### The four guards
+
+`backend/tests/db_guard.py` refuses to start unless all four pass. They are independent, so
+defeating one does not get you to the database:
+
+1. `TEST_DATABASE=true` must be set — an explicit opt-in no service sets.
+2. `ENVIRONMENT` must not be production/prod/live/staging.
+3. The database name must match `^test_|_test$|_test_` and must not be `jobsvsai`,
+   `postgres`, or a template.
+4. The connected database must contain `test_database_marker`, which only
+   `create-test-db.sh` writes. **This is the check the environment cannot fake** — a URL can
+   claim any name, but the table exists only in a database created as a test database.
+
+Checks 1-3 run at conftest import, before an engine is built. Check 4 runs in a session-scoped
+autouse fixture. `ingestion/tests/conftest.py` applies the same guard, because those tests
+connect with asyncpg directly and would otherwise bypass the backend conftest.
 
 ## Next steps
 

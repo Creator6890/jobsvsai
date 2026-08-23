@@ -1,8 +1,11 @@
 -- JobsVsAI — production occupation_scores investigation
--- Read-only. Writes nothing. Safe to run against the live database.
+-- Read-only, and now enforced rather than merely promised: the SET below makes the whole
+-- session read-only, so an accidental edit to this file fails instead of writing.
 --
---   docker compose exec postgres psql -U jobsvsai -d jobsvsai -f /path/to/investigate_occupation_scores.sql
---   (or paste section by section)
+--   ./scripts/psql-readonly.sh -f reports/investigate_occupation_scores.sql
+--   (or paste section by section into ./scripts/psql-readonly.sh)
+--
+SET default_transaction_read_only = on;
 --
 -- Answers, in order:
 --   1. which occupations own the rows

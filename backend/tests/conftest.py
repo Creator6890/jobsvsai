@@ -17,11 +17,36 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 
-from app.db.session import SessionFactory
-from app.main import app
-from tests.production_fixtures import build_promotion_run, roll_back_run
+from tests.db_guard import assert_marker_table, resolve_target
+
+# Checks 1-3 run at import, before `app.db.session` is imported and therefore before an
+# engine is constructed against whatever DATABASE_URL happens to be set. Importing this
+# module is enough to refuse an unsafe target; no test needs to remember to opt in.
+TEST_DATABASE_TARGET = resolve_target()
+
+from app.db.session import SessionFactory  # noqa: E402  (must follow the guard)
+from app.main import app  # noqa: E402
+from tests.production_fixtures import build_promotion_run, roll_back_run  # noqa: E402
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
+
+
+def pytest_report_header() -> list[str]:
+    """Put the resolved target in the pytest header so every run states its database."""
+    return [f"test database: {TEST_DATABASE_TARGET.describe()}"]
+
+
+@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
+async def _verify_test_database():
+    """Check 4, the one the environment cannot fake: the marker table must be present.
+
+    Autouse and session-scoped, so it runs before any fixture that touches the database.
+    A test that never opens a connection still pays only one connection for this.
+    """
+    async with SessionFactory() as session:
+        label = await assert_marker_table(session)
+    print(f"\ntest database marker verified: {label}")
+    yield
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
