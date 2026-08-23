@@ -75,7 +75,7 @@ archive_bytes="$(wc -c < "$archive")"
 # -Fc archives are compressed; 5x is a conservative floor for the restored footprint,
 # and the restore also needs room for WAL while it runs.
 needed_kb=$(( (archive_bytes / 1024) * 5 ))
-avail_kb="$(df -Pk /var/lib/docker 2>/dev/null | awk 'NR==2{print $4}')"
+avail_kb="$(df -Pk / 2>/dev/null | awk 'NR==2{print $4}')"
 [ -n "$avail_kb" ] || avail_kb="$(df -Pk / | awk 'NR==2{print $4}')"
 echo "==> Disk: $((avail_kb/1024)) MB free, ~$((needed_kb/1024)) MB estimated for restore"
 if [ "$avail_kb" -lt "$needed_kb" ]; then
