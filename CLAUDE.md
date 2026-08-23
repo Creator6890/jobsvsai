@@ -3,14 +3,20 @@
 Career intelligence platform. Answers "how is AI likely to affect my job, and what should I
 do about it?" using a proprietary interpretation layer over O\*NET 30.3.
 
-**Read `reports/PHASE6_LAUNCH_PLAN.md` first.** It is the current state of play: the
-507-occupation cohort is the launch cohort, an occupation is held back only for a concrete
-readiness reason, and the plan tracks all 11 launch steps.
-`reports/PHASE6_POST_COVERAGE_TRIAGE_REPORT.md` is how that cohort was derived.
+**The 507-occupation cohort is promoted and public as of 2026-08-21.** Read
+`reports/PHASE6_STATE_RECONCILIATION.md` first — it is the current state of play and lists
+which reports are superseded. `reports/PHASE6_ACTIVATION_AUDIT.md` is the authoritative
+detail on the promotion and the activation.
+
+Most other Phase 6 reports open with "Nothing promoted. No occupation activated." That was
+true when they were written and is false now; their methodology is still valid, only the
+status banner is stale. `reports/PHASE6_LAUNCH_PLAN.md` in particular is **no longer the
+current state of play** — its steps 3, 4, 5, 6, 9 and 10 are done.
+`reports/PHASE6_POST_COVERAGE_TRIAGE_REPORT.md` is how the cohort was derived.
 `reports/PHASE5B_COVERAGE_COMPLETION_REPORT.md` explains why the earlier 8-occupation cohort
 was a pipeline artefact; `reports/PHASE5B_SCORE_DELTA_REPORT.md` shows what the added
 evidence did to scores. `reports/PHASE6_LAUNCH_READINESS_REPORT.md` remains accurate on
-schema, guards and admin surfaces, but its cohort question is superseded.
+schema, guards and admin surfaces.
 `reports/PHASE6_OPTION_B_IMPLEMENTATION_REPORT.md` describes the production score store.
 Earlier phase reports in `reports/` describe how the methodology was validated.
 
@@ -42,15 +48,20 @@ one is wrong, explain the problem before changing anything.
 - **Determinism and versioning.** Same inputs + same versions must reproduce the same score.
   Reuse persisted mappings; avoid unnecessary AI calls.
 
-## Standing constraints (as of 2026-08-21)
+## Standing constraints (as of 2026-08-23)
 
 Until explicitly lifted by Akshay:
 
-- **Do not promote or activate without explicit approval from Akshay.** The launch policy
-  is settled — the 507-occupation Phase 6 cohort *is* the launch cohort, and an occupation
-  is held back only for a concrete readiness reason (see `PHASE6_LAUNCH_PLAN.md` §1) — but
-  running the promotion and activating publications are still gated on saying so.
-- **Do not activate occupations** (`occupation_publications.activation_status`).
+- **Do not promote or activate without explicit approval from Akshay.** The approved Phase 6
+  cohort has been promoted and activated — that approval was given once, for those 507
+  occupations, and does not carry forward. Any further promotion run, any change to the
+  public cohort, and any re-activation still needs Akshay to say so.
+- **Do not activate further occupations** (`occupation_publications.activation_status`). 507
+  are `public`; the remaining 509 are `staged`/`review_required` with no approved snapshot.
+  In particular, do not activate the 5 out-of-cohort editorial pages (`graphic-designer`,
+  `software-developer`, `ux-researcher`, `cybersecurity-analyst`, `financial-advisor`) to
+  round out the launch — they have no production score, and one of them would render a
+  pytest fixture row as its related-occupations list.
 - **Do not flip `scoring_model_versions.is_active`.** JVS 1.0.3 is active; the validated
   engine model `JVS 2.0.0-phase4b` is registered inactive.
 - **Do not modify the 11 legacy `occupation_scores` rows** or the legacy score history.
@@ -103,20 +114,28 @@ public. `backend/app/repositories/publication.py` holds the gate.
 - 311 occupations cannot defensibly reach 80% — zero mappable tasks remain and 20–77% of
   their weighted total is ambiguous O\*NET task text. That is a source-data limit, not an
   engineering backlog. Do not loosen the ambiguity rule to recover them.
-- Only 9 editorial `occupations` rows exist. A launch cohort needs hundreds — see the content
-  pipeline below.
-- The production store is **not empty**, but every row in it is a pytest architecture
-  fixture: 171 snapshots across 19 `architecture_test_fixture` promotion runs, all
-  `rolled_back`, which is why `current_production_occupation_scores` returns nothing. Zero
-  non-fixture runs exist. Fixtures are left behind deliberately — the store is append-only
-  and rollback is a status change, not a delete. Count non-fixture runs, not rows.
-- **Public content cannot be completed before promotion.** Every staged content candidate is
-  `incomplete` on `jobsvsai_verdict`, which is generated from a promoted snapshot. Content
-  needs a second run after promotion; editorial `occupations` rows should be created once,
-  after that, rather than as empty shells beforehand.
+- 512 editorial `occupations` rows exist: the 507 cohort pages (503 created, 4 updated in
+  place) plus 5 legacy pages outside the cohort. None are empty shells. The 4 pre-existing
+  cohort pages moved category when the SOC-derived job families were adopted — see
+  `PHASE6_ACTIVATION_AUDIT.md` §3.
+- The production store holds **one** non-fixture run — `phase6-promotion-2026q3-v1`
+  (id 30), `completed`, 507 snapshots — and `current_production_occupation_scores` returns
+  those 507. Everything else in the store is a pytest architecture fixture: rolled-back
+  `architecture_test_fixture` runs, whose count **grows every time the suite runs** (73 → 78
+  during one reconciliation session). Fixtures are left behind deliberately — the store is
+  append-only and rollback is a status change, not a delete. Never quote a raw row or run
+  count as a fact; count non-fixture runs.
+- **Public content cannot be completed before promotion**, because `jobsvsai_verdict` is
+  generated from a promoted snapshot. This played out as expected: content run 1
+  (`phase6-content-2026q3-v1`) staged 507 candidates all `incomplete`; content run 2
+  (`phase6-content-postpromotion-2026q3-v1`) ran after promotion and completed all 507. Both
+  runs staged their own 6,470 related-occupation rows, so that table holds 12,941 — the
+  reader takes `max(content_run_id)` per identity, so per-run counts are what matter.
+  `public_occupation_content_runs.promotion_run_id` is never written by
+  `run_public_content.py`; recover the link through `verdict_snapshot_id` instead.
 - Test baselines depend on database state, so compare failure *sets*, not counts. On a
   database without the O\*NET import and Phase 4/5 runs, 42 fail. On the current dev database
-  with all migrations applied and `backend/tests` mounted: **108 passed, 0 failed**.
+  with all migrations applied and `backend/tests` mounted: **111 passed, 0 failed**.
 - `test_admin_phase5_exposes_filters_full_provenance_and_isolation` reads the ambient count
   of public occupations, which the session-scoped `published_occupations` fixture changes
   while it is alive. It asserts against the live count for that reason; the Phase 5
@@ -151,9 +170,10 @@ docker compose run --rm -e PYTHONPATH=/app/scoring worker \
 docker compose run --rm -e PYTHONPATH=/app/scoring worker \
     python -m scoring.report_phase5b_completion --out /tmp/phase5b.json
 
-# Deterministic public content generation (staged; does not touch `occupations`)
+# Deterministic public content generation (staged; does not touch `occupations`).
+# run_key is unique — phase6-content-2026q3-v1 and -postpromotion- are both taken.
 docker compose run --rm worker python -m ingestion.run_public_content \
-    --run-version phase6-content-2026q3-v1 --dry-run
+    --run-version <new-run-version> --dry-run
 
 # Tests — mount backend/tests or you are running the image's stale copy
 docker compose run --rm -v "$PWD/backend/tests:/app/tests:ro" \
@@ -163,31 +183,33 @@ docker compose run --rm -v "$PWD/backend/tests:/app/tests:ro" \
 Current runs on the dev database: Phase 5 `phase5-bounded-corpus-v2-2026q3` (id 2), Phase 5B
 `phase5b-coverage-completion-2026q3-v1` (id 4) and its replay (id 5); triage runs
 `phase6-triage-2026q3-v1` (baseline, cohort 8) and `phase6-triage-postcoverage-2026q3-v1`
-(cohort 507). All phase5 and phase6 tables are append-only by trigger.
+(cohort 507); promotion run `phase6-promotion-2026q3-v1` (id 30, completed, 507); content
+runs `phase6-content-2026q3-v1` (id 1, pre-promotion, all incomplete) and
+`phase6-content-postpromotion-2026q3-v1` (id 2, all 507 complete — this is the live one).
+All phase5 and phase6 tables are append-only by trigger.
 
 Admin console: `/admin/production-scores` inspects the production store read-only —
 candidate vs snapshot, derivations, versions, publication consistency, approval eligibility.
 
 ## Next steps
 
-Tracked in `reports/PHASE6_LAUNCH_PLAN.md` §2. Steps 1, 2, 7 and 8 are done; 4 and 6 are
-staged as far as they can go pre-promotion. What remains:
+The launch sequence is complete. The provisional-sensitivity disclosure was decided **yes,
+per page** (`phase6-provisional-disclosure-v1`), promotion and activation both ran on
+2026-08-21, content run 2 filled every verdict, the 512 editorial rows exist, and the related
+read path now uses `public_occupation_related_occupations`. See
+`reports/PHASE6_STATE_RECONCILIATION.md` for the verified state. What remains:
 
-1. **Decide the provisional-sensitivity disclosure question** (plan §5). The 3-point rule
-   itself is frozen; the live question is whether public pages disclose that 25% of
-   replacement-risk weight is provisional. Recommended: yes, per page. Needed before the
-   post-promotion content run, because it changes the verdict template.
-2. **Promote** — approval gate. Command in §6 of the plan; dry-run and a full
-   write-then-rollback have both passed.
-3. Re-run the content pipeline under a new run version to fill `jobsvsai_verdict`.
-4. Create editorial `occupations` rows from the completed content — once, not as shells.
-5. Validate the 6,470 staged related-occupation rows and switch the read path to
-   `public_occupation_related_occupations`.
-6. **Activate publications** — approval gate.
-7. Final public QA and deployment checks.
-8. Career Finder decision — still excluded, still on legacy data, still not fabricating
-   salary/demand/location values.
-9. Run `reports/investigate_occupation_scores.sql` (the 11 legacy rows; still never executed).
+1. Career Finder decision — still excluded, still on legacy data, still not fabricating
+   salary/demand/location values. `education_requirement` defaulted to 2 on the 503 new
+   editorial rows and is read only by career-finder; it is not a real value.
+2. Run `reports/investigate_occupation_scores.sql` (the 11 legacy rows; still never executed).
+3. Confirm the SOC-derived category taxonomy, which replaced the legacy 7 categories for
+   cohort pages and moved 4 pre-existing pages between categories
+   (`PHASE6_ACTIVATION_AUDIT.md` §3). Reverting is a re-run, not a rebuild.
+4. Decide what to do about the 38 activated publications carrying an O\*NET title-review flag
+   (`PHASE6_ACTIVATION_AUDIT.md` §11) — wording only, no score or evidence problem.
+5. Consider recording activation at run level. Promotion writes a full audit row; activation
+   leaves only `updated_at` timestamps, so it cannot be reconstructed from the database alone.
 
 The truncation-bias experiment (orientation finding 7.5) is partly answered: across 70→85,
 the bias term is small and unsigned (signed mean +0.07 vs absolute 0.86, correlation 0.02).
