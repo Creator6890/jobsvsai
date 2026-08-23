@@ -6,5 +6,12 @@ pydantic-settings>=2.10,<3
 redis>=6,<8
 rq>=2.5,<3
 httpx>=0.28,<1
+# Feed XML is untrusted input. stdlib ElementTree expands internal entities (billion
+# laughs); defusedxml refuses them. Chosen over feedparser: we need a small, well-understood
+# metadata subset and deterministic behaviour, not liberal real-world coercion.
+defusedxml>=0.7,<0.8
+# Gemini, for AI News Phase 3 generation. Imported lazily inside the provider so no
+# other process pays for it. Official SDK: `from google import genai`.
+google-genai>=1.0,<2
 pytest>=8,<10
 pytest-asyncio>=1,<2

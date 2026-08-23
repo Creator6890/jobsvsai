@@ -118,6 +118,195 @@ export async function getCareerRecommendations(payload: Record<string, unknown>)
   });
 }
 
+// ------------------------------------------------------------------------------ AI News
+//
+// Jobs Impact is a news-significance indicator. It is unrelated to occupation AI Exposure
+// and Replacement Risk, and the public payload deliberately carries no numeric score: V1
+// publishes only the band.
+
+export type NewsImpactLevel = "low" | "medium" | "high";
+export type NewsArticleStatus = "draft" | "review_required" | "published" | "rejected";
+
+export type NewsSource = {
+  sourceName: string;
+  sourceUrl: string;
+  originalTitle: string;
+  sourcePublishedAt: string | null;
+  isPrimary: boolean;
+};
+
+export type NewsArticleSummary = {
+  slug: string;
+  headline: string;
+  whatHappened: string;
+  impactLevel: NewsImpactLevel;
+  publishedAt: string | null;
+  tags: string[];
+  jobAreas: string[];
+  primarySource: NewsSource | null;
+};
+
+export type NewsArticleDetail = NewsArticleSummary & {
+  whyItMattersForJobs: string;
+  sources: NewsSource[];
+};
+
+export const getNewsArticles = cache(async (impact?: NewsImpactLevel): Promise<NewsArticleSummary[]> => {
+  const query = impact ? `?impact=${impact}&limit=60` : "?limit=60";
+  return request<NewsArticleSummary[]>(`/news${query}`);
+});
+
+export const getNewsArticle = cache(async (slug: string): Promise<NewsArticleDetail | null> => {
+  try {
+    return await request<NewsArticleDetail>(`/news/${encodeURIComponent(slug)}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+});
+
+/** Published articles only — the backend predicate decides, not this reader. */
+export const getNewsSitemapEntries = cache(async (): Promise<{ slug: string; publishedAt: string; updatedAt: string }[]> =>
+  request<{ slug: string; publishedAt: string; updatedAt: string }[]>("/news/sitemap"));
+
+export type AdminNewsArticle = NewsArticleDetail & {
+  id: number;
+  status: NewsArticleStatus;
+  impactScore: number | null;
+  impactConfidence: number | null;
+  impactReasoning: string | null;
+  impactPolicyVersion: string | null;
+  capabilityAdvancement: number | null;
+  commercialDeployability: number | null;
+  breadthOfAffectedWork: number | null;
+  adoptionSpeed: number | null;
+  humanWorkReductionPotential: number | null;
+  automatedImpactScore: number | null;
+  automatedImpactLevel: NewsImpactLevel | null;
+  generationProvider: string | null;
+  generationModel: string | null;
+  impactAssessedAt: string | null;
+  impactAssessedBy: string | null;
+  impactOverriddenAt: string | null;
+  impactOverriddenBy: string | null;
+  impactOverrideReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NewsImpactPolicy = {
+  policyVersion: string;
+  minimumPublishConfidence: number;
+  factors: { key: string; label: string; weight: number }[];
+  thresholds: Record<string, string>;
+};
+
+// Admin news reads are NOT camelized client-side: the API already returns camelCase for
+// these models, unlike the raw dict-returning admin endpoints that adminRequest handles.
+async function adminNewsRequest<T>(path: string): Promise<T> {
+  return request<T>(path, { headers: adminHeaders() });
+}
+
+export const getAdminNewsArticles = cache(async (status?: NewsArticleStatus): Promise<AdminNewsArticle[]> =>
+  adminNewsRequest<AdminNewsArticle[]>(`/admin/news${status ? `?status=${status}` : ""}`));
+
+export const getAdminNewsCounts = cache(async (): Promise<Record<NewsArticleStatus, number>> =>
+  adminNewsRequest<Record<NewsArticleStatus, number>>("/admin/news/counts"));
+
+export const getAdminNewsArticle = cache(async (id: string): Promise<AdminNewsArticle | null> => {
+  try {
+    return await adminNewsRequest<AdminNewsArticle>(`/admin/news/${id}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+});
+
+export const getNewsImpactPolicy = cache(async (): Promise<NewsImpactPolicy> =>
+  adminNewsRequest<NewsImpactPolicy>("/admin/news/policy"));
+
+export const getNewsPublicationCheck = cache(async (id: string): Promise<{ publishable: boolean; blockers: string[] }> =>
+  adminNewsRequest<{ publishable: boolean; blockers: string[] }>(`/admin/news/${id}/publication-check`));
+
+/** Admin mutations. Server-side only; credentials never reach the browser. */
+export async function adminNewsMutate<T>(path: string, body?: unknown): Promise<T> {
+  return request<T>(`/admin/news${path}`, {
+    method: "POST",
+    headers: { ...adminHeaders(), "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+}
+
+// --- Phase 2 ingestion. Admin-only: there is no public reader for ingest items, because
+// there is no public route that serves one.
+
+export type IngestStatus = "new" | "candidate" | "ignored" | "duplicate" | "processed";
+
+export type IngestItem = {
+  id: number;
+  sourceId: number;
+  sourceName: string;
+  trustTier: number;
+  externalUrl: string;
+  canonicalUrl: string;
+  originalTitle: string;
+  originalExcerpt: string | null;
+  sourcePublishedAt: string | null;
+  fetchedAt: string;
+  status: IngestStatus;
+  relevanceScore: number | null;
+  relevancePolicyVersion: string | null;
+  relevanceSignals: Record<string, unknown>;
+  feedCategories: string[];
+  duplicateOfIngestItemId: number | null;
+  nearDuplicateSimilarity: number | null;
+  // Phase 3 semantic verdict. null = not yet assessed, distinct from false.
+  isAiNews: boolean | null;
+  aiRelevanceConfidence: number | null;
+  aiRelevanceReason: string | null;
+  semanticPolicyVersion: string | null;
+  generationProvider: string | null;
+  generationModel: string | null;
+  generationPromptVersion: string | null;
+  generationAttemptedAt: string | null;
+  generationAttempts: number;
+  generationError: string | null;
+  generationInputTokens: number | null;
+  generationOutputTokens: number | null;
+};
+
+export type GenerationStatus = {
+  enabled: boolean;
+  provider: string;
+  model: string | null;
+  /** Presence only — the key itself is never serialised by the API. */
+  apiKeyConfigured: boolean;
+  autoPublish: boolean;
+  dailyLimit: number;
+  batchSize: number;
+  promptVersion: string;
+  semanticPolicyVersion: string;
+  minimumSemanticConfidence: number;
+  runs: Record<string, unknown>[];
+};
+
+export const getGenerationStatus = cache(async (): Promise<GenerationStatus> =>
+  adminNewsRequest<GenerationStatus>("/admin/news/generation/status"));
+
+export type IngestOverview = {
+  statuses: Record<IngestStatus, number>;
+  relevancePolicyVersion: string;
+  candidateThreshold: number;
+  confidentThreshold: number;
+  runs: Record<string, unknown>[];
+};
+
+export const getIncomingItems = cache(async (status?: IngestStatus): Promise<IngestItem[]> =>
+  adminNewsRequest<IngestItem[]>(`/admin/news/incoming${status ? `?status=${status}` : ""}`));
+
+export const getIncomingOverview = cache(async (): Promise<IngestOverview> =>
+  adminNewsRequest<IngestOverview>("/admin/news/incoming/counts"));
+
 export type AdminOverview = {
   occupations: number;
   tasks: number;

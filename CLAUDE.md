@@ -204,6 +204,63 @@ All phase5 and phase6 tables are append-only by trigger.
 Admin console: `/admin/production-scores` inspects the production store read-only —
 candidate vs snapshot, derivations, versions, publication consistency, approval eligibility.
 
+## AI News — separate from occupation scoring
+
+`reports/AI_NEWS_V1_ARCHITECTURE.md` is the full design. Migration `029_ai_news_v1.sql`.
+
+**Jobs Impact is a news-significance indicator for one event. It is not AI Exposure and not
+Replacement Risk.** No `news_*` table has a foreign key into `occupations`,
+`canonical_occupation_identities`, `occupation_publications`,
+`production_occupation_score_snapshots` or `scoring_model_versions`, and a test asserts that
+by querying `information_schema`. `job_area` is free editorial text, never a SOC code —
+linking the two is the one change that would create the coupling this design prevents.
+
+- `news-impact-v1` lives in `backend/app/news/impact_policy.py` and nowhere else. Weights
+  30/25/20/15/10, `ROUND_HALF_UP` to two decimals, bands `<=34` low / `35-69` medium /
+  `>=70` high. Scores carry two decimals, so 34.01-34.99 is medium under the literal rule.
+- A provider returns five factors and a confidence, never a level. Confidence below 0.80
+  forces `review_required`.
+- The numeric score is **internal for V1**; the public payload omits it entirely rather than
+  hiding it in the UI.
+- Publication has one entry point, `repositories.news.publish()`, which refuses with every
+  blocker at once. `set_status()` refuses `published` outright.
+- Overrides never overwrite `automated_impact_score` / `automated_impact_level`.
+- No LLM provider is implemented. `NullGenerationProvider` refuses rather than returning
+  placeholder prose. `NEWS_AUTO_PUBLISH` must stay false.
+
+## AI News Phase 2 — ingestion
+
+`reports/AI_NEWS_PHASE2_INGESTION.md`. Migration `030_ai_news_phase2_ingestion.sql`.
+Disabled by default (`NEWS_ENABLED=false`); no schedule is active.
+
+- Nine **verified** free RSS feeds seeded as data. Anthropic and Meta AI are deliberately
+  absent — no public feed exists, and Phase 2 does not scrape. Adding a source is an INSERT.
+- `news-relevance-v1` (`backend/app/news/relevance.py`) is **presence-based, not
+  count-based**: counting hits rewarded keyword-stuffed corporate posts over real headlines.
+  Thresholds 40 candidate / 60 confident. The **source floor** lets an opaque first-party
+  headline through but requires a positive signal, so origin alone never rescues a funding
+  or appointment post.
+- `news-dedupe-v1` (`backend/app/news/dedupe.py`) — Jaccard over tokens and 2-word shingles,
+  threshold **0.55**, 48h window. Genuine restatements score 0.58-1.00, different events
+  0.00-0.38. **Biased toward false negatives on purpose**: a wrong merge destroys a candidate
+  nothing downstream can recover.
+- Feed XML is parsed by `defusedxml`, not stdlib — stdlib ElementTree expands internal
+  entities (billion laughs), which was verified, not assumed.
+- Feed HTML is reduced to plain text at ingestion with **decode-then-strip** order. The
+  obvious order is wrong: stripping first leaves `&lt;script&gt;`, which the later decode
+  turns into a live tag.
+- Lookback window and per-feed cap exist because the OpenAI feed alone holds 1,143 entries
+  (Hugging Face 846) — confirmed by the live run, not estimated.
+- **A 48h lookback yields nothing on a normal day.** First-party labs publish every few days,
+  so a cold start ingests almost zero; the closest live item missed the window by 5 hours.
+  The default is correct for 2-hourly steady-state polling. **The first production run should
+  pass a wider one-off window** via `run_ingestion(lookback_hours=...)`.
+- Near-dedupe is still calibrated only against constructed cases: the live sample contained
+  zero same-event duplicates, so the 0.55 threshold is unvalidated on real data.
+- `processed` means converted into an article. Admin triage cannot set it.
+- Ingest items have **no public route and no public schema**. They are internal triage
+  material.
+
 ## Databases — development vs test
 
 Two databases on the same local PostgreSQL server. They must never be confused.
