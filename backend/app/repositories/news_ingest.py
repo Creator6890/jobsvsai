@@ -235,6 +235,24 @@ async def article_for_ingest_item(session: AsyncSession, item_id: int) -> int | 
     """), {"id": item_id})).scalar_one_or_none()
 
 
+async def ingest_items_for_article(session: AsyncSession, article_id: int) -> list[dict[str, Any]]:
+    """The source candidates behind an article, primary first.
+
+    What makes editorial review possible: the reviewer can read the model's brief beside the
+    feed material it was written from, and see the semantic verdict that let it through.
+    Without this the editor is asked to trust generated prose with no way to check it.
+    """
+    rows = (await session.execute(text(f"""
+      SELECT {INGEST_COLUMNS}
+      FROM news_article_sources link
+      JOIN news_ingest_items item ON item.id = link.ingest_item_id
+      JOIN news_sources source ON source.id = item.source_id
+      WHERE link.article_id = :id
+      ORDER BY link.is_primary DESC, item.id
+    """), {"id": article_id})).mappings().all()
+    return [dict(row) for row in rows]
+
+
 async def select_generation_candidates(session: AsyncSession, limit: int) -> list[int]:
     """Unassessed candidates, best deterministic score first, newest first within that.
 

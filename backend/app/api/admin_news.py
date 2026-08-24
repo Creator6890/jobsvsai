@@ -251,6 +251,21 @@ async def get_article(article_id: int, session: AsyncSession = Depends(get_sessi
     return await _load_or_404(session, article_id)
 
 
+@router.get("/{article_id}/candidates", response_model=list[IngestItem],
+            response_model_by_alias=True)
+async def article_candidates(
+    article_id: int, session: AsyncSession = Depends(get_session)
+) -> list[IngestItem]:
+    """The source candidates behind an article, with their semantic verdicts.
+
+    Admin-only, like every ingest read. Lets the editor check the generated brief against the
+    feed material rather than taking it on trust.
+    """
+    await _load_or_404(session, article_id)
+    rows = await ingest_repo.ingest_items_for_article(session, article_id)
+    return [IngestItem(**row) for row in rows]
+
+
 @router.post("", response_model=AdminNewsArticle, response_model_by_alias=True,
              status_code=status.HTTP_201_CREATED)
 async def create_article(

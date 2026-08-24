@@ -279,7 +279,12 @@ Disabled by default (`NEWS_ENABLED=false`); no schedule is active.
 - Retries cover 429/5xx/timeout only, bounded at 3. Schema-invalid and safety refusals are not
   retried — they fail identically and only burn quota.
 - **The free tier sustained roughly 3 generation calls per session** before 429s. Defaults
-  (daily 10, batch 5) exceed that; lower them or move to a paid tier before automating.
+  are now sized to that: `NEWS_DAILY_GENERATION_LIMIT=5`, `NEWS_GENERATION_BATCH_SIZE=2`.
+  Raise them only on a paid tier.
+- **The test suite blanks NEWS_LLM_PROVIDER and NEWS_LLM_API_KEY for every test** (autouse
+  fixture in `conftest.py`). The suite runs with the developer's real environment, so without
+  it a test that forgot to inject a fake provider would call the live API. Same idea as the
+  test-database guard.
 - The 0.70 semantic-confidence threshold is still unexercised — every live verdict came back
   at 0.95.
 - `NEWS_*` must be listed in the compose `environment` blocks: `.env` is in `.dockerignore`

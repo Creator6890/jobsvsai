@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell, Status } from "@/components/admin/AdminShell";
-import { getAdminNewsArticle, getNewsImpactPolicy, getNewsPublicationCheck } from "@/lib/api";
+import { getAdminNewsArticle, getArticleCandidates, getNewsImpactPolicy, getNewsPublicationCheck } from "@/lib/api";
 import {
   addSource, assessImpact, overrideImpact, publishArticle,
   rejectArticle, saveArticle, unpublishArticle,
@@ -17,12 +17,20 @@ const FACTOR_FIELDS = [
   ["humanWorkReductionPotential", "Human work reduction potential"],
 ] as const;
 
+function formatDate(value: string | null): string {
+  return value
+    ? new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value))
+    : "—";
+}
+
+
 export default async function AdminNewsArticlePage({ params }: PageProps<"/admin/news/[articleId]">) {
   const { articleId } = await params;
-  const [article, policy, check] = await Promise.all([
+  const [article, policy, check, candidates] = await Promise.all([
     getAdminNewsArticle(articleId),
     getNewsImpactPolicy(),
     getNewsPublicationCheck(articleId).catch(() => ({ publishable: false, blockers: ["Article not found"] })),
+    getArticleCandidates(articleId).catch(() => []),
   ]);
   if (!article) notFound();
 
@@ -36,6 +44,64 @@ export default async function AdminNewsArticlePage({ params }: PageProps<"/admin
       action={<Status tone={article.status === "published" ? "ok" : "warn"}>{article.status.replace("_", " ")}</Status>}
     >
       <div className="news-editor">
+        {/* ------------------------------------------- what the brief was written from */}
+        {candidates.length > 0 && (
+          <div className="card" style={{ padding: "var(--pad-card)" }}>
+            <span className="section-kicker">Source material &amp; AI decision</span>
+            {candidates.map((candidate) => (
+              <div className="news-assessment" key={candidate.id}>
+                <dl>
+                  <dt>Source</dt>
+                  <dd>{candidate.sourceName} (trust tier {candidate.trustTier})</dd>
+                  <dt>Original title</dt>
+                  <dd>{candidate.originalTitle}</dd>
+                  {candidate.originalExcerpt && (
+                    <>
+                      <dt>Source excerpt</dt>
+                      {/* Feed text, reduced to plain text at ingestion. Shown so the brief
+                          above can be checked against the material it came from. */}
+                      <dd>{candidate.originalExcerpt}</dd>
+                    </>
+                  )}
+                  <dt>Source published</dt>
+                  <dd>{formatDate(candidate.sourcePublishedAt)}</dd>
+                  <dt>Keyword prefilter</dt>
+                  <dd>
+                    {candidate.relevanceScore ?? "—"}/100
+                    {candidate.relevancePolicyVersion && ` · ${candidate.relevancePolicyVersion}`}
+                  </dd>
+                  {candidate.isAiNews !== null && (
+                    <>
+                      <dt>AI verdict</dt>
+                      <dd>
+                        <strong>{candidate.isAiNews ? "relevant AI news" : "not AI news"}</strong>
+                        {candidate.aiRelevanceConfidence !== null &&
+                          ` · semantic confidence ${candidate.aiRelevanceConfidence}`}
+                        {candidate.semanticPolicyVersion && ` · ${candidate.semanticPolicyVersion}`}
+                      </dd>
+                      <dt>AI reasoning</dt>
+                      <dd>{candidate.aiRelevanceReason ?? "—"}</dd>
+                    </>
+                  )}
+                  {candidate.generationInputTokens !== null && (
+                    <>
+                      <dt>Tokens</dt>
+                      <dd>
+                        {candidate.generationInputTokens} in / {candidate.generationOutputTokens} out
+                      </dd>
+                    </>
+                  )}
+                </dl>
+                <p className="small">
+                  <a href={candidate.externalUrl} target="_blank" rel="noopener noreferrer nofollow">
+                    Read the original source ↗
+                  </a>
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* -------------------------------------------------- assessment, before editing */}
         <div className="card" style={{ padding: "var(--pad-card)" }}>
           <span className="section-kicker">Jobs Impact</span>
@@ -49,6 +115,12 @@ export default async function AdminNewsArticlePage({ params }: PageProps<"/admin
               </dd>
               <dt>Final editorial</dt>
               <dd>{article.impactLevel ? article.impactLevel.toUpperCase() : "Not set"}{overridden ? " (overridden)" : ""}</dd>
+              <dt>Impact factors</dt>
+              <dd>
+                {FACTOR_FIELDS.every(([field]) => article[field] === null)
+                  ? "Not assessed"
+                  : FACTOR_FIELDS.map(([field, label]) => `${label} ${article[field] ?? "—"}`).join(" · ")}
+              </dd>
               <dt>Policy</dt>
               <dd>{article.impactPolicyVersion ?? policy.policyVersion}</dd>
               {article.impactAssessedBy && <><dt>Assessed by</dt><dd>{article.impactAssessedBy}</dd></>}

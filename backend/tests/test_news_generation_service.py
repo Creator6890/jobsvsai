@@ -217,6 +217,135 @@ async def test_rejection_creates_no_article_and_keeps_the_verdict(
     assert row["semantic_policy_version"] == "news-semantic-relevance-v1"
 
 
+# ------------------------------------------------- the three semantic routing paths
+#
+# One test per path, named for the outcome, so a regression in routing is legible from the
+# failure line alone rather than from a parametrised case id.
+
+
+async def test_path_1_high_confidence_ai_article_becomes_draft(monkeypatch, candidates) -> None:
+    """Confident on both axes: no human needed before an editor picks it up normally."""
+    enable(monkeypatch)
+    async with SessionFactory() as s:
+        outcome = await generate_for_candidate(
+            s, candidates[0],
+            FakeProvider(brief(ai_relevance_confidence=0.95, impact_confidence=0.91)),
+        )
+        row = (await s.execute(text(
+            "SELECT status, is_ai_news, ai_relevance_confidence FROM news_ingest_items WHERE id=:id"
+        ), {"id": candidates[0]})).mappings().one()
+
+    assert outcome.outcome == "accepted"
+    assert outcome.article_status == "draft"
+    assert row["status"] == "processed"
+    assert row["is_ai_news"] is True
+
+
+async def test_path_2_non_ai_article_is_rejected_with_no_article(
+    monkeypatch, candidates
+) -> None:
+    """Rejected outright. No article exists to review, and the verdict is retained."""
+    enable(monkeypatch)
+    rejection = GeneratedBrief(
+        is_ai_news=False, ai_relevance_confidence=0.95,
+        relevance_reason="Advertising rollout, not a capability change.",
+    )
+    async with SessionFactory() as s:
+        outcome = await generate_for_candidate(s, candidates[0], FakeProvider(rejection))
+        row = (await s.execute(text("""
+          SELECT status, is_ai_news, ai_relevance_reason,
+                 (SELECT count(*) FROM news_article_sources l WHERE l.ingest_item_id=:id) links
+          FROM news_ingest_items WHERE id = :id
+        """), {"id": candidates[0]})).mappings().one()
+
+    assert outcome.outcome == "rejected"
+    assert outcome.article_id is None
+    assert row["links"] == 0
+    assert row["status"] == "ignored"
+    assert row["is_ai_news"] is False
+    assert "Advertising rollout" in row["ai_relevance_reason"]
+
+
+async def test_path_3_ambiguous_article_becomes_review_required(
+    monkeypatch, candidates
+) -> None:
+    """Accepted, but the model was not sure it was AI news. A human decides.
+
+    This is the path the supervised live run never exercised - every real verdict came back
+    at 0.95 - so it is pinned here rather than assumed.
+    """
+    enable(monkeypatch)
+    async with SessionFactory() as s:
+        outcome = await generate_for_candidate(
+            s, candidates[0],
+            # Below MINIMUM_SEMANTIC_CONFIDENCE (0.70) but confident about the factors, so
+            # only the semantic axis is what routes it to review.
+            FakeProvider(brief(ai_relevance_confidence=0.62, impact_confidence=0.95)),
+        )
+    assert outcome.outcome == "accepted"
+    assert outcome.article_status == "review_required"
+    assert outcome.ai_relevance_confidence == 0.62
+
+
+async def test_semantic_confidence_boundary_is_exact(monkeypatch, candidates) -> None:
+    """0.70 is inclusive: at the threshold the article is a draft, just below it is review."""
+    from app.news.generation import MINIMUM_SEMANTIC_CONFIDENCE
+
+    assert MINIMUM_SEMANTIC_CONFIDENCE == 0.70
+    assert decide_status(brief(ai_relevance_confidence=0.70)) == "draft"
+    assert decide_status(brief(ai_relevance_confidence=0.699)) == "review_required"
+
+
+async def test_either_confidence_alone_forces_review(monkeypatch, candidates) -> None:
+    """The two confidences answer different questions; either being weak is enough."""
+    # Semantic weak, impact strong.
+    assert decide_status(brief(ai_relevance_confidence=0.4, impact_confidence=0.99)) == "review_required"
+    # Impact weak, semantic strong.
+    assert decide_status(brief(ai_relevance_confidence=0.99, impact_confidence=0.4)) == "review_required"
+    # Both weak.
+    assert decide_status(brief(ai_relevance_confidence=0.4, impact_confidence=0.4)) == "review_required"
+
+
+async def test_auto_publish_stays_false_and_is_never_consulted_to_publish(
+    monkeypatch, candidates
+) -> None:
+    """Even with NEWS_AUTO_PUBLISH forced true, generation cannot publish.
+
+    The setting exists as a declaration of intent, not as a switch generation reads. Nothing
+    in the generation path branches on it, which is what this asserts.
+    """
+    enable(monkeypatch, news_auto_publish="true")
+    assert get_settings().news_auto_publish is True
+
+    async with SessionFactory() as s:
+        outcome = await generate_for_candidate(s, candidates[0], FakeProvider())
+        status = (await s.execute(text("SELECT status FROM news_articles WHERE id=:id"),
+                                  {"id": outcome.article_id})).scalar_one()
+    assert status == "draft", "generation must never publish, whatever the flag says"
+    assert outcome.article_status != "published"
+    get_settings.cache_clear()
+
+
+async def test_safe_production_defaults(monkeypatch) -> None:
+    """Sized from the live run, where the free tier stalled at roughly three calls."""
+    # Every NEWS_* override is removed so this reads the code defaults, not whatever the
+    # developer's environment happens to set. Without the delenv the assertions would pass or
+    # fail depending on a local .env, which is not what "default" means.
+    for name in ("NEWS_DAILY_GENERATION_LIMIT", "NEWS_GENERATION_BATCH_SIZE",
+                 "NEWS_AUTO_PUBLISH", "NEWS_ENABLED", "NEWS_LLM_PROVIDER",
+                 "NEWS_LLM_API_KEY", "NEWS_LLM_MODEL"):
+        monkeypatch.delenv(name, raising=False)
+    get_settings.cache_clear()
+    settings = get_settings()
+    assert settings.news_daily_generation_limit == 5
+    assert settings.news_generation_batch_size == 2
+    # Generation is off, unattended publishing is off, and no provider is wired by default.
+    assert settings.news_auto_publish is False
+    assert settings.news_enabled is False
+    assert settings.news_llm_provider == "null"
+    get_settings.cache_clear()
+
+
 # --------------------------------------------------------------------------- provenance
 
 

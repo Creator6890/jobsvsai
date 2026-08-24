@@ -33,8 +33,13 @@ class Settings(BaseSettings):
     news_llm_provider: str = "null"
     news_llm_api_key: str = ""
     news_llm_model: str = ""
-    news_daily_generation_limit: int = 10
-    news_generation_batch_size: int = 5
+    # Sized from the supervised live run of 2026-08-24, where the free tier sustained
+    # roughly three calls before returning 429 and kept doing so after a 90s backoff. The
+    # earlier 10/5 defaults were above what the tier actually delivered. Target volume is
+    # 2-3 published stories a day, so a batch of 2 with a daily ceiling of 5 leaves room for
+    # rejections without inviting a quota wall.
+    news_daily_generation_limit: int = 5
+    news_generation_batch_size: int = 2
     news_llm_timeout_seconds: int = 45
     # Must stay false. Generation produces draft or review_required, never published.
     news_auto_publish: bool = False

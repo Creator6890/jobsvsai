@@ -222,6 +222,17 @@ export const getAdminNewsArticle = cache(async (id: string): Promise<AdminNewsAr
   }
 });
 
+/** The source candidates behind an article, with their semantic verdicts. Admin-only. */
+export const getArticleCandidates = cache(async (id: string): Promise<IngestItem[]> => {
+  try {
+    return await adminNewsRequest<IngestItem[]>(`/admin/news/${id}/candidates`);
+  } catch (error) {
+    // A hand-written article has no ingest candidate; that is not an error.
+    if (error instanceof ApiError && error.status === 404) return [];
+    throw error;
+  }
+});
+
 export const getNewsImpactPolicy = cache(async (): Promise<NewsImpactPolicy> =>
   adminNewsRequest<NewsImpactPolicy>("/admin/news/policy"));
 

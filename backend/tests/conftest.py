@@ -17,6 +17,7 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 
+from app.core.config import get_settings
 from tests.db_guard import assert_marker_table, resolve_target
 
 # Checks 1-3 run at import, before `app.db.session` is imported and therefore before an
@@ -34,6 +35,26 @@ pytestmark = pytest.mark.asyncio(loop_scope="session")
 def pytest_report_header() -> list[str]:
     """Put the resolved target in the pytest header so every run states its database."""
     return [f"test database: {TEST_DATABASE_TARGET.describe()}"]
+
+
+@pytest.fixture(autouse=True)
+def _no_live_llm_calls(monkeypatch):
+    """No test may reach a real language-model provider.
+
+    The suite runs with the developer's environment, which legitimately carries
+    NEWS_LLM_PROVIDER=gemini and a real NEWS_LLM_API_KEY. A generation test that forgot to
+    inject a fake provider would therefore call the live API — spending quota, depending on
+    the network, and making results non-deterministic.
+
+    This is the language-model analogue of the test-database guard: blank the credentials for
+    every test by default, so reaching a provider requires a deliberate override rather than
+    an oversight. Tests that exercise provider construction set what they need explicitly.
+    """
+    monkeypatch.setenv("NEWS_LLM_PROVIDER", "null")
+    monkeypatch.setenv("NEWS_LLM_API_KEY", "")
+    get_settings.cache_clear()
+    yield
+    get_settings.cache_clear()
 
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)

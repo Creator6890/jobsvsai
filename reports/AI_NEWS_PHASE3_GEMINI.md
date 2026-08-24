@@ -1,7 +1,8 @@
 # AI News Phase 3 — Gemini generation
 
 Date: 2026-08-24
-Status: **Implemented and live-validated on 3 of 5 planned candidates.** Disabled by default
+Status: **Implemented, live-validated on 3 of 5 planned candidates, and hardened for
+production (see §8a).** Disabled by default
 (`NEWS_ENABLED=false`, `NEWS_LLM_PROVIDER=null`). No scheduler, no auto-publish, nothing
 deployed. Migration 031. Prompt `news-generation-v1`, semantic policy
 `news-semantic-relevance-v1`.
@@ -63,8 +64,8 @@ NEWS_LLM_PROVIDER=gemini
 NEWS_LLM_API_KEY=<secret, .env only>
 NEWS_LLM_MODEL=gemini-3.7-flash
 NEWS_AUTO_PUBLISH=false
-NEWS_DAILY_GENERATION_LIMIT=10
-NEWS_GENERATION_BATCH_SIZE=5
+NEWS_DAILY_GENERATION_LIMIT=5      # hardened 2026-08-24
+NEWS_GENERATION_BATCH_SIZE=2       # hardened 2026-08-24
 NEWS_LLM_TIMEOUT_SECONDS=45
 ```
 
@@ -211,23 +212,80 @@ incoming queue. It is the main open risk for production rollout.
 
 - **Sample size is three.** Both rejections were correct and the single acceptance was good,
   but no conclusion about calibration can rest on this.
-- **The 0.70 semantic-confidence threshold was never exercised.** All three verdicts came
-  back at 0.95, so the `review_required` path for weak semantic confidence remains untested
-  against real model output. Its value is still a guess.
+- **The 0.70 semantic-confidence threshold has never been exercised by a real verdict.** All
+  three live verdicts came back at 0.95. The routing is now pinned by test at 0.62, 0.699 and
+  0.70, so the mechanism is proven — but whether 0.70 is the *right* number is still a guess,
+  and only a wider live sample can settle it.
 - **Free-tier throughput is unproven above ~3 calls per session.**
 - **No Atom source has been live-tested** (Phase 2 carry-over): all nine feeds are RSS 2.0.
 - **Token usage is a single data point.** 2,248 tokens for one accepted generation; rejections
   now record usage but none has been measured since the fix.
 - **`gemini-3.7-flash` free-tier eligibility is empirical**, not confirmed from documentation.
 
+## 8a. Production-readiness hardening — 2026-08-24
+
+Completed after the supervised run, before any merge.
+
+### Defaults lowered to what the tier actually delivered
+
+`NEWS_GENERATION_BATCH_SIZE` 5 → **2**, `NEWS_DAILY_GENERATION_LIMIT` 10 → **5**, changed in
+`config.py`, `.env.example` and both compose service blocks. The previous values were set
+before the live run and exceeded the roughly three calls per session the free tier sustained.
+Target volume is 2-3 published stories a day, so a batch of 2 under a daily ceiling of 5
+leaves headroom for rejections without walking into a quota wall.
+
+### The three semantic routing paths are now pinned by test
+
+The live run returned 0.95 on every verdict, so the middle path was never exercised against
+real output. Each path now has its own named test:
+
+| Path | Condition | Result |
+|---|---|---|
+| 1 | confident, is_ai_news=true | article `draft`, item `processed` |
+| 2 | is_ai_news=false | **no article**, item `ignored`, verdict retained |
+| 3 | is_ai_news=true, semantic confidence < 0.70 | article `review_required` |
+
+Plus the exact boundary (0.70 inclusive → draft, 0.699 → review) and the rule that *either*
+confidence being weak is sufficient on its own, since the two answer different questions.
+
+### Publish is human-gated, asserted rather than assumed
+
+A test sets `NEWS_AUTO_PUBLISH=true` and confirms generation still produces `draft`. The
+setting is a declaration of intent, not a switch the generation path reads — nothing in that
+path branches on it, and the test is what keeps that true.
+
+### A live-LLM guard for the test suite
+
+The suite runs with the developer's environment, which legitimately carries
+`NEWS_LLM_PROVIDER=gemini` and a real key. A generation test that forgot to inject a fake
+provider would have called the live API — spending quota and making results depend on the
+network. An autouse fixture now blanks the provider and key for every test, so reaching a
+provider requires a deliberate override rather than an oversight. This is the language-model
+analogue of the existing test-database guard.
+
+### Editorial review surfaces closed
+
+The article editor showed impact confidence and provenance but **not the semantic verdict**,
+which lives on the ingest item and was never loaded. A reviewer could not see why the model
+accepted a story, or compare the brief against the material it was written from — which is
+most of what review is for.
+
+Added `GET /admin/news/{id}/candidates` and a "Source material & AI decision" panel above the
+impact panel, so evidence is read before verdict. Verified through the real admin API that all
+of the following are present on a generated article:
+
+source · source excerpt · original title · original URL · generated summary · why it matters
+for jobs · five impact factors · semantic confidence and verdict · semantic reasoning · impact
+score and level · impact confidence · tags · job areas · provider/model/prompt version ·
+token usage · status
+
 ## 9. Recommendation
 
 Phase 3 is functionally complete and behaves correctly under real conditions, including its
 failure paths. Before production automation:
 
-1. **Resolve quota.** Either confirm the paid tier, or set
-   `NEWS_DAILY_GENERATION_LIMIT` low (5-8) and `NEWS_GENERATION_BATCH_SIZE` to 2-3 with
-   spacing between batches. The current defaults (10 / 5) exceed what the free tier sustained.
+1. **Resolve quota.** Defaults are now 5 / 2, sized to the observed tier. If a paid tier is
+   confirmed they can rise; on the free tier they should not.
 2. **Run a second supervised batch** once quota allows, targeting the two unfinished
    candidates plus a few designed to land near 0.70 semantic confidence, so the review path
    gets exercised.
