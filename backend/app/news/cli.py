@@ -6,6 +6,7 @@
     python -m app.news.cli candidates             what is waiting in the queue
     python -m app.news.cli sources                configured feeds and their health
     python -m app.news.cli runs                   recent ingestion runs
+    python -m app.news.cli metrics                cost, reliability and quality readings
 
 `generate` is the one command that spends money. It is gated by `NEWS_GENERATION_ENABLED`,
 bounded by the daily cap, and **cannot publish**: every article it produces is `draft` or
@@ -134,8 +135,8 @@ async def cmd_generate(args: argparse.Namespace) -> int:
     print(f"  generation_enabled = {settings.generation_enabled}"
           f"   auto_publish = {settings.news_auto_publish}"
           f"   provider = {settings.news_llm_provider}")
-    print(f"  batch = {args.batch_size or settings.news_generation_batch_size}"
-          f"   daily cap = {settings.news_daily_generation_limit}"
+    print(f"  batch = {args.batch_size or settings.generations_per_run}"
+          f"   daily cap = {settings.generations_per_day}"
           f"   model = {settings.news_llm_model or 'provider default'}")
 
     if not settings.generation_enabled:
@@ -277,6 +278,76 @@ async def cmd_runs(args: argparse.Namespace) -> int:
     return 0
 
 
+async def cmd_metrics(args: argparse.Namespace) -> int:
+    """Cost, reliability and quality, read from what the pipeline already recorded."""
+    from app.repositories import news_metrics
+
+    settings = get_settings()
+    async with SessionFactory() as session:
+        data = await news_metrics.collect(session, days=args.days)
+
+    ing, gen, qual = data["ingestion"], data["generation"], data["quality"]
+    print(f"AI News metrics · last {args.days} days")
+
+    print("\n  INGESTION")
+    print(f"    runs {ing['runs']}   fetched {ing['fetched']}   stored {ing['stored']}"
+          f"   candidates {ing['candidates']}   ignored {ing['ignored']}")
+    print(f"    duplicates: exact {ing['exact_duplicates']}  near {ing['near_duplicates']}"
+          f"   outside window {ing['outside_window']}")
+    print(f"    source failures {ing['source_failures']}   last run {_fmt_date(ing['last_run'])}")
+
+    attempts = int(gen["attempts"] or 0)
+    print("\n  GENERATION")
+    print(f"    attempts {attempts}   accepted {gen['accepted']}   rejected {gen['rejected']}"
+          f"   failed {gen['failed']}")
+    if attempts:
+        print(f"    acceptance {100 * gen['accepted'] / attempts:.0f}%"
+              f"   rejection {100 * gen['rejected'] / attempts:.0f}%"
+              f"   failure {100 * gen['failed'] / attempts:.0f}%")
+    print(f"    latency p50 {gen['latency_p50'] or '—'}ms   p95 {gen['latency_p95'] or '—'}ms"
+          f"   max {gen['latency_max'] or '—'}ms")
+    print(f"    last attempt {_fmt_date(gen['last_attempt'])}")
+
+    if data["failures"]:
+        print("\n  FAILURES BY KIND")
+        for row in data["failures"]:
+            print(f"    {row['kind']:<18}{row['total']:>5}   last {_fmt_date(row['last_seen'])}")
+
+    print("\n  COST")
+    input_tokens, output_tokens = int(gen["input_tokens"]), int(gen["output_tokens"])
+    total = input_tokens + output_tokens
+    print(f"    tokens: input {input_tokens}   output {output_tokens}   total {total}")
+    accepted = int(gen["accepted"] or 0)
+    if accepted:
+        print(f"    tokens per accepted article: {total / accepted:.0f}")
+    if settings.news_llm_cost_per_1m_input is not None and \
+            settings.news_llm_cost_per_1m_output is not None:
+        cost = (input_tokens / 1_000_000 * settings.news_llm_cost_per_1m_input
+                + output_tokens / 1_000_000 * settings.news_llm_cost_per_1m_output)
+        print(f"    estimated cost: {cost:.4f}"
+              + (f"   per accepted article: {cost / accepted:.4f}" if accepted else ""))
+    else:
+        # Stated rather than silently omitted, so nobody reads "no cost line" as "no cost".
+        print("    (no currency estimate: set NEWS_LLM_COST_PER_1M_INPUT and _OUTPUT)")
+
+    print("\n  ARTICLES")
+    print(f"    total {qual['articles']}   draft {qual['draft']}"
+          f"   review_required {qual['review_required']}   published {qual['published']}")
+    print(f"    rejected {qual['rejected']}   archived {qual['archived']}")
+    print(f"    regenerated {qual['regenerated']} article(s), {qual['regenerations']} time(s)"
+          f"   impact overridden {qual['overridden']}")
+
+    print("\n  QUALITY PROXIES")
+    print(f"    impact: low {qual['impact_low']}  medium {qual['impact_medium']}"
+          f"  high {qual['impact_high']}   avg score {qual['avg_impact_score'] or '—'}")
+    print(f"    avg impact confidence {qual['avg_impact_confidence'] or '—'}"
+          f"   avg semantic confidence {qual['avg_semantic_confidence'] or '—'}"
+          f"   min semantic {qual['min_semantic_confidence'] or '—'}")
+    print("    These are self-reported confidences and policy scores, not measured outcomes:")
+    print("    nothing here has been validated against whether a story mattered.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m app.news.cli",
@@ -316,6 +387,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sources = sub.add_parser("sources", help="configured feeds and their health")
     sources.set_defaults(handler=cmd_sources)
+
+    metrics = sub.add_parser("metrics", help="cost, reliability and quality readings")
+    metrics.add_argument("--days", type=int, default=30, metavar="N",
+                         help="reporting window; default 30")
+    metrics.set_defaults(handler=cmd_metrics)
 
     runs = sub.add_parser("runs", help="recent ingestion runs")
     runs.add_argument("--limit", type=int, default=5)

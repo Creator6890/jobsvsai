@@ -57,11 +57,26 @@ class Settings(BaseSettings):
     # rejections without inviting a quota wall.
     news_daily_generation_limit: int = 5
     news_generation_batch_size: int = 2
+    # Aliases for the same two limits under the operational names used in the automation
+    # docs. Deliberately aliases, not new settings: two names for one cap is confusing, but
+    # two independent settings for one cap is a bug waiting to happen — someone raises one
+    # and the other silently still binds. The canonical fields above are what the code
+    # reads; these only override them when explicitly set.
+    news_max_generations_per_run: int | None = None
+    news_max_generations_per_day: int | None = None
     news_llm_timeout_seconds: int = 45
+    # Optional. Left unset by default so `metrics` reports tokens only — deriving a currency
+    # figure from a guessed rate produces a number that looks authoritative and is not.
+    news_llm_cost_per_1m_input: float | None = None
+    news_llm_cost_per_1m_output: float | None = None
     # Must stay false. Generation produces draft or review_required, never published.
     news_auto_publish: bool = False
 
+    # Every optional NEWS_* field, because compose passes each one as `${VAR:-}` and an
+    # absent variable therefore arrives as an empty string rather than as an absent key.
     @field_validator("news_ingestion_enabled", "news_generation_enabled", "news_enabled",
+                     "news_max_generations_per_run", "news_max_generations_per_day",
+                     "news_llm_cost_per_1m_input", "news_llm_cost_per_1m_output",
                      mode="before")
     @classmethod
     def _blank_means_unset(cls, value: object) -> object:
@@ -75,6 +90,20 @@ class Settings(BaseSettings):
         if isinstance(value, str) and not value.strip():
             return None
         return value
+
+    @property
+    def generations_per_run(self) -> int:
+        """Candidates per generation run. NEWS_MAX_GENERATIONS_PER_RUN wins if set."""
+        if self.news_max_generations_per_run is not None:
+            return self.news_max_generations_per_run
+        return self.news_generation_batch_size
+
+    @property
+    def generations_per_day(self) -> int:
+        """Provider calls per day, counted across every run. Alias wins if set."""
+        if self.news_max_generations_per_day is not None:
+            return self.news_max_generations_per_day
+        return self.news_daily_generation_limit
 
     @property
     def ingestion_enabled(self) -> bool:

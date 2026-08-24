@@ -37,9 +37,16 @@ target = resolve_target()
 print('guard: accepted ->', target.describe())
 "
 
+# scripts/ and deploy/ are mounted read-only because the automation tests execute the
+# scheduled entry points and assert their exit codes — cron reads exit codes, and a guard
+# that failed open would be invisible to a Python-only test. `docker compose` is absent
+# inside the container, which is what makes "the guard returned before reaching compose"
+# and "the run reached compose and failed" distinguishable.
 docker compose run --rm \
   -e DATABASE_URL="$TEST_DATABASE_URL" \
   -e ENVIRONMENT=test \
   -e TEST_DATABASE=true \
   -v "$PWD/backend/tests:/app/tests:ro" \
+  -v "$PWD/scripts:/app/scripts:ro" \
+  -v "$PWD/deploy:/app/deploy:ro" \
   backend python -m pytest tests "$@"

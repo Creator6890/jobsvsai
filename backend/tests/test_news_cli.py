@@ -113,9 +113,16 @@ async def test_cli_cannot_publish() -> None:
     assert "generation_service" not in module_imports, (
         "generation must stay a local import inside cmd_generate"
     )
-    # Nothing anywhere in the module reaches the publication path.
-    for forbidden in ("repo.publish", "publish(", "set_status", "'published'"):
-        assert forbidden not in source_text, f"CLI must not reference {forbidden}"
+    # `repositories.news` is the module that owns publish() and set_status(). The CLI reads
+    # from news_ingest and news_metrics only, so the publication path is not merely unused
+    # here — it is unreachable.
+    assert "repositories import news\n" not in source_text
+    assert "repositories.news " not in source_text
+    # And no call site exists. Checked as calls rather than as substrings: the metrics
+    # command legitimately *reports* a count of published articles, and a naive string
+    # search cannot tell that apart from publishing one.
+    for forbidden_call in ("publish(", "set_status(", "archive(", "create_draft("):
+        assert forbidden_call not in source_text, f"CLI must not call {forbidden_call}"
 
 
 # ---------------------------------------------------------------------------- the dry run

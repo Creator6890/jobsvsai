@@ -321,6 +321,19 @@ variable to `""` and pydantic cannot parse that as a bool.
   so failures group without parsing messages. A kind and a message always appear together.
 - **Operator CLI `generate`** runs the batch: `python -m app.news.cli generate`. It imports
   `generation_service` inside the command only, and references no publication path.
+- **Automation is host cron, not a scheduler** (`scripts/news-{ingest,generate,metrics}.sh`,
+  `deploy/news-cron.example`). RQ's own scheduler only does one-shot `enqueue_in`/`enqueue_at`,
+  not cron recurrence, so `with_scheduler=True` would not give a cadence. **Nothing is
+  installed** — the example file is documentation.
+- Scripts preserve caller environment across the `.env` load. The `set -a; . ./.env` pattern
+  used by `backup-db.sh` lets the file clobber the caller, which made the auto-publish guard
+  silently not fire when first written.
+- A disabled pipeline exits **0**, not non-zero: it is a configured state, and alerting on it
+  would train the operator to ignore the job. `NEWS_AUTO_PUBLISH=true` makes
+  `news-generate.sh` refuse with **exit 2**, before any spend.
+- `NEWS_MAX_GENERATIONS_PER_RUN` / `_PER_DAY` are **aliases** for
+  `NEWS_GENERATION_BATCH_SIZE` / `NEWS_DAILY_GENERATION_LIMIT`, resolved by a property. Two
+  independent settings for one cap would let someone raise one while the other still binds.
 - `NEWS_*` must be listed in the compose `environment` blocks: `.env` is in `.dockerignore`
   and is not mounted, so pydantic's `env_file` never sees it inside a container.
 

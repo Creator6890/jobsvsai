@@ -331,10 +331,10 @@ async def regenerate_article(
     # and exempting it would make the ceiling meaningless to anyone clicking the button.
     settings = get_settings()
     already = await _todays_call_count(session)
-    if already >= settings.news_daily_generation_limit:
+    if already >= settings.generations_per_day:
         outcome.outcome = "skipped"
         outcome.error = (
-            f"Daily generation limit reached ({already}/{settings.news_daily_generation_limit})"
+            f"Daily generation limit reached ({already}/{settings.generations_per_day})"
         )
         return outcome
 
@@ -455,8 +455,8 @@ async def run_generation_batch(
             run_id=None, run_key=run_key, status="skipped", skipped_reason=str(exc),
         )
 
-    size = batch_size or settings.news_generation_batch_size
-    daily_limit = settings.news_daily_generation_limit
+    size = batch_size or settings.generations_per_run
+    daily_limit = settings.generations_per_day
     already = await _todays_call_count(session)
     remaining = max(0, daily_limit - already)
     if remaining == 0:

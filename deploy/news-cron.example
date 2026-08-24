@@ -1,0 +1,40 @@
+# AI News scheduled operation — EXAMPLE ONLY, not installed.
+#
+# Install deliberately, after deciding the pipeline is worth running:
+#     sudo crontab -e -u root          # or the user that owns /opt/jobsvsai
+# then paste the lines below and confirm with:
+#     sudo crontab -l -u root
+#
+# Remove by deleting the lines again. There is no other state to unwind: cron is the only
+# thing that makes any of this recurring, which is why this file is an example rather than
+# an installer.
+#
+# ---------------------------------------------------------------------------------------
+# BEFORE INSTALLING, the flags must be set in /opt/jobsvsai/.env. Both default to false and
+# the scripts exit 0 without doing anything while they are:
+#
+#     NEWS_INGESTION_ENABLED=true      # allows feed polling
+#     NEWS_GENERATION_ENABLED=true     # allows provider calls; costs money
+#     NEWS_AUTO_PUBLISH=false          # MUST stay false; news-generate.sh refuses otherwise
+#
+# Enable ingestion first and leave generation off for a few cycles. That is the state the
+# split flags exist to make possible, and it costs nothing to observe.
+# ---------------------------------------------------------------------------------------
+
+# Ingestion, every 6 hours. Cheap, no external model, no article creation.
+# Runs at 00:10, 06:10, 12:10, 18:10 — offset off the hour so it does not contend with the
+# 03:15 database backup or with whole-hour traffic.
+10 */6 * * * cd /opt/jobsvsai && ./scripts/news-ingest.sh >> /var/log/jobsvsai-news.log 2>&1
+
+# Generation, once daily at 02:00. The only scheduled job that spends money.
+# Bounded by NEWS_GENERATION_BATCH_SIZE per run and NEWS_DAILY_GENERATION_LIMIT per day.
+# Allow several minutes: a FAILING provider call occupies 80-140 seconds because the 45s
+# timeout is multiplied by up to three attempts plus backoff, and a batch of two all-failing
+# candidates was measured at 258 seconds.
+0 2 * * * cd /opt/jobsvsai && ./scripts/news-generate.sh >> /var/log/jobsvsai-news.log 2>&1
+
+# Metrics, once daily at 04:00. Read-only; safe whatever the flags say.
+0 4 * * * cd /opt/jobsvsai && ./scripts/news-metrics.sh >> /var/log/jobsvsai-news.log 2>&1
+
+# Log rotation is not configured here. /var/log/jobsvsai-news.log grows unbounded; add it to
+# logrotate alongside the existing backup log before running this for long.
