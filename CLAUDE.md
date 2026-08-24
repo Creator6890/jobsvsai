@@ -313,6 +313,14 @@ variable to `""` and pydantic cannot parse that as a bool.
   test-database guard.
 - The 0.70 semantic-confidence threshold is still unexercised — every live verdict came back
   at 0.95.
+- **A failing generation call occupies 80-140 seconds**: the 45s timeout is multiplied by up
+  to three attempts plus backoff. A batch of two all-failing candidates took 258s. Any
+  scheduled job must budget for that, or it dies mid-batch leaving attempts uncounted.
+- `generation_error_kind` (migration 033) is a stable vocabulary — `rate_limited`,
+  `server_error`, `timeout`, `invalid_response`, `credentials`, `provider_error`, `unknown` —
+  so failures group without parsing messages. A kind and a message always appear together.
+- **Operator CLI `generate`** runs the batch: `python -m app.news.cli generate`. It imports
+  `generation_service` inside the command only, and references no publication path.
 - `NEWS_*` must be listed in the compose `environment` blocks: `.env` is in `.dockerignore`
   and is not mounted, so pydantic's `env_file` never sees it inside a container.
 

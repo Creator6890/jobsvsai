@@ -273,7 +273,8 @@ async def select_generation_candidates(session: AsyncSession, limit: int) -> lis
 
 
 async def record_semantic_acceptance(
-    session: AsyncSession, item_id: int, brief, provider: str, model: str, prompt_version: str
+    session: AsyncSession, item_id: int, brief, provider: str, model: str,
+    prompt_version: str, latency_ms: int | None = None,
 ) -> None:
     """Accepted: the item is now `processed`, and the verdict is kept alongside it."""
     await session.execute(text("""
@@ -288,15 +289,18 @@ async def record_semantic_acceptance(
         generation_attempted_at = now(),
         generation_attempts = generation_attempts + 1,
         generation_error = NULL,
+        generation_error_kind = NULL,
+        generation_latency_ms = :latency_ms,
         generation_input_tokens = :input_tokens,
         generation_output_tokens = :output_tokens,
         updated_at = now()
       WHERE id = :id
-    """), _semantic_params(item_id, brief, provider, model, prompt_version))
+    """), _semantic_params(item_id, brief, provider, model, prompt_version, latency_ms))
 
 
 async def record_semantic_rejection(
-    session: AsyncSession, item_id: int, brief, provider: str, model: str, prompt_version: str
+    session: AsyncSession, item_id: int, brief, provider: str, model: str,
+    prompt_version: str, latency_ms: int | None = None,
 ) -> None:
     """Rejected: no article, and the item becomes `ignored`.
 
@@ -316,14 +320,16 @@ async def record_semantic_rejection(
         generation_attempted_at = now(),
         generation_attempts = generation_attempts + 1,
         generation_error = NULL,
+        generation_error_kind = NULL,
+        generation_latency_ms = :latency_ms,
         generation_input_tokens = :input_tokens,
         generation_output_tokens = :output_tokens,
         updated_at = now()
       WHERE id = :id
-    """), _semantic_params(item_id, brief, provider, model, prompt_version))
+    """), _semantic_params(item_id, brief, provider, model, prompt_version, latency_ms))
 
 
-def _semantic_params(item_id, brief, provider, model, prompt_version) -> dict:
+def _semantic_params(item_id, brief, provider, model, prompt_version, latency_ms=None) -> dict:
     from app.news.generation import SEMANTIC_POLICY_VERSION
 
     return {
@@ -333,17 +339,20 @@ def _semantic_params(item_id, brief, provider, model, prompt_version) -> dict:
         "policy": SEMANTIC_POLICY_VERSION,
         "provider": provider, "model": model, "prompt_version": prompt_version,
         "input_tokens": brief.input_tokens, "output_tokens": brief.output_tokens,
+        "latency_ms": latency_ms,
     }
 
 
 async def record_generation_failure(
     session: AsyncSession, item_id: int, provider: str, model: str,
-    prompt_version: str, error: str,
+    prompt_version: str, error: str, error_kind: str = "unknown",
+    latency_ms: int | None = None,
 ) -> None:
     """A failed attempt. The item keeps its `candidate` status so it stays retryable.
 
-    Only the attempt counter and a concise reason move; the semantic columns stay NULL
-    because no verdict was reached.
+    Only the attempt counter, the reason and its category move; the semantic columns stay
+    NULL because no verdict was reached — an unassessed item is not the same as one the model
+    declined, and conflating them would corrupt the acceptance rate Step 5 needs.
     """
     await session.execute(text("""
       UPDATE news_ingest_items SET
@@ -352,10 +361,13 @@ async def record_generation_failure(
         generation_attempted_at = now(),
         generation_attempts = generation_attempts + 1,
         generation_error = :error,
+        generation_error_kind = :error_kind,
+        generation_latency_ms = :latency_ms,
         updated_at = now()
       WHERE id = :id
     """), {"id": item_id, "provider": provider, "model": model,
-           "prompt_version": prompt_version, "error": error})
+           "prompt_version": prompt_version, "error": error,
+           "error_kind": error_kind, "latency_ms": latency_ms})
 
 
 async def token_totals_for_items(session: AsyncSession, item_ids: list[int]) -> dict[str, int]:

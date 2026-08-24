@@ -97,20 +97,25 @@ async def test_parser_exposes_the_documented_commands() -> None:
     assert parser.parse_args(["ingest", "--lookback", "168"]).lookback == 168
 
 
-async def test_cli_has_no_path_to_generation_or_publication() -> None:
-    """The CLI cannot call a model or publish, because it imports neither.
+async def test_cli_cannot_publish() -> None:
+    """The CLI can generate (Step 4 added that) but has no path to publication.
 
-    Asserted on the module's own source rather than by behaviour: the guarantee is the
-    absence of a capability, and a behavioural test could only show it was not used today.
+    Asserted on the module's own source: the guarantee is the absence of a capability, and a
+    behavioural test could only show it went unused today. `generation_service` is imported
+    inside the one command that needs it, so ingestion commands still cannot reach a
+    provider merely by being in the same module.
     """
     import pathlib
 
-    source = pathlib.Path(__file__).parent.parent / "app" / "news" / "cli.py"
-    imports = [line for line in source.read_text().splitlines()
-               if line.startswith(("import ", "from "))]
-    joined = "\n".join(imports)
-    for forbidden in ("generation_service", "gemini", "generation import", "repositories.news "):
-        assert forbidden not in joined, f"CLI must not import {forbidden}"
+    source_text = (pathlib.Path(__file__).parent.parent / "app" / "news" / "cli.py").read_text()
+    module_imports = "\n".join(line for line in source_text.splitlines()
+                               if line.startswith(("import ", "from ")))
+    assert "generation_service" not in module_imports, (
+        "generation must stay a local import inside cmd_generate"
+    )
+    # Nothing anywhere in the module reaches the publication path.
+    for forbidden in ("repo.publish", "publish(", "set_status", "'published'"):
+        assert forbidden not in source_text, f"CLI must not reference {forbidden}"
 
 
 # ---------------------------------------------------------------------------- the dry run

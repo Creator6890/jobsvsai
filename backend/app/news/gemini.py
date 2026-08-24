@@ -39,11 +39,16 @@ BACKOFF_BASE_SECONDS = 1.5
 
 
 class GeminiError(RuntimeError):
-    """A Gemini call failed. Message is safe to show an admin and to store."""
+    """A Gemini call failed. Message is safe to show an admin and to store.
 
-    def __init__(self, message: str, retryable: bool = False) -> None:
+    `kind` is a stable category so failures can be grouped without parsing the message,
+    which is the sort of thing that works until the message changes.
+    """
+
+    def __init__(self, message: str, retryable: bool = False, kind: str = "unknown") -> None:
         super().__init__(message)
         self.retryable = retryable
+        self.kind = kind
 
 
 class GeminiGenerationProvider:
@@ -101,20 +106,25 @@ class GeminiGenerationProvider:
         name = type(error).__name__
 
         if status in (429,) or "ResourceExhausted" in name or "RateLimit" in name:
-            return GeminiError("Rate limited by provider (429)", retryable=True)
+            return GeminiError("Rate limited by provider (429)", retryable=True,
+                               kind="rate_limited")
         if isinstance(status, int) and 500 <= status < 600:
-            return GeminiError(f"Provider server error ({status})", retryable=True)
+            return GeminiError(f"Provider server error ({status})", retryable=True,
+                               kind="server_error")
         if any(token in name for token in ("Timeout", "Deadline", "Connection", "Unavailable")):
-            return GeminiError(f"Transient transport failure ({name})", retryable=True)
+            return GeminiError(f"Transient transport failure ({name})", retryable=True,
+                               kind="timeout")
         if isinstance(status, int) and status in (401, 403):
             # Never echo the provider's message here; it can contain request material.
             return GeminiError(
                 f"Provider rejected credentials ({status}). Check NEWS_LLM_API_KEY.",
-                retryable=False,
+                retryable=False, kind="credentials",
             )
         if isinstance(status, int) and 400 <= status < 500:
-            return GeminiError(f"Provider rejected the request ({status})", retryable=False)
-        return GeminiError(f"Provider call failed ({name})", retryable=False)
+            return GeminiError(f"Provider rejected the request ({status})", retryable=False,
+                               kind="provider_error")
+        return GeminiError(f"Provider call failed ({name})", retryable=False,
+                           kind="unknown")
 
     # ------------------------------------------------------------------------- the call
 
@@ -145,14 +155,15 @@ class GeminiGenerationProvider:
         if not text or not str(text).strip():
             raise GeminiError(
                 "Provider returned an empty response (possible safety refusal)",
-                retryable=False,
+                retryable=False, kind="invalid_response",
             )
         try:
             parsed = json.loads(str(text))
         except json.JSONDecodeError as exc:
             # Do not include the body: it is untrusted model output that may be large.
             raise GeminiError(
-                f"Provider returned non-JSON output ({exc.msg})", retryable=False
+                f"Provider returned non-JSON output ({exc.msg})", retryable=False,
+                kind="invalid_response",
             ) from exc
 
         # Token accounting. `total_token_count` exceeds prompt + candidates because Gemini 3
@@ -184,7 +195,8 @@ class GeminiGenerationProvider:
             except (InvalidGeneratedBrief, InvalidImpactFactors) as exc:
                 # A structurally wrong answer is the model misunderstanding, not a blip.
                 # Retrying produces the same answer and spends quota to get it.
-                raise GeminiError(f"Invalid response schema: {exc}", retryable=False) from exc
+                raise GeminiError(f"Invalid response schema: {exc}", retryable=False,
+                                  kind="invalid_response") from exc
             except GeminiError as exc:
                 last = exc
                 if not exc.retryable or attempt == MAX_ATTEMPTS:
@@ -196,4 +208,4 @@ class GeminiGenerationProvider:
                     raise classified from exc
             # Exponential backoff with jitter, so a batch does not retry in lockstep.
             self._sleep(BACKOFF_BASE_SECONDS * (2 ** (attempt - 1)) + random.uniform(0, 0.5))
-        raise last or GeminiError("Generation failed", retryable=False)
+        raise last or GeminiError("Generation failed", retryable=False, kind="unknown")

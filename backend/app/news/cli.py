@@ -2,13 +2,16 @@
 
     python -m app.news.cli ingest --dry-run       fetch, dedupe, score; write nothing
     python -m app.news.cli ingest                 the same, but store the results
+    python -m app.news.cli generate               turn candidates into review-ready drafts
     python -m app.news.cli candidates             what is waiting in the queue
     python -m app.news.cli sources                configured feeds and their health
     python -m app.news.cli runs                   recent ingestion runs
 
-Read-mostly by design. **This CLI cannot call a language model, create an article, or
-publish anything** — it imports neither the generation service nor a provider, so those are
-not oversights that could be corrected by a flag but capabilities the module does not have.
+`generate` is the one command that spends money. It is gated by `NEWS_GENERATION_ENABLED`,
+bounded by the daily cap, and **cannot publish**: every article it produces is `draft` or
+`review_required`, because the service it calls has no path to `published`.
+
+Every other command is read-only or ingestion-only.
 
 `--dry-run` exists because a first production ingestion is otherwise unobservable until after
 it has happened. It runs the identical pipeline and reports the identical decisions, then
@@ -122,6 +125,86 @@ async def cmd_ingest(args: argparse.Namespace) -> int:
     return 0
 
 
+async def cmd_generate(args: argparse.Namespace) -> int:
+    """Turn candidates into review-ready drafts. The command that costs money."""
+    from app.news.generation_service import run_generation_batch
+
+    settings = get_settings()
+    print("AI News generation")
+    print(f"  generation_enabled = {settings.generation_enabled}"
+          f"   auto_publish = {settings.news_auto_publish}"
+          f"   provider = {settings.news_llm_provider}")
+    print(f"  batch = {args.batch_size or settings.news_generation_batch_size}"
+          f"   daily cap = {settings.news_daily_generation_limit}"
+          f"   model = {settings.news_llm_model or 'provider default'}")
+
+    if not settings.generation_enabled:
+        print("\n  SKIPPED: NEWS_GENERATION_ENABLED is false. No provider call was made.")
+        return 0
+    if settings.news_auto_publish:
+        # Reported, not enforced here: the generation service has no path to `published`
+        # regardless. Surfaced so a misconfiguration is visible rather than silent.
+        print("\n  WARNING: NEWS_AUTO_PUBLISH is true. Generation still cannot publish —"
+              " every article is draft or review_required — but the flag should be false.")
+
+    async with SessionFactory() as session:
+        result = await run_generation_batch(
+            session, triggered_by=args.triggered_by, batch_size=args.batch_size,
+            ingest_item_ids=args.item or None,
+        )
+
+    if result.status == "skipped":
+        print(f"\n  SKIPPED: {result.skipped_reason}")
+        return 0
+
+    c = result.counters
+    print(f"\n  status={result.status}  {c.duration_ms}ms  run_id={result.run_id}")
+    print(f"  selected={c.candidates_selected} calls={c.calls_made} "
+          f"skipped_existing={c.skipped_existing}")
+    print(f"  outcomes: accepted={c.accepted} rejected={c.rejected} failed={c.failed}")
+    print(f"  articles: draft={c.articles_draft} review_required={c.articles_review_required}")
+    print(f"  tokens  : input={c.input_tokens} output={c.output_tokens} "
+          f"total={c.input_tokens + c.output_tokens}")
+
+    # The numbers Step 5 needs to answer whether this is worth doing. Printed per run rather
+    # than aggregated, because a single run is the unit an operator is deciding about.
+    if c.calls_made:
+        accept_rate = 100 * c.accepted / c.calls_made
+        reject_rate = 100 * c.rejected / c.calls_made
+        fail_rate = 100 * c.failed / c.calls_made
+        per_article = ((c.input_tokens + c.output_tokens) / c.accepted) if c.accepted else 0
+        print(f"\n  acceptance {accept_rate:.0f}%   rejection {reject_rate:.0f}%   "
+              f"failure {fail_rate:.0f}%")
+        print(f"  tokens per accepted article: "
+              f"{per_article:.0f}" if c.accepted else "  tokens per accepted article: n/a")
+
+    for o in result.outcomes:
+        print(f"\n  --- #{o.ingest_item_id} [{o.source_name}] det={o.relevance_score} "
+              f"-> {o.outcome.upper()}")
+        print(f"      {_truncate(o.original_title, 84)}")
+        if o.latency_ms is not None:
+            tokens = (f" · {o.input_tokens}/{o.output_tokens} tokens"
+                      if o.input_tokens is not None else "")
+            print(f"      {o.latency_ms}ms{tokens}")
+        if o.is_ai_news is not None:
+            print(f"      is_ai_news={o.is_ai_news} confidence={o.ai_relevance_confidence}")
+            print(f"      {_truncate(o.relevance_reason or '', 96)}")
+        if o.outcome == "accepted":
+            f = o.factors
+            print(f"      factors cap={f['capability_advancement']} "
+                  f"deploy={f['commercial_deployability']} "
+                  f"breadth={f['breadth_of_affected_work']} "
+                  f"speed={f['adoption_speed']} "
+                  f"reduction={f['human_work_reduction_potential']}")
+            print(f"      impact {o.impact_score} {(o.impact_level or '').upper()} "
+                  f"(confidence {o.impact_confidence}) -> {o.article_status}")
+        if o.error:
+            print(f"      {o.error_kind or 'error'}: {_truncate(o.error, 96)}")
+
+    print("\n  Nothing was published. Review at /admin/news before anything goes public.")
+    return 0
+
+
 async def cmd_candidates(args: argparse.Namespace) -> int:
     async with SessionFactory() as session:
         counts = await repo.ingest_status_counts(session)
@@ -197,7 +280,7 @@ async def cmd_runs(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m app.news.cli",
-        description="AI News ingestion operator commands. Cannot generate or publish.",
+        description="AI News operator commands. Nothing here can publish.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -213,6 +296,15 @@ def build_parser() -> argparse.ArgumentParser:
     ingest.add_argument("--urls", action="store_true", help="print stored candidate URLs")
     ingest.add_argument("--triggered-by", default="cli", help="recorded on the run row")
     ingest.set_defaults(handler=cmd_ingest)
+
+    generate = sub.add_parser(
+        "generate", help="generate drafts from candidates (calls the provider)")
+    generate.add_argument("--batch-size", type=int, metavar="N",
+                          help="override the configured batch size")
+    generate.add_argument("--item", type=int, action="append", metavar="ID",
+                          help="generate for specific candidates; repeatable")
+    generate.add_argument("--triggered-by", default="cli", help="recorded on the run row")
+    generate.set_defaults(handler=cmd_generate)
 
     candidates = sub.add_parser("candidates", help="show the current candidate queue")
     candidates.add_argument("--status", choices=["new", "candidate", "ignored", "duplicate",

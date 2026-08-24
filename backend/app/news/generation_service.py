@@ -17,6 +17,7 @@ Three rules this module exists to enforce:
 from __future__ import annotations
 
 import json
+import time
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
@@ -76,6 +77,10 @@ class ItemOutcome:
     impact_confidence: float | None = None
     factors: dict[str, int] = field(default_factory=dict)
     error: str | None = None
+    error_kind: str | None = None
+    latency_ms: int | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
 
 
 @dataclass
@@ -194,16 +199,25 @@ async def generate_for_candidate(
     provider_name = getattr(provider, "name", "unknown")
     provider_model = getattr(provider, "model", "unknown")
 
+    started = time.monotonic()
     try:
         brief = provider.generate_news_brief(payload)
     except Exception as exc:  # noqa: BLE001 - every provider failure is recorded, not raised
         # The candidate stays a candidate so it can be retried; only the attempt is recorded.
+        latency_ms = int((time.monotonic() - started) * 1000)
         await ingest_repo.record_generation_failure(
-            session, ingest_item_id, provider_name, provider_model, PROMPT_VERSION, str(exc)[:400]
+            session, ingest_item_id, provider_name, provider_model, PROMPT_VERSION,
+            str(exc)[:400], error_kind=getattr(exc, "kind", "unknown"), latency_ms=latency_ms,
         )
         await session.commit()
         outcome.error = str(exc)[:400]
+        outcome.error_kind = getattr(exc, "kind", "unknown")
+        outcome.latency_ms = latency_ms
         return outcome
+    latency_ms = int((time.monotonic() - started) * 1000)
+    outcome.latency_ms = latency_ms
+    outcome.input_tokens = brief.input_tokens
+    outcome.output_tokens = brief.output_tokens
 
     outcome.is_ai_news = brief.is_ai_news
     outcome.ai_relevance_confidence = brief.ai_relevance_confidence
@@ -214,6 +228,7 @@ async def generate_for_candidate(
         # rejection is the most useful record there is for calibrating the prompt.
         await ingest_repo.record_semantic_rejection(
             session, ingest_item_id, brief, provider_name, provider_model, PROMPT_VERSION,
+            latency_ms=latency_ms,
         )
         await session.commit()
         outcome.outcome = "rejected"
@@ -243,6 +258,7 @@ async def generate_for_candidate(
     await article_repo.set_status(session, article_id, status)
     await ingest_repo.record_semantic_acceptance(
         session, ingest_item_id, brief, provider_name, provider_model, PROMPT_VERSION,
+        latency_ms=latency_ms,
     )
     await session.commit()
 
@@ -342,15 +358,24 @@ async def regenerate_article(
     provider_name = getattr(provider, "name", "unknown")
     provider_model = getattr(provider, "model", "unknown")
 
+    started = time.monotonic()
     try:
         brief = provider.generate_news_brief(payload)
     except Exception as exc:  # noqa: BLE001 - a failed regeneration leaves the article intact
+        latency_ms = int((time.monotonic() - started) * 1000)
         await ingest_repo.record_generation_failure(
-            session, item["id"], provider_name, provider_model, PROMPT_VERSION, str(exc)[:400]
+            session, item["id"], provider_name, provider_model, PROMPT_VERSION,
+            str(exc)[:400], error_kind=getattr(exc, "kind", "unknown"), latency_ms=latency_ms,
         )
         await session.commit()
         outcome.error = str(exc)[:400]
+        outcome.error_kind = getattr(exc, "kind", "unknown")
+        outcome.latency_ms = latency_ms
         return outcome
+    latency_ms = int((time.monotonic() - started) * 1000)
+    outcome.latency_ms = latency_ms
+    outcome.input_tokens = brief.input_tokens
+    outcome.output_tokens = brief.output_tokens
 
     outcome.is_ai_news = brief.is_ai_news
     outcome.ai_relevance_confidence = brief.ai_relevance_confidence
@@ -388,6 +413,7 @@ async def regenerate_article(
     await article_repo.set_status(session, article_id, status)
     await ingest_repo.record_semantic_acceptance(
         session, item["id"], brief, provider_name, provider_model, PROMPT_VERSION,
+        latency_ms=latency_ms,
     )
     await session.commit()
 
