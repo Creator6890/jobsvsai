@@ -269,6 +269,13 @@ variable to `""` and pydantic cannot parse that as a bool.
   pass a wider one-off window** via `run_ingestion(lookback_hours=...)`.
 - Near-dedupe is still calibrated only against constructed cases: the live sample contained
   zero same-event duplicates, so the 0.55 threshold is unvalidated on real data.
+- **Operator CLI**: `python -m app.news.cli {ingest|candidates|sources|runs}`. `ingest
+  --dry-run` runs the whole pipeline and writes nothing — no items, no run row, no source
+  health. It imports neither the generation service nor a provider, so it *cannot* generate
+  or publish; a test asserts that by inspecting its imports.
+- A dry run tracks fingerprints accepted **within the same run**. Without that it missed
+  in-batch near-duplicates (a live run sees them because each insert is committed) and
+  over-reported candidates. A test asserts dry and live reach identical decisions.
 - `processed` means converted into an article. Admin triage cannot set it.
 - Ingest items have **no public route and no public schema**. They are internal triage
   material.

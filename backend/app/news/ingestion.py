@@ -43,6 +43,27 @@ class RunCounters:
 
 
 @dataclass
+class ItemDecision:
+    """What the pipeline decided about one feed entry, and why.
+
+    Collected on every run so the same reporting works for a dry run and a real one — a dry
+    run that reported differently from the run it is meant to preview would be worth little.
+    """
+
+    source_name: str
+    original_title: str
+    external_url: str
+    source_published_at: datetime | None
+    relevance_score: int | None
+    relevance_confident: bool | None
+    dedupe: str            # new | exact_duplicate | near_duplicate | outside_window
+    status: str            # candidate | ignored | duplicate | new | not_stored
+    near_duplicate_of: int | None = None
+    near_duplicate_similarity: float | None = None
+    matched_signals: list[str] = field(default_factory=list)
+
+
+@dataclass
 class RunResult:
     run_id: int | None
     run_key: str
@@ -50,12 +71,15 @@ class RunResult:
     counters: RunCounters = field(default_factory=RunCounters)
     errors: list[dict[str, str]] = field(default_factory=list)
     skipped_reason: str | None = None
+    dry_run: bool = False
+    decisions: list[ItemDecision] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, object]:
         return {
             "runId": self.run_id, "runKey": self.run_key, "status": self.status,
-            "skippedReason": self.skipped_reason,
+            "skippedReason": self.skipped_reason, "dryRun": self.dry_run,
             "counters": asdict(self.counters), "errors": self.errors,
+            "decisions": [asdict(d) for d in self.decisions],
         }
 
 
@@ -77,10 +101,16 @@ async def run_ingestion(
     fetcher: object | None = None,
     lookback_hours: int | None = None,
     max_entries_per_feed: int | None = None,
+    dry_run: bool = False,
 ) -> RunResult:
     """Fetch every enabled source once and triage what comes back.
 
     `fetcher` is injectable so tests drive the whole pipeline from fixtures with no network.
+
+    `dry_run` fetches, deduplicates and scores exactly as a real run does, and writes
+    nothing: no ingest items, no run row, no per-source health. It is the safe way to look at
+    what a feed set would produce before letting it into a database — the reason it exists is
+    that a first production run is otherwise unobservable until after it has happened.
     """
     settings = get_settings()
     run_key = f"news-ingest-{datetime.now(UTC):%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:8]}"
@@ -104,14 +134,24 @@ async def run_ingestion(
     counters = RunCounters()
     errors: list[dict[str, str]] = []
 
-    run_id = await repo.start_run(session, {
-        "run_key": run_key,
-        "relevance_policy_version": relevance.POLICY_VERSION,
-        "lookback_hours": lookback,
-        "max_entries_per_feed": per_feed,
-        "triggered_by": triggered_by,
-    })
-    await session.commit()
+    decisions: list[ItemDecision] = []
+    # Fingerprints accepted earlier in THIS run. A live run does not need them — each insert
+    # is committed, so the next lookup sees it — but a dry run writes nothing, so without
+    # this it cannot detect a restatement of an entry it has already accepted, and reports
+    # more candidates than the live run would store. A preview that disagrees with the run it
+    # previews is worse than no preview. Ids are negative to mark "matched within this run".
+    pending: list[tuple[int, str]] = []
+
+    run_id: int | None = None
+    if not dry_run:
+        run_id = await repo.start_run(session, {
+            "run_key": run_key,
+            "relevance_policy_version": relevance.POLICY_VERSION,
+            "lookback_hours": lookback,
+            "max_entries_per_feed": per_feed,
+            "triggered_by": triggered_by,
+        })
+        await session.commit()
 
     sources = await repo.list_enabled_sources(session)
 
@@ -122,27 +162,48 @@ async def run_ingestion(
         except FeedError as error:
             counters.sources_failed += 1
             errors.append({"source": source["name"], "error": str(error)[:400]})
-            await repo.record_source_result(session, source["id"], str(error)[:400])
-            await session.commit()
+            if not dry_run:
+                await repo.record_source_result(session, source["id"], str(error)[:400])
+                await session.commit()
             continue
         except Exception as error:  # noqa: BLE001 - an unexpected fault is still one source
             counters.sources_failed += 1
             message = f"{type(error).__name__}: {error}"[:400]
             errors.append({"source": source["name"], "error": message})
-            await repo.record_source_result(session, source["id"], message)
-            await session.commit()
+            if not dry_run:
+                await repo.record_source_result(session, source["id"], message)
+                await session.commit()
             continue
 
         counters.sources_succeeded += 1
-        await repo.record_source_result(session, source["id"], None)
+        if not dry_run:
+            await repo.record_source_result(session, source["id"], None)
 
         is_ai_specific = repo.source_is_ai_specific(source["name"])
 
         for entry in entries[:per_feed]:
             counters.items_fetched += 1
 
+            def record(dedupe: str, status: str, assessment=None, match=None) -> None:
+                """One place that builds a decision, so every branch reports the same shape."""
+                signals = assessment.signals if assessment else {}
+                matched = [t for key in ("aiTerms", "capabilityTerms", "workTerms")
+                           for t in (signals.get(key) or [])]
+                decisions.append(ItemDecision(
+                    source_name=source["name"], original_title=entry.original_title,
+                    external_url=entry.external_url,
+                    source_published_at=entry.source_published_at,
+                    relevance_score=assessment.score if assessment else None,
+                    relevance_confident=assessment.confident if assessment else None,
+                    dedupe=dedupe, status=status,
+                    near_duplicate_of=match.ingest_item_id if match else None,
+                    near_duplicate_similarity=match.similarity if match else None,
+                    matched_signals=matched[:8],
+                ))
+
             if not _within_window(entry, cutoff):
                 counters.items_outside_window += 1
+                record("outside_window", "not_stored")
                 continue
 
             # 1. Exact dedupe, on both axes the schema enforces.
@@ -151,17 +212,22 @@ async def run_ingestion(
             )
             if existing is not None:
                 counters.items_exact_duplicate += 1
+                record("exact_duplicate", "not_stored")
                 continue
 
             # 2. Near dedupe, against recent non-duplicate items only.
             fingerprint = dedupe.normalise_title(entry.original_title)
             recent = await repo.recent_fingerprints(session, dedupe.DEFAULT_WINDOW_HOURS)
-            match = dedupe.find_duplicate(fingerprint, recent)
+            match = dedupe.find_duplicate(fingerprint, recent + pending if dry_run else recent)
 
             if match is not None:
                 # The row is kept: cross-source coverage is evidence about the event. It is
                 # marked duplicate and points at what it duplicates, and is not scored,
                 # because a duplicate is not a separate candidate.
+                record("near_duplicate", "duplicate", match=match)
+                if dry_run:
+                    counters.items_near_duplicate += 1
+                    continue
                 inserted = await repo.insert_item(session, {
                     "source_id": source["id"],
                     "external_url": entry.external_url,
@@ -200,6 +266,18 @@ async def run_ingestion(
             if status == "candidate" and counters.items_candidate >= max_candidates:
                 status = "new"
 
+            record("new", status, assessment=assessment)
+            if dry_run:
+                pending.append((-(len(pending) + 1), fingerprint))
+                # Counters still move so a dry run previews the same totals a real run would
+                # report; only the writes are withheld.
+                counters.items_new += 1
+                if status == "candidate":
+                    counters.items_candidate += 1
+                elif status == "ignored":
+                    counters.items_ignored += 1
+                continue
+
             inserted = await repo.insert_item(session, {
                 "source_id": source["id"],
                 "external_url": entry.external_url,
@@ -231,14 +309,16 @@ async def run_ingestion(
                 counters.items_ignored += 1
 
     counters.duration_ms = int((datetime.now(UTC) - started).total_seconds() * 1000)
-    await repo.complete_run(
-        session, run_id, asdict(counters), json.dumps(errors),
-        "completed" if counters.sources_failed < counters.sources_attempted or not sources else "failed",
-    )
-    await session.commit()
+    status = ("completed" if counters.sources_failed < counters.sources_attempted or not sources
+              else "failed")
+
+    if not dry_run:
+        await repo.complete_run(
+            session, run_id, asdict(counters), json.dumps(errors), status,
+        )
+        await session.commit()
 
     return RunResult(
-        run_id=run_id, run_key=run_key,
-        status="completed" if counters.sources_failed < counters.sources_attempted or not sources else "failed",
-        counters=counters, errors=errors,
+        run_id=run_id, run_key=run_key, status=status,
+        counters=counters, errors=errors, dry_run=dry_run, decisions=decisions,
     )
