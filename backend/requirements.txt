@@ -12,6 +12,8 @@ httpx>=0.28,<1
 defusedxml>=0.7,<0.8
 # Gemini, for AI News Phase 3 generation. Imported lazily inside the provider so no
 # other process pays for it. Official SDK: `from google import genai`.
-google-genai>=1.0,<2
+# Pinned below 2 deliberately: the provider uses the stable models.generate_content
+# surface, not the experimental Interactions API that requires >= 2.0.0.
+google-genai>=1.40,<2
 pytest>=8,<10
 pytest-asyncio>=1,<2

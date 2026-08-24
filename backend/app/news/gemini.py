@@ -119,18 +119,29 @@ class GeminiGenerationProvider:
     # ------------------------------------------------------------------------- the call
 
     def _call_once(self, payload: GenerationInput) -> dict[str, Any]:
+        """One structured call on the stable `models.generate_content` surface.
+
+        Not `client.interactions.create`, which the current docs feature: that API is marked
+        experimental by the SDK itself and changed incompatibly in May 2026 (it now requires
+        google-genai >= 2.0.0 and rejects earlier callers with a 400). `generate_content` is
+        the long-standing structured-output surface and is the safer dependency for code
+        meant to run unattended.
+        """
+        from google.genai import types
+
         client = self._get_client()
-        response = client.interactions.create(
+        response = client.models.generate_content(
             model=self.model,
-            input=f"{build_system_instruction()}\n\n---\n\n{build_user_content(payload)}",
-            response_format={
-                "type": "text",
-                "mime_type": "application/json",
-                "schema": RESPONSE_SCHEMA,
-            },
+            contents=build_user_content(payload),
+            config=types.GenerateContentConfig(
+                system_instruction=build_system_instruction(),
+                response_mime_type="application/json",
+                response_schema=RESPONSE_SCHEMA,
+                http_options=types.HttpOptions(timeout=int(self._timeout * 1000)),
+            ),
         )
 
-        text = getattr(response, "output_text", None) or getattr(response, "text", None)
+        text = getattr(response, "text", None) or getattr(response, "output_text", None)
         if not text or not str(text).strip():
             raise GeminiError(
                 "Provider returned an empty response (possible safety refusal)",
@@ -144,15 +155,24 @@ class GeminiGenerationProvider:
                 f"Provider returned non-JSON output ({exc.msg})", retryable=False
             ) from exc
 
-        usage = getattr(response, "usage", None) or getattr(response, "usage_metadata", None)
+        # Token accounting. `total_token_count` exceeds prompt + candidates because Gemini 3
+        # bills reasoning tokens separately (`thoughts_token_count`), so output is derived
+        # from the total rather than read from candidates alone — otherwise the recorded
+        # spend would understate the bill.
+        usage = getattr(response, "usage_metadata", None) or getattr(response, "usage", None)
         if usage is not None:
-            for attr, key in (
-                ("input_tokens", "_input_tokens"), ("prompt_token_count", "_input_tokens"),
-                ("output_tokens", "_output_tokens"), ("candidates_token_count", "_output_tokens"),
-            ):
-                value = getattr(usage, attr, None)
-                if isinstance(value, int) and key not in parsed:
-                    parsed[key] = value
+            prompt_tokens = getattr(usage, "prompt_token_count", None) or getattr(
+                usage, "input_tokens", None
+            )
+            total_tokens = getattr(usage, "total_token_count", None)
+            if isinstance(prompt_tokens, int):
+                parsed["_input_tokens"] = prompt_tokens
+                if isinstance(total_tokens, int):
+                    parsed["_output_tokens"] = max(0, total_tokens - prompt_tokens)
+                else:
+                    candidates = getattr(usage, "candidates_token_count", None)
+                    if isinstance(candidates, int):
+                        parsed["_output_tokens"] = candidates
         return parsed
 
     def generate_news_brief(self, payload: GenerationInput) -> GeneratedBrief:

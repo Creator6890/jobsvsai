@@ -91,9 +91,26 @@ async def _cleanup() -> None:
 
 @pytest_asyncio.fixture(loop_scope="session")
 async def candidates():
-    """Three candidates from one source, highest deterministic score first."""
+    """Three candidates from one source, highest deterministic score first.
+
+    Any pre-existing candidate is parked as `new` for the duration and restored afterwards.
+    Without that, `select_generation_candidates` takes the top of the *whole* queue, so a
+    database holding real ingested items — which is exactly what a supervised validation
+    leaves behind — would have those items generated against by the test suite. The tests
+    must own every row they touch.
+    """
     await _cleanup()
     ids: list[int] = []
+    parked: list[int] = []
+    async with SessionFactory() as s, s.begin():
+        parked = list((await s.execute(text(
+            "SELECT id FROM news_ingest_items WHERE status = 'candidate'"
+        ))).scalars().all())
+        if parked:
+            await s.execute(
+                text("UPDATE news_ingest_items SET status='new' WHERE id = ANY(:ids)"),
+                {"ids": parked},
+            )
     async with SessionFactory() as s, s.begin():
         source_id = (await s.execute(text("""
           INSERT INTO news_sources (name, feed_url, site_url, source_type, trust_tier,
@@ -119,6 +136,12 @@ async def candidates():
         yield ids
     finally:
         await _cleanup()
+        if parked:
+            async with SessionFactory() as s, s.begin():
+                await s.execute(
+                    text("UPDATE news_ingest_items SET status='candidate' WHERE id = ANY(:ids)"),
+                    {"ids": parked},
+                )
         get_settings.cache_clear()
 
 
@@ -273,8 +296,18 @@ async def test_batch_size_is_respected(monkeypatch, candidates) -> None:
 
 
 async def test_daily_limit_stops_generation(monkeypatch, candidates) -> None:
-    """The free-tier guard: past the cap the batch stops cleanly rather than calling."""
-    enable(monkeypatch, news_daily_generation_limit=1)
+    """The free-tier guard: past the cap the batch stops cleanly rather than calling.
+
+    The cap is deliberately global for the day — it counts every generation attempt, not
+    just this run's — so the limit is set relative to whatever has already been attempted
+    today. Hard-coding 1 would make the test pass only on a database with no prior attempts.
+    """
+    from app.news.generation_service import _todays_call_count
+
+    async with SessionFactory() as s:
+        already = await _todays_call_count(s)
+
+    enable(monkeypatch, news_daily_generation_limit=already + 1)
     provider = FakeProvider()
     async with SessionFactory() as s:
         first = await run_generation_batch(
@@ -283,7 +316,7 @@ async def test_daily_limit_stops_generation(monkeypatch, candidates) -> None:
         second = await run_generation_batch(
             s, triggered_by="pytest", provider=provider, batch_size=5
         )
-    assert first.counters.calls_made == 1
+    assert first.counters.calls_made == 1, "the run must stop at the remaining allowance"
     assert second.status == "skipped"
     assert "Daily generation limit reached" in (second.skipped_reason or "")
     assert provider.calls == 1, "no call may be made once the cap is reached"

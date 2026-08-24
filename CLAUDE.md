@@ -261,6 +261,30 @@ Disabled by default (`NEWS_ENABLED=false`); no schedule is active.
 - Ingest items have **no public route and no public schema**. They are internal triage
   material.
 
+## AI News Phase 3 — Gemini generation
+
+`reports/AI_NEWS_PHASE3_GEMINI.md`. Migration 031. Disabled by default; no scheduler,
+`NEWS_AUTO_PUBLISH=false`.
+
+- **Use `client.models.generate_content`, not `client.interactions.create`.** The docs
+  feature Interactions, but it is flagged experimental by the SDK and changed incompatibly in
+  May 2026 — it now requires google-genai >= 2.0.0 and 400s earlier callers. This was found by
+  the live run failing all five calls. `google-genai` is pinned `>=1.40,<2` for that reason.
+- The model returns five factors and a semantic verdict. It never returns an impact level and
+  the response schema gives it no field for one; `news-impact-v1` computes score and level.
+- Validation refuses rather than coerces — an out-of-range factor is an error, not something
+  to clamp. Unknown tags are dropped so one invented tag cannot cost a good brief.
+- Rejections are kept: no article, item becomes `ignored`, and the verdict, confidence and
+  reason are retained. That record is the best input for calibrating the prompt.
+- Retries cover 429/5xx/timeout only, bounded at 3. Schema-invalid and safety refusals are not
+  retried — they fail identically and only burn quota.
+- **The free tier sustained roughly 3 generation calls per session** before 429s. Defaults
+  (daily 10, batch 5) exceed that; lower them or move to a paid tier before automating.
+- The 0.70 semantic-confidence threshold is still unexercised — every live verdict came back
+  at 0.95.
+- `NEWS_*` must be listed in the compose `environment` blocks: `.env` is in `.dockerignore`
+  and is not mounted, so pydantic's `env_file` never sees it inside a container.
+
 ## Databases — development vs test
 
 Two databases on the same local PostgreSQL server. They must never be confused.

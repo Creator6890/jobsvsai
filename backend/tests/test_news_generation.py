@@ -184,27 +184,36 @@ def test_non_list_tags_are_rejected() -> None:
 
 
 class FakeResponse:
+    """Shaped like a google-genai GenerateContentResponse."""
+
     def __init__(self, text: str, usage=None) -> None:
-        self.output_text = text
-        self.usage = usage
+        self.text = text
+        self.usage_metadata = usage
 
 
 class FakeUsage:
-    def __init__(self, i: int, o: int) -> None:
-        self.input_tokens = i
-        self.output_tokens = o
+    """Gemini 3 bills reasoning tokens separately, so total exceeds prompt + candidates."""
+
+    def __init__(self, prompt: int, candidates: int, thoughts: int = 0) -> None:
+        self.prompt_token_count = prompt
+        self.candidates_token_count = candidates
+        self.thoughts_token_count = thoughts
+        self.total_token_count = prompt + candidates + thoughts
 
 
 def build_provider(responses, sleep=lambda _s: None):
-    """A GeminiGenerationProvider whose transport is a scripted list."""
+    """A GeminiGenerationProvider whose transport is a scripted list.
+
+    Mirrors the stable `client.models.generate_content` surface the provider actually uses.
+    """
     from app.news.gemini import GeminiGenerationProvider
 
     provider = GeminiGenerationProvider(api_key="test-key-not-real", model="test-model",
                                         sleep=sleep)
     calls = {"n": 0}
 
-    class FakeInteractions:
-        def create(self, **kwargs):
+    class FakeModels:
+        def generate_content(self, **kwargs):
             calls["n"] += 1
             item = responses[min(calls["n"] - 1, len(responses) - 1)]
             if isinstance(item, Exception):
@@ -212,7 +221,7 @@ def build_provider(responses, sleep=lambda _s: None):
             return item
 
     class FakeClient:
-        interactions = FakeInteractions()
+        models = FakeModels()
 
     provider._client = FakeClient()
     return provider, calls
@@ -238,12 +247,26 @@ def test_provider_requires_an_api_key() -> None:
 
 def test_provider_parses_a_valid_structured_response() -> None:
     provider, calls = build_provider([
-        FakeResponse(json.dumps(ACCEPTED), usage=FakeUsage(1200, 340))
+        FakeResponse(json.dumps(ACCEPTED), usage=FakeUsage(1200, 340, thoughts=90))
     ])
     brief = provider.generate_news_brief(PAYLOAD)
     assert brief.is_ai_news is True
-    assert brief.input_tokens == 1200 and brief.output_tokens == 340
+    assert brief.input_tokens == 1200
+    # Output is derived from the total so reasoning tokens are counted; reading
+    # candidates_token_count alone would understate the bill by the thoughts count.
+    assert brief.output_tokens == 430
     assert calls["n"] == 1, "one candidate must cost exactly one call"
+
+
+def test_rejections_still_record_token_usage() -> None:
+    """A rejection costs a call. Dropping its usage understated spend by the larger share
+    of traffic, since a permissive prefilter sends more rejections than acceptances."""
+    provider, _ = build_provider([
+        FakeResponse(json.dumps(REJECTED), usage=FakeUsage(900, 40, thoughts=20))
+    ])
+    brief = provider.generate_news_brief(PAYLOAD)
+    assert brief.is_ai_news is False
+    assert brief.input_tokens == 900 and brief.output_tokens == 60
 
 
 def test_missing_usage_metadata_does_not_fail_generation() -> None:

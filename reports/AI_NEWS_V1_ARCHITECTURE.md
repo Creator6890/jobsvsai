@@ -354,7 +354,21 @@ several outlets covering one event — for which title-shingle similarity within
 window over `candidate` items is a reasonable first cut. Prefer the lowest `trust_tier`
 source as the primary; mark the rest `duplicate` and attach them as secondary sources.
 
-## 11. Phase 3 — generation
+## 11. Phase 3 — generation — **IMPLEMENTED**
+
+Built and live-validated; see `reports/AI_NEWS_PHASE3_GEMINI.md` (migration 031, prompt
+`news-generation-v1`, semantic policy `news-semantic-relevance-v1`). One structured Gemini
+call per candidate returns a semantic verdict, an original brief, controlled tags and job
+areas, and five impact factors that `news-impact-v1` turns into a score and level. Disabled
+by default; no scheduler, no auto-publish.
+
+The supervised run reached 3 of 5 candidates before free-tier rate limits intervened. Both
+Phase 2 false positives were correctly rejected at 0.95 confidence, and the one generated
+brief was factually grounded with no hallucination.
+
+The sketch below is what was planned; the report above records what was actually built and
+where it differed — notably the SDK surface, which had to change.
+
 
 ### Gemini free tier
 Implement `GeminiGenerationProvider` with `name = "gemini"`, register it via

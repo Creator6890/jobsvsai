@@ -172,6 +172,10 @@ def _controlled_list(
     return list(picked)[:cap]
 
 
+def _int_or_none(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
 def parse_provider_response(raw: dict[str, object]) -> GeneratedBrief:
     """Validate a provider's JSON into a GeneratedBrief.
 
@@ -196,8 +200,14 @@ def parse_provider_response(raw: dict[str, object]) -> GeneratedBrief:
     if not is_ai_news:
         # A rejection needs a verdict and a reason and nothing else. Requiring a brief here
         # would force the model to write copy for a story it just declined.
+        #
+        # Token usage still carries: a rejection costs a call like any other, and dropping
+        # it here would understate recorded spend by exactly the rejections — which, on a
+        # permissive prefilter, is the larger share of the traffic.
         return GeneratedBrief(
             is_ai_news=False, ai_relevance_confidence=confidence, relevance_reason=reason,
+            input_tokens=_int_or_none(raw.get("_input_tokens")),
+            output_tokens=_int_or_none(raw.get("_output_tokens")),
         )
 
     factors: dict[str, int] = {}
@@ -233,8 +243,8 @@ def parse_provider_response(raw: dict[str, object]) -> GeneratedBrief:
         impact_reasoning=_clean_text(
             raw.get("impact_reasoning"), "impact_reasoning", MAX_REASON_CHARS
         ),
-        input_tokens=raw.get("_input_tokens") if isinstance(raw.get("_input_tokens"), int) else None,
-        output_tokens=raw.get("_output_tokens") if isinstance(raw.get("_output_tokens"), int) else None,
+        input_tokens=_int_or_none(raw.get("_input_tokens")),
+        output_tokens=_int_or_none(raw.get("_output_tokens")),
     )
 
 
