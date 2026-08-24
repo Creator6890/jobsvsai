@@ -8,7 +8,7 @@ from pydantic import Field
 from app.schemas.occupation import ApiModel
 
 ImpactLevel = Literal["low", "medium", "high"]
-ArticleStatus = Literal["draft", "review_required", "published", "rejected"]
+ArticleStatus = Literal["draft", "review_required", "published", "rejected", "archived"]
 
 
 class ArticleSource(ApiModel):
@@ -129,6 +129,11 @@ class AdminNewsArticle(ApiModel):
     impact_override_reason: str | None = None
 
     published_at: datetime | None = None
+    archived_at: datetime | None = None
+    archived_by: str | None = None
+    archive_reason: str | None = None
+    regenerated_at: datetime | None = None
+    regeneration_count: int = 0
     created_at: datetime
     updated_at: datetime
 
@@ -165,6 +170,12 @@ class ImpactOverrideInput(ApiModel):
 
     impact_level: ImpactLevel
     impact_reasoning: str | None = None
+    reason: str | None = None
+
+
+class ArchiveInput(ApiModel):
+    """Optional context for retiring an article. The actor comes from auth, not the body."""
+
     reason: str | None = None
 
 

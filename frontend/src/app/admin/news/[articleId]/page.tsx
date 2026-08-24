@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { AdminShell, Status } from "@/components/admin/AdminShell";
 import { getAdminNewsArticle, getArticleCandidates, getNewsImpactPolicy, getNewsPublicationCheck } from "@/lib/api";
 import {
-  addSource, assessImpact, overrideImpact, publishArticle,
-  rejectArticle, saveArticle, unpublishArticle,
+  addSource, archiveArticle, assessImpact, overrideImpact, publishArticle,
+  regenerateArticle, rejectArticle, restoreArticle, saveArticle, unpublishArticle,
 } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -253,6 +253,68 @@ export default async function AdminNewsArticlePage({ params }: PageProps<"/admin
               <Link className="button secondary" href={`/news/${article.slug}`}>View public page ↗</Link>
             )}
           </div>
+        </div>
+
+        {/* ------------------------------------------------------- lifecycle actions */}
+        <div className="card news-editor" style={{ padding: "var(--pad-card)" }}>
+          <span className="section-kicker">Lifecycle</span>
+
+          {article.status === "archived" ? (
+            <>
+              <p className="small">
+                Archived {formatDate(article.archivedAt)} by {article.archivedBy}
+                {article.archiveReason && <> — {article.archiveReason}</>}.
+                {article.publishedAt && " It was published before being archived; that record is kept."}
+              </p>
+              <div className="form-actions">
+                <form action={restoreArticle}>
+                  <input type="hidden" name="articleId" value={article.id} />
+                  <button className="button secondary" type="submit">Restore to review</button>
+                </form>
+              </div>
+            </>
+          ) : (
+            <form action={archiveArticle} className="news-editor">
+              <input type="hidden" name="articleId" value={article.id} />
+              <p className="small">
+                Archiving retires the article. Unlike rejecting, it keeps
+                <code> published_at</code>, so the record of what the site served is preserved.
+                An archived article is not public.
+              </p>
+              <label>Reason <small>(optional)</small>
+                <input name="reason" placeholder="Superseded, no longer accurate, …" />
+              </label>
+              <div className="form-actions">
+                <button className="button secondary" type="submit">Archive</button>
+              </div>
+            </form>
+          )}
+
+          {candidates.length > 0 && (
+            <form action={regenerateArticle}>
+              <input type="hidden" name="articleId" value={article.id} />
+              <p className="small">
+                Regenerate rewrites the brief from the source candidate, in place — it never
+                creates a second article. Any editorial impact override is cleared, because it
+                was a judgement about prose that will no longer exist. Counts against the
+                daily generation limit.
+                {article.regenerationCount > 0 &&
+                  ` Regenerated ${article.regenerationCount} time${article.regenerationCount === 1 ? "" : "s"}, last ${formatDate(article.regeneratedAt)}.`}
+              </p>
+              <div className="form-actions">
+                <button className="button secondary" type="submit"
+                  disabled={article.status === "published"}>
+                  Regenerate with AI
+                </button>
+              </div>
+              {article.status === "published" && (
+                <p className="small">
+                  Published articles cannot be regenerated in place — readers are already
+                  being served this text. Unpublish or archive it first.
+                </p>
+              )}
+            </form>
+          )}
         </div>
       </div>
     </AdminShell>

@@ -125,7 +125,7 @@ export async function getCareerRecommendations(payload: Record<string, unknown>)
 // publishes only the band.
 
 export type NewsImpactLevel = "low" | "medium" | "high";
-export type NewsArticleStatus = "draft" | "review_required" | "published" | "rejected";
+export type NewsArticleStatus = "draft" | "review_required" | "published" | "rejected" | "archived";
 
 export type NewsSource = {
   sourceName: string;
@@ -190,6 +190,11 @@ export type AdminNewsArticle = NewsArticleDetail & {
   impactOverriddenAt: string | null;
   impactOverriddenBy: string | null;
   impactOverrideReason: string | null;
+  archivedAt: string | null;
+  archivedBy: string | null;
+  archiveReason: string | null;
+  regeneratedAt: string | null;
+  regenerationCount: number;
   createdAt: string;
   updatedAt: string;
 };

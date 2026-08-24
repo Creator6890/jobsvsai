@@ -139,3 +139,23 @@ export async function runGenerationBatch() {
   await adminNewsMutate("/generation/batch");
   refreshIncoming();
 }
+
+export async function archiveArticle(form: FormData) {
+  const id = textField(form, "articleId");
+  await adminNewsMutate(`/${id}/archive`, { reason: textField(form, "reason") || null });
+  refresh(id);
+}
+
+export async function restoreArticle(form: FormData) {
+  const id = textField(form, "articleId");
+  await adminNewsMutate(`/${id}/restore`);
+  refresh(id);
+}
+
+export async function regenerateArticle(form: FormData) {
+  const id = textField(form, "articleId");
+  // Never raises on a provider failure or a refusal: both are normal states, reported on
+  // the article rather than thrown at the editor.
+  await adminNewsMutate(`/${id}/regenerate`);
+  refresh(id);
+}

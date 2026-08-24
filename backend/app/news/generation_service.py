@@ -256,6 +256,151 @@ async def generate_for_candidate(
     return outcome
 
 
+async def regenerate_article(
+    session: AsyncSession,
+    article_id: int,
+    provider: NewsGenerationProvider,
+    triggered_by: str = "manual",
+) -> ItemOutcome:
+    """Rewrite an existing article from its source candidate.
+
+    Deliberately updates the existing row rather than creating a second one: the "one
+    candidate, one article" rule is what stops a retried job or an impatient click from
+    producing duplicates, and regeneration must not become the exception that breaks it.
+
+    A published article is refused. Regenerating in place would silently change what readers
+    are already being served, with no review step between the model's new output and the
+    public page. Archive or unpublish it first — both are one click, and both make the change
+    visible.
+    """
+    outcome = ItemOutcome(
+        ingest_item_id=0, source_name="", original_title="",
+        relevance_score=None, outcome="failed",
+    )
+
+    if not get_settings().generation_enabled:
+        outcome.outcome = "skipped"
+        outcome.error = "NEWS_GENERATION_ENABLED is false"
+        return outcome
+
+    article = (await session.execute(text(
+        "SELECT id, status, headline FROM news_articles WHERE id = :id"
+    ), {"id": article_id})).mappings().first()
+    if article is None:
+        raise ValueError(f"Article {article_id} does not exist")
+    if article["status"] == "published":
+        outcome.outcome = "skipped"
+        outcome.error = (
+            "Published articles cannot be regenerated. Archive or unpublish first, so the "
+            "change is reviewed before readers see it."
+        )
+        return outcome
+
+    candidates = await ingest_repo.ingest_items_for_article(session, article_id)
+    if not candidates:
+        outcome.outcome = "skipped"
+        outcome.error = (
+            "This article has no source candidate, so there is nothing to regenerate from. "
+            "Hand-written articles are edited, not regenerated."
+        )
+        return outcome
+
+    item = candidates[0]
+    outcome.ingest_item_id = item["id"]
+    outcome.source_name = item["source_name"]
+    outcome.original_title = item["original_title"]
+    outcome.relevance_score = item["relevance_score"]
+
+    # The daily cap covers regeneration too: a regenerated brief costs a call like any other,
+    # and exempting it would make the ceiling meaningless to anyone clicking the button.
+    settings = get_settings()
+    already = await _todays_call_count(session)
+    if already >= settings.news_daily_generation_limit:
+        outcome.outcome = "skipped"
+        outcome.error = (
+            f"Daily generation limit reached ({already}/{settings.news_daily_generation_limit})"
+        )
+        return outcome
+
+    signals = item.get("relevance_signals") or {}
+    matched = [t for key in ("aiTerms", "capabilityTerms", "workTerms")
+               for t in (signals.get(key) or [])]
+    payload = GenerationInput(
+        source_title=item["original_title"],
+        source_excerpt=item["original_excerpt"] or "",
+        source_url=item["external_url"],
+        source_name=item["source_name"],
+        source_trust_tier=item["trust_tier"],
+        source_published_at=(
+            item["source_published_at"].isoformat() if item["source_published_at"] else None
+        ),
+        categories=list(item.get("feed_categories") or []),
+        relevance_score=item["relevance_score"],
+        relevance_signals=matched,
+    )
+
+    provider_name = getattr(provider, "name", "unknown")
+    provider_model = getattr(provider, "model", "unknown")
+
+    try:
+        brief = provider.generate_news_brief(payload)
+    except Exception as exc:  # noqa: BLE001 - a failed regeneration leaves the article intact
+        await ingest_repo.record_generation_failure(
+            session, item["id"], provider_name, provider_model, PROMPT_VERSION, str(exc)[:400]
+        )
+        await session.commit()
+        outcome.error = str(exc)[:400]
+        return outcome
+
+    outcome.is_ai_news = brief.is_ai_news
+    outcome.ai_relevance_confidence = brief.ai_relevance_confidence
+    outcome.relevance_reason = brief.relevance_reason
+
+    if not brief.is_ai_news:
+        # The model changed its mind. The existing article is left exactly as it was and the
+        # new verdict is reported — deleting an editor's article because a second call
+        # disagreed would be the wrong call to make automatically.
+        outcome.outcome = "rejected"
+        outcome.article_id = article_id
+        outcome.error = (
+            "The provider now judges this not to be AI news. The article was left unchanged; "
+            "archive or reject it if you agree."
+        )
+        return outcome
+
+    assessment = impact_policy.assess(brief.factors)
+    status = decide_status(brief)
+
+    await article_repo.replace_generated_content(session, article_id, {
+        "headline": brief.headline,
+        "what_happened": brief.what_happened,
+        "why_it_matters_for_jobs": brief.why_it_matters_for_jobs,
+        "tags": brief.tags,
+        "job_areas": brief.job_areas,
+    })
+    await article_repo.apply_impact(
+        session, article_id,
+        factors=brief.factors, confidence=brief.impact_confidence,
+        reasoning=brief.impact_reasoning,
+        assessed_by=f"{provider_name}:{provider_model}",
+        provider=provider_name, model=provider_model, prompt_version=PROMPT_VERSION,
+    )
+    await article_repo.set_status(session, article_id, status)
+    await ingest_repo.record_semantic_acceptance(
+        session, item["id"], brief, provider_name, provider_model, PROMPT_VERSION,
+    )
+    await session.commit()
+
+    outcome.outcome = "accepted"
+    outcome.article_id = article_id
+    outcome.article_status = status
+    outcome.impact_score = float(assessment.score)
+    outcome.impact_level = assessment.level
+    outcome.impact_confidence = brief.impact_confidence
+    outcome.factors = dict(brief.factors)
+    return outcome
+
+
 async def run_generation_batch(
     session: AsyncSession,
     triggered_by: str = "manual",

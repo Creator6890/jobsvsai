@@ -223,7 +223,14 @@ linking the two is the one change that would create the coupling this design pre
 - The numeric score is **internal for V1**; the public payload omits it entirely rather than
   hiding it in the UI.
 - Publication has one entry point, `repositories.news.publish()`, which refuses with every
-  blocker at once. `set_status()` refuses `published` outright.
+  blocker at once. `set_status()` refuses `published` and `archived` outright — archiving
+  needs an actor, which a status-string helper cannot supply.
+- **Archive is not reject** (migration 032). Rejecting clears `published_at`; archiving
+  preserves it, because an article that was published genuinely was. Neither is public.
+  Restore returns to `review_required`, never straight to public.
+- **Regenerate rewrites in place**, never creating a second article — the "one candidate, one
+  article" rule has no exception. Refused for published articles, when generation is
+  disabled, at the daily cap, and for hand-written articles; every refusal costs zero quota.
 - Overrides never overwrite `automated_impact_score` / `automated_impact_level`.
 - No LLM provider is implemented. `NullGenerationProvider` refuses rather than returning
   placeholder prose. `NEWS_AUTO_PUBLISH` must stay false.

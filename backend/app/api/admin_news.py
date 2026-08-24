@@ -25,6 +25,7 @@ from app.repositories import news as repo
 from app.repositories import news_ingest as ingest_repo
 from app.schemas.news import (
     AdminNewsArticle,
+    ArchiveInput,
     IngestItem,
     IngestStatusInput,
     ArticleDraftInput,
@@ -367,6 +368,64 @@ async def publish_article(
         raise HTTPException(status_code=422, detail=str(refusal)) from refusal
     await session.commit()
     return await _load_or_404(session, article_id)
+
+
+@router.post("/{article_id}/archive", response_model=AdminNewsArticle,
+             response_model_by_alias=True)
+async def archive_article(
+    article_id: int,
+    payload: ArchiveInput | None = None,
+    session: AsyncSession = Depends(get_session),
+    admin: str = Depends(require_admin),
+) -> AdminNewsArticle:
+    """Retire an article. Preserves `published_at`; rejecting does not.
+
+    An archived article is no longer public — the reader predicate admits only `published` —
+    so no separate unpublish step is required.
+    """
+    await _load_or_404(session, article_id)
+    await repo.archive(session, article_id, archived_by=f"admin:{admin}",
+                       reason=payload.reason if payload else None)
+    await session.commit()
+    return await _load_or_404(session, article_id)
+
+
+@router.post("/{article_id}/restore", response_model=AdminNewsArticle,
+             response_model_by_alias=True)
+async def restore_article(
+    article_id: int, session: AsyncSession = Depends(get_session)
+) -> AdminNewsArticle:
+    """Bring an archived article back to review — never straight back to public."""
+    await _load_or_404(session, article_id)
+    await repo.restore_from_archive(session, article_id)
+    await session.commit()
+    return await _load_or_404(session, article_id)
+
+
+@router.post("/{article_id}/regenerate")
+async def regenerate(
+    article_id: int,
+    session: AsyncSession = Depends(get_session),
+    admin: str = Depends(require_admin),
+) -> dict[str, object]:
+    """Rewrite the brief from its source candidate, in place.
+
+    Returns the outcome rather than raising on a provider failure: a failed regeneration is a
+    normal, retryable state and the existing article is left untouched.
+    """
+    await _load_or_404(session, article_id)
+    settings = get_settings()
+    if not settings.generation_enabled:
+        return {"status": "skipped", "reason": "NEWS_GENERATION_ENABLED is false"}
+    try:
+        provider = generation_service.resolve_provider()
+    except generation.ProviderNotConfigured as exc:
+        return {"status": "skipped", "reason": str(exc)}
+
+    outcome = await generation_service.regenerate_article(
+        session, article_id, provider, triggered_by=f"admin:{admin}"
+    )
+    return {"status": outcome.outcome, "outcome": outcome.__dict__}
 
 
 @router.post("/{article_id}/reject", response_model=AdminNewsArticle,

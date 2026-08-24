@@ -168,7 +168,9 @@ _ADMIN_COLUMNS = """
   article.impact_assessed_at, article.impact_assessed_by,
   article.impact_overridden_at, article.impact_overridden_by,
   article.impact_override_reason,
-  article.published_at, article.created_at, article.updated_at
+  article.published_at, article.archived_at, article.archived_by, article.archive_reason,
+  article.regenerated_at, article.regeneration_count,
+  article.created_at, article.updated_at
 """
 
 
@@ -417,6 +419,73 @@ async def override_impact(
     })
 
 
+async def archive(
+    session: AsyncSession, article_id: int, archived_by: str, reason: str | None = None
+) -> None:
+    """Retire an article. Distinct from rejecting it.
+
+    `published_at` is deliberately preserved: an article that was published genuinely was,
+    and erasing that would falsify the record of what the site once served. Rejecting clears
+    it, because a rejection treats the item as something that should not have gone out.
+
+    No separate unpublish is needed — the public reader admits only `published`, so the
+    article leaves the site as soon as the status changes.
+    """
+    await session.execute(text("""
+      UPDATE news_articles
+      SET status = 'archived',
+          archived_at = now(), archived_by = :archived_by, archive_reason = :reason,
+          updated_at = now()
+      WHERE id = :id
+    """), {"id": article_id, "archived_by": archived_by, "reason": reason})
+
+
+async def restore_from_archive(session: AsyncSession, article_id: int) -> None:
+    """Bring an archived article back for review, never straight back to public.
+
+    It returns to `review_required` rather than to whatever it was before: time has passed,
+    and an article worth un-retiring is worth a second look before it is public again.
+    """
+    await session.execute(text("""
+      UPDATE news_articles
+      SET status = 'review_required',
+          archived_at = NULL, archived_by = NULL, archive_reason = NULL,
+          updated_at = now()
+      WHERE id = :id AND status = 'archived'
+    """), {"id": article_id})
+
+
+async def replace_generated_content(
+    session: AsyncSession, article_id: int, payload: Mapping[str, Any]
+) -> None:
+    """Overwrite the brief with a fresh generation, and count the attempt.
+
+    Any earlier editorial impact override is cleared: it was a judgement about prose that no
+    longer exists, and silently carrying it onto new content would attribute an editor's
+    decision to text they never read. The automated pair is rewritten by apply_impact
+    immediately afterwards.
+    """
+    await session.execute(text("""
+      UPDATE news_articles SET
+        headline = :headline,
+        what_happened = :what_happened,
+        why_it_matters_for_jobs = :why,
+        regenerated_at = now(),
+        regeneration_count = regeneration_count + 1,
+        impact_overridden_at = NULL,
+        impact_overridden_by = NULL,
+        impact_override_reason = NULL,
+        updated_at = now()
+      WHERE id = :id
+    """), {
+        "id": article_id, "headline": payload["headline"].strip(),
+        "what_happened": payload["what_happened"].strip(),
+        "why": payload["why_it_matters_for_jobs"].strip(),
+    })
+    await replace_tags(session, article_id, payload.get("tags") or [])
+    await replace_job_areas(session, article_id, payload.get("job_areas") or [])
+
+
 async def publication_blockers(session: AsyncSession, article_id: int) -> list[str]:
     """Every reason this article may not go public. Empty list means publishable.
 
@@ -465,9 +534,14 @@ async def publish(session: AsyncSession, article_id: int) -> None:
 
 
 async def set_status(session: AsyncSession, article_id: int, status: str) -> None:
-    """Move between non-public statuses. Publication has its own guarded path."""
+    """Move between non-public statuses. Publication and archiving have their own paths."""
     if status == "published":
         raise NewsPublicationRefused("Use publish() so the publication guard runs")
+    if status == "archived":
+        # Archiving records who did it; a helper taking only a status string cannot, and the
+        # database CHECK would reject the row anyway. Fail here with a legible message
+        # rather than letting a constraint violation surface from three layers down.
+        raise NewsPublicationRefused("Use archive() so the actor is recorded")
     await session.execute(text("""
       UPDATE news_articles
       SET status = :status,
