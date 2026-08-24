@@ -144,6 +144,17 @@ async def generate_for_candidate(
     triggered_by: str = "manual",
 ) -> ItemOutcome:
     """Process one candidate. Commits its own work so a batch never loses earlier items."""
+    # The gate lives here, not only in the batch runner. Every generation path — batch
+    # run, admin single-item action, worker job — passes through this function, so checking
+    # once here is what makes "generation disabled means no provider call" true rather than
+    # merely intended. Checked before the item is even loaded.
+    if not get_settings().generation_enabled:
+        return ItemOutcome(
+            ingest_item_id=ingest_item_id, source_name="", original_title="",
+            relevance_score=None, outcome="skipped",
+            error="NEWS_GENERATION_ENABLED is false",
+        )
+
     item = await ingest_repo.get_ingest_item(session, ingest_item_id)
     if item is None:
         raise ValueError(f"Ingest item {ingest_item_id} does not exist")
@@ -260,10 +271,10 @@ async def run_generation_batch(
     settings = get_settings()
     run_key = f"news-generate-{datetime.now(UTC):%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:8]}"
 
-    if not settings.news_enabled:
+    if not settings.generation_enabled:
         return GenerationRunResult(
             run_id=None, run_key=run_key, status="skipped",
-            skipped_reason="NEWS_ENABLED is false",
+            skipped_reason="NEWS_GENERATION_ENABLED is false",
         )
 
     try:

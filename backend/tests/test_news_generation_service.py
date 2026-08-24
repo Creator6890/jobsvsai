@@ -65,7 +65,8 @@ def admin_auth() -> tuple[str, str]:
 
 
 def enable(monkeypatch, **overrides) -> None:
-    monkeypatch.setenv("NEWS_ENABLED", "true")
+    monkeypatch.setenv("NEWS_INGESTION_ENABLED", "true")
+    monkeypatch.setenv("NEWS_GENERATION_ENABLED", "true")
     for k, v in overrides.items():
         monkeypatch.setenv(k.upper(), str(v))
     get_settings.cache_clear()
@@ -332,7 +333,8 @@ async def test_safe_production_defaults(monkeypatch) -> None:
     # developer's environment happens to set. Without the delenv the assertions would pass or
     # fail depending on a local .env, which is not what "default" means.
     for name in ("NEWS_DAILY_GENERATION_LIMIT", "NEWS_GENERATION_BATCH_SIZE",
-                 "NEWS_AUTO_PUBLISH", "NEWS_ENABLED", "NEWS_LLM_PROVIDER",
+                 "NEWS_AUTO_PUBLISH", "NEWS_ENABLED", "NEWS_INGESTION_ENABLED",
+                 "NEWS_GENERATION_ENABLED", "NEWS_LLM_PROVIDER",
                  "NEWS_LLM_API_KEY", "NEWS_LLM_MODEL"):
         monkeypatch.delenv(name, raising=False)
     get_settings.cache_clear()
@@ -341,7 +343,8 @@ async def test_safe_production_defaults(monkeypatch) -> None:
     assert settings.news_generation_batch_size == 2
     # Generation is off, unattended publishing is off, and no provider is wired by default.
     assert settings.news_auto_publish is False
-    assert settings.news_enabled is False
+    assert settings.ingestion_enabled is False
+    assert settings.generation_enabled is False
     assert settings.news_llm_provider == "null"
     get_settings.cache_clear()
 
@@ -452,7 +455,7 @@ async def test_daily_limit_stops_generation(monkeypatch, candidates) -> None:
 
 
 async def test_disabled_news_makes_generation_a_no_op(monkeypatch, candidates) -> None:
-    monkeypatch.setenv("NEWS_ENABLED", "false")
+    monkeypatch.setenv("NEWS_GENERATION_ENABLED", "false")
     get_settings.cache_clear()
     provider = FakeProvider()
     async with SessionFactory() as s:

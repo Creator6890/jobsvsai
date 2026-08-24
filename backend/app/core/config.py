@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,9 +17,25 @@ class Settings(BaseSettings):
     admin_username: str = "admin"
     admin_password: str = "change-me-too"
 
-    # --- AI News ingestion (Phase 2). Disabled by default: enabling ingestion is a
-    # deliberate operational act, not something a fresh environment inherits.
-    news_enabled: bool = False
+    # --- AI News. Ingestion and generation are controlled SEPARATELY.
+    #
+    # A single NEWS_ENABLED flag could not express the state Phase 4 needs: ingestion running
+    # in production while generation stays off. Under one flag, turning ingestion on also
+    # armed the admin Generate button against a live, billed API key.
+    #
+    # Both default to disabled. Enabling either is a deliberate operational act, not
+    # something a fresh environment inherits.
+    #
+    # `news_enabled` is the LEGACY variable, retained only so an environment that still sets
+    # it keeps behaving exactly as it did. Precedence, resolved by the properties below:
+    #   1. an explicitly set new flag wins
+    #   2. otherwise NEWS_ENABLED applies to both, preserving old behaviour exactly
+    #   3. otherwise disabled
+    # Optional types are what make "explicitly set" distinguishable from "left at default";
+    # a plain `bool = False` could not tell the two apart.
+    news_ingestion_enabled: bool | None = None
+    news_generation_enabled: bool | None = None
+    news_enabled: bool | None = None
     news_fetch_interval_minutes: int = 120
     # First-run protection. Feeds carry years of history — the OpenAI feed alone holds well
     # over a thousand entries — so a run only considers entries published inside this
@@ -43,6 +60,50 @@ class Settings(BaseSettings):
     news_llm_timeout_seconds: int = 45
     # Must stay false. Generation produces draft or review_required, never published.
     news_auto_publish: bool = False
+
+    @field_validator("news_ingestion_enabled", "news_generation_enabled", "news_enabled",
+                     mode="before")
+    @classmethod
+    def _blank_means_unset(cls, value: object) -> object:
+        """Treat an empty string as "not set".
+
+        Docker Compose interpolates an absent variable to an empty string — `${NEWS_ENABLED:-}`
+        yields `NEWS_ENABLED=""`, not an absent key — and pydantic cannot parse that as a
+        boolean. Without this the API refuses to start whenever the deprecated variable is
+        merely passed through unset, which is the normal case.
+        """
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
+
+    @property
+    def ingestion_enabled(self) -> bool:
+        """Whether feed ingestion may run. Never read `news_enabled` directly."""
+        if self.news_ingestion_enabled is not None:
+            return self.news_ingestion_enabled
+        return bool(self.news_enabled)
+
+    @property
+    def generation_enabled(self) -> bool:
+        """Whether the language-model generation pipeline may run.
+
+        Independent of ingestion: candidates can accumulate for review with no provider call
+        ever being made, which is the state controlled production validation requires.
+        """
+        if self.news_generation_enabled is not None:
+            return self.news_generation_enabled
+        return bool(self.news_enabled)
+
+    @property
+    def uses_legacy_news_flag(self) -> bool:
+        """True when behaviour is coming from NEWS_ENABLED rather than the split flags.
+
+        Surfaced to admin so an operator can see that a deprecated variable is still in play
+        rather than discovering it when the fallback is eventually removed.
+        """
+        return self.news_enabled is not None and (
+            self.news_ingestion_enabled is None or self.news_generation_enabled is None
+        )
 
     @property
     def cors_origin_list(self) -> list[str]:

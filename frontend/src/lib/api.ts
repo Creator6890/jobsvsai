@@ -287,7 +287,11 @@ export type IngestItem = {
 };
 
 export type GenerationStatus = {
-  enabled: boolean;
+  /** Ingestion and generation are gated independently. */
+  ingestionEnabled: boolean;
+  generationEnabled: boolean;
+  /** True when behaviour still comes from the deprecated single NEWS_ENABLED variable. */
+  usesLegacyNewsFlag: boolean;
   provider: string;
   model: string | null;
   /** Presence only — the key itself is never serialised by the API. */

@@ -46,7 +46,7 @@ class FakeFetcher:
 
 def enable_news(monkeypatch, **overrides) -> None:
     """Settings are lru_cached, so the cache is cleared around every override."""
-    monkeypatch.setenv("NEWS_ENABLED", "true")
+    monkeypatch.setenv("NEWS_INGESTION_ENABLED", "true")
     for key, value in overrides.items():
         monkeypatch.setenv(key.upper(), str(value))
     get_settings.cache_clear()
@@ -129,7 +129,7 @@ async def _statuses() -> dict[str, int]:
 
 async def test_disabled_ingestion_is_a_safe_no_op(monkeypatch, sources) -> None:
     """A scheduled job on a disabled system must cost nothing and write nothing."""
-    monkeypatch.setenv("NEWS_ENABLED", "false")
+    monkeypatch.setenv("NEWS_INGESTION_ENABLED", "false")
     get_settings.cache_clear()
     probe = fetcher()
 
@@ -137,7 +137,7 @@ async def test_disabled_ingestion_is_a_safe_no_op(monkeypatch, sources) -> None:
         result = await run_ingestion(session, triggered_by="pytest", fetcher=probe)
 
     assert result.status == "skipped"
-    assert result.skipped_reason == "NEWS_ENABLED is false"
+    assert result.skipped_reason == "NEWS_INGESTION_ENABLED is false"
     assert result.run_id is None
     assert probe.calls == [], "a disabled run must not touch a feed"
     assert await _statuses() == {}
@@ -340,7 +340,7 @@ async def test_draft_from_candidate_preserves_provenance(
 async def test_manual_trigger_reports_skipped_when_disabled(
     client: AsyncClient, monkeypatch, sources
 ) -> None:
-    monkeypatch.setenv("NEWS_ENABLED", "false")
+    monkeypatch.setenv("NEWS_INGESTION_ENABLED", "false")
     get_settings.cache_clear()
     body = (await client.post("/api/v1/admin/news/ingest/run", auth=admin_auth())).json()
     assert body["status"] == "skipped"

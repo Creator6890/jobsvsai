@@ -231,7 +231,19 @@ linking the two is the one change that would create the coupling this design pre
 ## AI News Phase 2 — ingestion
 
 `reports/AI_NEWS_PHASE2_INGESTION.md`. Migration `030_ai_news_phase2_ingestion.sql`.
-Disabled by default (`NEWS_ENABLED=false`); no schedule is active.
+Disabled by default; no schedule is active.
+
+**Ingestion and generation are gated separately** (Phase 4 Step 1):
+`NEWS_INGESTION_ENABLED` and `NEWS_GENERATION_ENABLED`, both defaulting to false. The single
+`NEWS_ENABLED` is deprecated but still honoured — an explicitly set new flag wins, otherwise
+the legacy flag applies to both, otherwise disabled. The fields are `bool | None` precisely so
+"explicitly set" stays distinguishable from "left at default". Never read `news_enabled`
+directly; use `settings.ingestion_enabled` / `settings.generation_enabled`.
+
+Compose passes the new flags as `${...:-}` (empty), **not** as an explicit `false`: an
+explicit false would outrank `NEWS_ENABLED` and silently disable an environment running on
+it. A `field_validator` maps a blank string to None, because compose interpolates an unset
+variable to `""` and pydantic cannot parse that as a bool.
 
 - Nine **verified** free RSS feeds seeded as data. Anthropic and Meta AI are deliberately
   absent — no public feed exists, and Phase 2 does not scrape. Adding a source is an INSERT.

@@ -85,12 +85,13 @@ async def run_ingestion(
     settings = get_settings()
     run_key = f"news-ingest-{datetime.now(UTC):%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:8]}"
 
-    if not settings.news_enabled:
-        # A disabled scheduler must be a safe no-op, not an error: the recurring job will
-        # fire regardless of configuration and should cost nothing when news is off.
+    if not settings.ingestion_enabled:
+        # A disabled scheduler must be a safe no-op, not an error: a recurring job will fire
+        # regardless of configuration and should cost nothing when ingestion is off. No feed
+        # is opened and no run row is written.
         return RunResult(
             run_id=None, run_key=run_key, status="skipped",
-            skipped_reason="NEWS_ENABLED is false",
+            skipped_reason="NEWS_INGESTION_ENABLED is false",
         )
 
     lookback = lookback_hours or settings.news_lookback_hours

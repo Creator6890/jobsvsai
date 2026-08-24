@@ -42,7 +42,14 @@ services:
       ENVIRONMENT: ${ENVIRONMENT:-development}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me-too}
-      NEWS_ENABLED: ${NEWS_ENABLED:-false}
+      # Passed through as empty when unset, NOT as an explicit false. An explicit false
+      # here would outrank the deprecated NEWS_ENABLED and silently disable an environment
+      # that is currently running on it. Unset stays unset; the code default is disabled.
+      NEWS_INGESTION_ENABLED: ${NEWS_INGESTION_ENABLED:-}
+      NEWS_GENERATION_ENABLED: ${NEWS_GENERATION_ENABLED:-}
+      # Deprecated. Passed through only so an environment that still sets it keeps
+      # working; the split flags above take precedence when explicitly set.
+      NEWS_ENABLED: ${NEWS_ENABLED:-}
       NEWS_LLM_PROVIDER: ${NEWS_LLM_PROVIDER:-null}
       NEWS_LLM_API_KEY: ${NEWS_LLM_API_KEY:-}
       NEWS_LLM_MODEL: ${NEWS_LLM_MODEL:-}
@@ -79,7 +86,14 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://jobsvsai:change-me@postgres:5432/jobsvsai}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       QUEUE_NAME: ${QUEUE_NAME:-default}
-      NEWS_ENABLED: ${NEWS_ENABLED:-false}
+      # Passed through as empty when unset, NOT as an explicit false. An explicit false
+      # here would outrank the deprecated NEWS_ENABLED and silently disable an environment
+      # that is currently running on it. Unset stays unset; the code default is disabled.
+      NEWS_INGESTION_ENABLED: ${NEWS_INGESTION_ENABLED:-}
+      NEWS_GENERATION_ENABLED: ${NEWS_GENERATION_ENABLED:-}
+      # Deprecated. Passed through only so an environment that still sets it keeps
+      # working; the split flags above take precedence when explicitly set.
+      NEWS_ENABLED: ${NEWS_ENABLED:-}
       NEWS_LLM_PROVIDER: ${NEWS_LLM_PROVIDER:-null}
       NEWS_LLM_API_KEY: ${NEWS_LLM_API_KEY:-}
       NEWS_LLM_MODEL: ${NEWS_LLM_MODEL:-}

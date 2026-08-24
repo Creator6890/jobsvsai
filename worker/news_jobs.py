@@ -5,8 +5,10 @@ cadence is supplied by whatever enqueues this (an RQ scheduler, a cron entry cal
 `enqueue_ingestion`, or an admin button), and `NEWS_FETCH_INTERVAL_MINUTES` is read here
 rather than compiled into the job so changing it is configuration.
 
-The job is deliberately safe to fire on a disabled system: with `NEWS_ENABLED=false` it
-returns a `skipped` result without opening a feed connection or writing a run row.
+The job is deliberately safe to fire on a disabled system: with
+`NEWS_INGESTION_ENABLED=false` it returns a `skipped` result without opening a feed
+connection or writing a run row. Generation is gated separately by
+`NEWS_GENERATION_ENABLED`, so feeds can be polled in production while no provider is called.
 """
 
 from __future__ import annotations
@@ -37,7 +39,7 @@ def enqueue_ingestion(queue=None, triggered_by: str = "scheduler"):
     scheduler, and so the disabled case costs nothing at all.
     """
     settings = get_settings()
-    if not settings.news_enabled:
+    if not settings.ingestion_enabled:
         return None
     if queue is None:
         from redis import Redis
@@ -81,7 +83,7 @@ def enqueue_generation(queue=None, triggered_by: str = "batch",
                        ingest_item_ids: list[int] | None = None):
     """Enqueue one generation batch. Returns None when news is disabled."""
     settings = get_settings()
-    if not settings.news_enabled:
+    if not settings.generation_enabled:
         return None
     if queue is None:
         from redis import Redis

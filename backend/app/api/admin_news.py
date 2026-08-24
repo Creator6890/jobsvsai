@@ -178,7 +178,7 @@ async def trigger_ingestion(
     session: AsyncSession = Depends(get_session),
     admin: str = Depends(require_admin),
 ) -> dict[str, object]:
-    """Run ingestion now. Returns `skipped` rather than failing when NEWS_ENABLED is false."""
+    """Run ingestion now. Returns `skipped` rather than failing when ingestion is off."""
     result = await ingestion.run_ingestion(session, triggered_by=f"admin:{admin}")
     return result.as_dict()
 
@@ -192,7 +192,11 @@ async def generation_status(session: AsyncSession = Depends(get_session)) -> dic
     """
     settings = get_settings()
     return {
-        "enabled": settings.news_enabled,
+        # Reported separately so an operator can see the exact gating state, including
+        # whether the deprecated single flag is still supplying it.
+        "ingestionEnabled": settings.ingestion_enabled,
+        "generationEnabled": settings.generation_enabled,
+        "usesLegacyNewsFlag": settings.uses_legacy_news_flag,
         "provider": settings.news_llm_provider,
         "model": settings.news_llm_model or None,
         "apiKeyConfigured": bool(settings.news_llm_api_key),
@@ -220,8 +224,8 @@ async def generate_from_incoming(
     if await ingest_repo.get_ingest_item(session, item_id) is None:
         raise HTTPException(status_code=404, detail="Ingest item not found")
     settings = get_settings()
-    if not settings.news_enabled:
-        return {"status": "skipped", "reason": "NEWS_ENABLED is false"}
+    if not settings.generation_enabled:
+        return {"status": "skipped", "reason": "NEWS_GENERATION_ENABLED is false"}
     try:
         provider = generation_service.resolve_provider()
     except generation.ProviderNotConfigured as exc:

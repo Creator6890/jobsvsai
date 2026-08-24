@@ -64,7 +64,9 @@ export default async function IncomingPage({ searchParams }: { searchParams: Pro
           ))}
         </div>
         <form action={runIngestion}>
-          <button className="button" type="submit">Fetch feeds now</button>
+          <button className="button" type="submit" disabled={!generation.ingestionEnabled}>
+            Fetch feeds now
+          </button>
         </form>
       </div>
 
@@ -80,9 +82,16 @@ export default async function IncomingPage({ searchParams }: { searchParams: Pro
       )}
 
       <div className="card" style={{ padding: "var(--pad-card)", marginBottom: "var(--gap)" }}>
-        <span className="section-kicker">AI generation</span>
+        <span className="section-kicker">AI news pipeline</span>
+        {generation.usesLegacyNewsFlag && (
+          <p className="small" style={{ color: "var(--amber)" }}>
+            Gating is coming from the deprecated <code>NEWS_ENABLED</code> variable. Set
+            <code> NEWS_INGESTION_ENABLED</code> and <code>NEWS_GENERATION_ENABLED</code> instead.
+          </p>
+        )}
         <p className="small">
-          {generation.enabled ? "Enabled" : "Disabled (NEWS_ENABLED=false)"} ·
+          ingestion <strong>{generation.ingestionEnabled ? "enabled" : "disabled"}</strong> ·
+          generation <strong>{generation.generationEnabled ? "enabled" : "disabled"}</strong> ·
           provider <strong>{generation.provider}</strong> ·
           model <strong>{generation.model ?? "default"}</strong> ·
           {/* Presence only. The key is never sent to the browser. */}
@@ -94,7 +103,7 @@ export default async function IncomingPage({ searchParams }: { searchParams: Pro
         <div className="form-actions">
           <form action={runGenerationBatch}>
             <button className="button" type="submit"
-              disabled={!generation.enabled || !generation.apiKeyConfigured}>
+              disabled={!generation.generationEnabled || !generation.apiKeyConfigured}>
               Generate batch ({generation.batchSize})
             </button>
           </form>
@@ -149,7 +158,7 @@ export default async function IncomingPage({ searchParams }: { searchParams: Pro
                   <form action={generateFromIncoming}>
                     <input type="hidden" name="itemId" value={item.id} />
                     <button className="button" type="submit"
-                      disabled={!generation.enabled || !generation.apiKeyConfigured}>
+                      disabled={!generation.generationEnabled || !generation.apiKeyConfigured}>
                       Generate with AI
                     </button>
                   </form>
