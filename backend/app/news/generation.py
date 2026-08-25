@@ -23,8 +23,13 @@ from app.news.impact_policy import FACTOR_WEIGHTS, InvalidImpactFactors
 PROMPT_VERSION = "news-generation-v1"
 
 # The semantic relevance contract, versioned separately from the prompt because its decision
-# rules can tighten without the brief-writing instructions changing.
-SEMANTIC_POLICY_VERSION = "news-semantic-relevance-v1"
+# rules can change without the brief-writing instructions changing — which is exactly what
+# happened here. v1 defined AI news as a capability or deployment change only, and correctly
+# but uselessly rejected a Stanford study measuring AI's effect on entry-level hiring: the
+# single most on-topic item in the first production corpus. v2 adds empirical work evidence as
+# a first-class category. PROMPT_VERSION is deliberately NOT bumped: Step 2 and Step 3, which
+# write the brief and read the impact factors, are unchanged.
+SEMANTIC_POLICY_VERSION = "news-semantic-relevance-v2"
 
 # Below this, an accepted item still becomes an article but lands in review rather than
 # draft: the model said yes without much conviction, and a human should look.

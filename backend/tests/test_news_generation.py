@@ -55,8 +55,11 @@ PAYLOAD = GenerationInput(
 
 
 def test_versions_are_the_documented_ones() -> None:
+    # The two move independently on purpose: v2 widened the semantic scope to admit
+    # empirical work evidence, while Step 2 and Step 3 of the prompt were untouched, so
+    # articles stay attributable to the same brief-writing instructions.
     assert PROMPT_VERSION == "news-generation-v1"
-    assert SEMANTIC_POLICY_VERSION == "news-semantic-relevance-v1"
+    assert SEMANTIC_POLICY_VERSION == "news-semantic-relevance-v2"
     assert MINIMUM_SEMANTIC_CONFIDENCE == 0.70
 
 

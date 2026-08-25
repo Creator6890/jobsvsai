@@ -217,6 +217,79 @@ async def set_ingest_status(session: AsyncSession, item_id: int, status: str) ->
     """), {"id": item_id, "status": status})
 
 
+async def requeue_for_reassessment(
+    session: AsyncSession, item_id: int, current_policy_version: str
+) -> dict[str, Any]:
+    """Return one semantically rejected item to the queue, under an explicit operator action.
+
+    A semantic rejection sets `status='ignored'` and `is_ai_news=false`, and
+    `select_generation_candidates` filters on both, so a rejected item is doubly excluded and
+    nothing short of clearing the verdict brings it back. That is deliberate: a rejection is
+    supposed to be final under the policy that made it.
+
+    When the policy itself changes, some of those rejections stop being right. This is the one
+    supported way to act on that, and it is intentionally narrow:
+
+    * one item per call — there is no bulk variant, because silently re-running a whole corpus
+      under a new policy would rewrite history and spend the daily budget without anyone
+      choosing to;
+    * refused when the stored verdict came from the policy version currently in force, so the
+      same policy can never be asked to re-roll a decision it has already made, which would
+      burn free-tier quota to no purpose;
+    * refused once the item has become an article, which is a conversion, not a verdict.
+
+    `generation_attempts` and `generation_attempted_at` are deliberately NOT reset. The spend
+    already happened, the daily cap counts it, and erasing it would make the budget lie.
+
+    The superseded verdict is returned to the caller before it is cleared, so an operator sees
+    what is being discarded. It is not archived anywhere: the per-item verdict columns hold the
+    current verdict only. What survives is the append-only `news_generation_runs` row, which
+    records the policy version that ran and what it decided in aggregate.
+    """
+    row = (await session.execute(text("""
+      SELECT id, status, is_ai_news, ai_relevance_confidence, ai_relevance_reason,
+             semantic_policy_version, generation_attempts,
+             (SELECT count(*) FROM news_article_sources l WHERE l.ingest_item_id = i.id)
+               AS article_links
+      FROM news_ingest_items i WHERE id = :id
+    """), {"id": item_id})).mappings().first()
+
+    if row is None:
+        return {"ok": False, "reason": f"No ingest item {item_id}."}
+    if row["article_links"]:
+        return {"ok": False, "reason":
+                f"Item {item_id} is already linked to an article; that is a conversion, "
+                "not a verdict to revisit."}
+    if row["is_ai_news"] is None:
+        return {"ok": False, "reason":
+                f"Item {item_id} carries no semantic verdict, so there is nothing to requeue. "
+                f"Its status is {row['status']!r}."}
+    if row["semantic_policy_version"] == current_policy_version:
+        return {"ok": False, "reason":
+                f"Item {item_id} was judged by {current_policy_version}, which is still the "
+                "policy in force. Requeueing would ask the same policy the same question."}
+
+    superseded = {
+        "is_ai_news": row["is_ai_news"],
+        "confidence": row["ai_relevance_confidence"],
+        "reason": row["ai_relevance_reason"],
+        "policy_version": row["semantic_policy_version"],
+        "attempts": row["generation_attempts"],
+        "previous_status": row["status"],
+    }
+    await session.execute(text("""
+      UPDATE news_ingest_items SET
+        status = 'candidate',
+        is_ai_news = NULL,
+        ai_relevance_confidence = NULL,
+        ai_relevance_reason = NULL,
+        semantic_policy_version = NULL,
+        updated_at = now()
+      WHERE id = :id
+    """), {"id": item_id})
+    return {"ok": True, "superseded": superseded}
+
+
 async def mark_processed(session: AsyncSession, item_id: int) -> None:
     """The one path to `processed`: the item has been converted into an article."""
     await session.execute(text("""

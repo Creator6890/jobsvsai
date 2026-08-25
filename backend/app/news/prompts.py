@@ -1,5 +1,8 @@
 """news-generation-v1 — the single structured prompt.
 
+Step 1 applies the semantic relevance contract, currently
+`news-semantic-relevance-v2`, which is versioned separately in `generation.py`.
+
 One call per candidate produces the semantic verdict, the brief, tags, job areas and the
 five impact factors. Splitting these into separate calls would multiply token spend for a
 free tier and give the model less context for each judgement.
@@ -34,34 +37,70 @@ assign an impact level or score — you supply evidence and JobsVsAI computes th
 
 Return ONLY a JSON object matching the requested schema. No markdown, no commentary."""
 
-RELEVANCE_CRITERIA = """## Step 1 — Is this genuinely AI news?
+RELEVANCE_CRITERIA = """## Step 1 — Is this in scope for JobsVsAI?
 
-Set is_ai_news = true for a material development in what AI can do or where it is deployed:
+JobsVsAI covers two kinds of story, and an item qualifies if it is EITHER of them.
+
+### A. A material AI development
+
+A real change in what AI can do, or where it is deployed:
 - a new model release or a substantive model update
 - an agent, tool-use or computer-use capability
-- a robotics capability improvement
+- a robotics or physical-automation capability improvement
 - an inference, training or efficiency breakthrough
 - a multimodal, voice, vision or generation capability change
 - a coding-automation release
 - an AI product gaining materially new capability for real work
 - a commercially deployable automation system
+- a meaningful enterprise deployment or production rollout, where AI is documented doing real work inside an organisation
 
-Set is_ai_news = false for items with no material capability or deployment change:
+### B. Credible evidence that AI is changing work
+
+Substantive evidence about AI's measurable effect on jobs, workers or how work is done. This does NOT require any new model or deployment to be announced — the evidence itself is the story:
+- employment, hiring, layoffs, displacement or headcount effects
+- wages, earnings or entry-level opportunity
+- task substitution, task augmentation or work compression
+- productivity, throughput or time saved on real work
+- workforce structure, staffing patterns or occupational change
+- how adoption is landing on the people actually doing the work
+
+Acceptable forms of evidence include academic research, labour-market datasets, credible surveys, company studies reporting measured outcomes, and independent reporting on any of these.
+
+A study finding that AI-exposed occupations lost entry-level hiring is squarely in scope. It announces no model and ships no product, and that is fine: measuring the effect is the contribution.
+
+## What is NOT in scope
+
+Set is_ai_news = false when there is neither a material development nor substantive evidence:
 - funding rounds, valuations, IPOs, share-price or earnings stories
 - executive appointments, hires, departures, board changes
 - conference attendance, keynotes, sponsorships, awards
 - advertising or marketing rollouts, pricing-only changes, regional availability
-- generic corporate partnerships with no technical or product substance
-- policy, opinion or think-piece posts with no accompanying development
-- legal or regulatory stories with no capability change
+- generic corporate partnerships with no technical, product or measured substance
+- legal or regulatory stories with no capability change and no evidence about work
 
-Judge the NEWS EVENT, not the company. A major lab publishing a policy essay is not AI \
-news; a small company shipping a working autonomous system is.
+### Evidence versus opinion — the distinction that matters most
 
-The item reached you through a deliberately permissive keyword prefilter, so expect some \
-irrelevant items. Rejecting them is the point of this step — do not feel obliged to accept.
+Category B is about EVIDENCE, not about subject matter. An item does not become relevant merely because it uses the words jobs, workers, employment, automation or future of work. Ask what the item actually establishes.
+
+Reject, however work-related the topic sounds:
+- opinion columns, essays and think pieces
+- predictions, forecasts and speculation with no supporting data
+- broad commentary that AI will change jobs, with nothing measured
+- ethics or policy debate with no development and no findings
+- an article that only quotes someone's view about AI and work
+
+Accept only when the item reports something observed, measured or shipped. If you cannot name what was measured or what was built, it is not in scope.
+
+### First-party evidence still counts, but note what it is
+
+A vendor case study describing measured outcomes at a named customer is legitimate category B material. Relevance is not a judgement that the claim has been independently verified — it means the item is worth analysing. Treat a company's report about its own product as the company's report, not as established fact, and carry that distinction into the brief you write in Step 2.
+
+Judge the NEWS EVENT, not the company. A major lab publishing a policy essay is not in scope; a small company shipping a working autonomous system is, and so is a university measuring what happened to hiring.
+
+The item reached you through a deliberately permissive keyword prefilter, so expect some irrelevant items. Rejecting them is the point of this step — do not feel obliged to accept.
 
 ai_relevance_confidence is how sure you are of the is_ai_news verdict itself, 0.0 to 1.0."""
+
 
 CONTENT_RULES = f"""## Step 2 — Write the brief (only when is_ai_news is true)
 

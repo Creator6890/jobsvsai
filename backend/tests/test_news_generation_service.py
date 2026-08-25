@@ -13,7 +13,7 @@ from sqlalchemy import text
 
 from app.core.config import get_settings
 from app.db.session import SessionFactory
-from app.news.generation import GeneratedBrief, ProviderNotConfigured
+from app.news.generation import SEMANTIC_POLICY_VERSION, GeneratedBrief, ProviderNotConfigured
 from app.news.generation_service import (
     decide_status,
     generate_for_candidate,
@@ -215,7 +215,7 @@ async def test_rejection_creates_no_article_and_keeps_the_verdict(
     assert row["is_ai_news"] is False
     assert float(row["ai_relevance_confidence"]) == 0.88
     assert row["ai_relevance_reason"].startswith("Funding round")
-    assert row["semantic_policy_version"] == "news-semantic-relevance-v1"
+    assert row["semantic_policy_version"] == SEMANTIC_POLICY_VERSION
 
 
 # ------------------------------------------------- the three semantic routing paths

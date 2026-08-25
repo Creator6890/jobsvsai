@@ -151,6 +151,39 @@ async def cmd_ingest(args: argparse.Namespace) -> int:
     return 0
 
 
+async def cmd_requeue(args: argparse.Namespace) -> int:
+    """Return one semantically rejected item to the queue after a policy change.
+
+    Deliberately one item at a time and refused when the verdict came from the policy still in
+    force. Calls no provider and spends nothing.
+    """
+    from app.news.generation import SEMANTIC_POLICY_VERSION
+
+    print("AI News · requeue for reassessment")
+    print(f"  current semantic policy = {SEMANTIC_POLICY_VERSION}")
+
+    async with SessionFactory() as session:
+        result = await repo.requeue_for_reassessment(
+            session, args.item, SEMANTIC_POLICY_VERSION)
+        if not result["ok"]:
+            print(f"\n  REFUSED: {result['reason']}")
+            return 1
+        await session.commit()
+
+    old = result["superseded"]
+    print(f"\n  Item {args.item} returned to the queue.")
+    print("  The superseded verdict is shown here because it is not archived anywhere:")
+    print(f"    policy      : {old['policy_version']}")
+    print(f"    is_ai_news  : {old['is_ai_news']}   confidence {old['confidence']}")
+    print(f"    prior status: {old['previous_status']}")
+    print(f"    reason      : {_truncate(old['reason'] or '-', 160)}")
+    print(f"\n  generation_attempts stays at {old['attempts']}: the spend already happened "
+          "and the daily cap still counts it.")
+    print("  Nothing was generated. Run `generate --item "
+          f"{args.item}` explicitly when you want it assessed.")
+    return 0
+
+
 async def cmd_generate(args: argparse.Namespace) -> int:
     """Turn candidates into review-ready drafts. The command that costs money."""
     from app.news.generation_service import run_generation_batch
@@ -455,6 +488,13 @@ def build_parser() -> argparse.ArgumentParser:
                           help="generate for specific candidates; repeatable")
     generate.add_argument("--triggered-by", default="cli", help="recorded on the run row")
     generate.set_defaults(handler=cmd_generate)
+
+    requeue = sub.add_parser(
+        "requeue",
+        help="return one semantically rejected item to the queue after a policy change")
+    requeue.add_argument("--item", type=int, required=True,
+                         help="the single ingest item to requeue")
+    requeue.set_defaults(handler=cmd_requeue)
 
     candidates = sub.add_parser("candidates", help="show the current candidate queue")
     candidates.add_argument("--status", choices=["new", "candidate", "ignored", "duplicate",
