@@ -1,17 +1,17 @@
 /** Global AdSense script loader.
  *
- * Mirrors the GA4 Script injection in layout.tsx: loaded once, globally,
- * only when ads are enabled and a valid client ID is configured.
+ * Loaded once, globally in root layout for site connection and verification.
+ * Renders the official AdSense script tag when a client ID is configured.
  *
  * When configuration is absent this renders nothing and does not throw.
  * It uses Next.js `afterInteractive` strategy so it never blocks first paint.
  */
 
 import Script from "next/script";
-import { adsReady, adsenseClientId } from "@/lib/ads";
+import { adsenseClientId } from "@/lib/ads";
 
 export function AdsenseScript() {
-  if (!adsReady) return null;
+  if (!adsenseClientId) return null;
 
   return (
     <Script

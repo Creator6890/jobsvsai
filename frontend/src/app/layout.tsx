@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { AdsenseScript } from "@/components/AdsenseScript";
+import { adsenseClientId } from "@/lib/ads";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,6 +19,9 @@ export const metadata: Metadata = {
     title: "JobsVsAI — Will AI take your job?",
     description: "AI Exposure. Replacement Risk. Your next move.",
     images: ["/og.png"],
+  },
+  other: {
+    ...(adsenseClientId ? { "google-adsense-account": adsenseClientId } : {}),
   },
 };
 
