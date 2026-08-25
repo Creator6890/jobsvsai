@@ -109,6 +109,21 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
         className="button result-link"
         href={`/jobs/${selected.slug}`}
       >See the full analysis <span aria-hidden="true">→</span></Link>
+      <div className="search-career-fit-handoff">
+        <div className="handoff-content">
+          <strong>Thinking about other options?</strong>
+          <p>Find careers that align with your strengths and work preferences.</p>
+        </div>
+        <div className="handoff-action">
+          <Link
+            className="button secondary compact"
+            href="/career-fit?from=homepage_search"
+          >
+            Find My Career Fit <span aria-hidden="true">→</span>
+          </Link>
+          <span className="handoff-time">Takes about 3 minutes</span>
+        </div>
+      </div>
     </article>
   );
 

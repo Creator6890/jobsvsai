@@ -15,7 +15,7 @@ import {
 } from "@/lib/careerFit";
 import { ProfileStrengthBars } from "./ProfileStrengthBars";
 import { CareerMatchCard } from "./CareerMatchCard";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, type KnownEntrySource } from "@/lib/analytics";
 
 type CareerFitAppProps = {
   occupations: Occupation[];
@@ -42,7 +42,19 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
 
   const handleStart = () => {
     startTimeRef.current = Date.now();
-    trackEvent("career_fit_started", { entry_source: "career_fit_page" });
+    let entrySource: KnownEntrySource = "career_fit_page";
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const src = params.get("from") || params.get("source");
+      if (
+        src === "homepage_search" ||
+        src === "action_plan" ||
+        src === "transitions"
+      ) {
+        entrySource = src;
+      }
+    }
+    trackEvent("career_fit_started", { entry_source: entrySource });
     setView("assessment");
     setCurrentIndex(0);
   };

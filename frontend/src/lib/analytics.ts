@@ -36,7 +36,11 @@ export type KnownSortOption =
   | "risk"
   | "exposure";
 
-export type KnownEntrySource = "career_fit_page" | "action_plan" | "transitions";
+export type KnownEntrySource =
+  | "career_fit_page"
+  | "action_plan"
+  | "transitions"
+  | "homepage_search";
 
 /**
  * Strictly defined event property schemas.
@@ -171,7 +175,12 @@ const KNOWN_SORT_OPTIONS = new Set<string>([
   "risk",
   "exposure",
 ]);
-const KNOWN_ENTRY_SOURCES = new Set<string>(["career_fit_page", "action_plan", "transitions"]);
+const KNOWN_ENTRY_SOURCES = new Set<string>([
+  "career_fit_page",
+  "action_plan",
+  "transitions",
+  "homepage_search",
+]);
 
 function isValidSlug(val: unknown): val is string {
   return typeof val === "string" && val.length >= 1 && val.length <= 100 && SLUG_REGEX.test(val);

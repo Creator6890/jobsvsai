@@ -388,10 +388,15 @@ test("Underlying AI Exposure and Replacement Risk are never altered by Career Fi
 
 test("Navigation contains Career Fit link", () => {
   const headerContent = fs.readFileSync(path.join(srcRoot, "components", "SiteHeader.tsx"), "utf8");
+  const dropdownContent = fs.readFileSync(path.join(srcRoot, "components", "CareerToolsDropdown.tsx"), "utf8");
   const footerContent = fs.readFileSync(path.join(srcRoot, "components", "SiteFooter.tsx"), "utf8");
   const homeContent = fs.readFileSync(path.join(srcRoot, "app", "page.tsx"), "utf8");
 
-  assert.ok(headerContent.includes('["Career Fit", "/career-fit"]'), "SiteHeader must include Career Fit link");
+  assert.ok(
+    headerContent.includes("CareerToolsDropdown") && dropdownContent.includes('href="/career-fit"'),
+    "SiteHeader dropdown must link to /career-fit"
+  );
+  assert.ok(headerContent.includes('href="/career-fit"'), "SiteHeader mobile navigation must include Career Fit link");
   assert.ok(footerContent.includes('href="/career-fit"'), "SiteFooter must include Career Fit link");
   assert.ok(homeContent.includes('href="/career-fit"'), "Homepage must include Career Fit CTA link");
 });
