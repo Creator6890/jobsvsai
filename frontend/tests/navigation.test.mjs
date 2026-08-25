@@ -18,12 +18,12 @@ test("Desktop primary nav contains Rankings, Career Tools dropdown, News, About 
   assert.ok(fs.existsSync(headerPath), "SiteHeader.tsx must exist");
   const headerContent = fs.readFileSync(headerPath, "utf8");
 
-  // Home link must NOT be present in desktop primary nav (Logo handles '/')
-  assert.ok(!headerContent.includes('["Home", "/"]'), "Desktop nav must NOT contain an explicit Home link");
-  assert.ok(!headerContent.includes('<Link href="/">Home</Link>'), "Desktop nav must NOT contain an explicit Home link");
+  // Home link must NOT be present in primary nav (Logo handles '/')
+  assert.ok(!headerContent.includes('["Home", "/"]'), "Header must NOT contain an explicit Home link");
+  assert.ok(!headerContent.includes('<Link href="/">Home</Link>'), "Header must NOT contain an explicit Home link");
 
-  // Methodology must NOT be present in primary nav
-  assert.ok(!headerContent.includes('<Link href="/methodology">Methodology</Link>') || headerContent.includes("mobile-nav-inner"), "Methodology must NOT be in desktop primary nav");
+  // Methodology must NOT be present in header navigation
+  assert.ok(!headerContent.includes('href="/methodology"'), "Methodology must NOT be in header primary navigation");
 
   // Desktop nav must render Rankings, CareerToolsDropdown, News, About
   assert.ok(headerContent.includes('<Link href="/rankings">Rankings</Link>'), "Desktop nav must include Rankings link");
@@ -59,10 +59,10 @@ test("CareerToolsDropdown contains Career Fit and Compare Careers destinations w
 });
 
 // ---------------------------------------------------------------------------
-// 3. Mobile Navigation Invariants
+// 3. Mobile Navigation Invariants (Aligned with Desktop Hierarchy)
 // ---------------------------------------------------------------------------
 
-test("Mobile navigation contains Rankings, Career Tools (Career Fit + Compare), News, Methodology, and About", () => {
+test("Mobile navigation contains Rankings, Career Tools (Career Fit + Compare), News, and About", () => {
   const headerContent = fs.readFileSync(path.join(srcRoot, "components", "SiteHeader.tsx"), "utf8");
 
   assert.ok(headerContent.includes('className="mobile-menu"'), "Mobile menu must be present");
@@ -70,12 +70,14 @@ test("Mobile navigation contains Rankings, Career Tools (Career Fit + Compare), 
   assert.ok(headerContent.includes('href="/career-fit"'), "Mobile menu must contain Career Fit");
   assert.ok(headerContent.includes('href="/compare"'), "Mobile menu must contain Compare Careers");
   assert.ok(headerContent.includes('href="/news"'), "Mobile menu must contain News");
-  assert.ok(headerContent.includes('href="/methodology"'), "Mobile menu must contain Methodology");
   assert.ok(headerContent.includes('href="/about"'), "Mobile menu must contain About");
+
+  // Methodology is not in mobile primary nav
+  assert.ok(!headerContent.includes('href="/methodology"'), "Mobile navigation must NOT contain Methodology as a primary link");
 });
 
 // ---------------------------------------------------------------------------
-// 4. Footer Invariants
+// 4. Footer Invariants (Trust & Full Discovery)
 // ---------------------------------------------------------------------------
 
 test("Footer contains Rankings, Career Fit, Compare, News, Methodology, and About", () => {

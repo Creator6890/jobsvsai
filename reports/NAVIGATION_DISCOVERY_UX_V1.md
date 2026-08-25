@@ -3,7 +3,7 @@
 **Architecture & Implementation Report**  
 **Author:** Worker B / Antigravity  
 **Branch:** `agent/navigation-discovery-ux-v1`  
-**Status:** **READY FOR ARCHITECT REVIEW**
+**Status:** **READY FOR ARCHITECT REVIEW & MAIN INTEGRATION**
 
 ---
 
@@ -21,8 +21,9 @@ alongside a fixed-width logo (`160px`) and an "Explore the rankings →" CTA but
 
 ---
 
-## 2. New Information Architecture (IA)
+## 2. Final Information Architecture (IA)
 
+### Desktop Navigation
 ```
 [JobsVsAI Logo (/)]
    │
@@ -36,8 +37,20 @@ alongside a fixed-width logo (`160px`) and an "Explore the rankings →" CTA but
    └── [CTA: Explore the rankings → (/rankings)]
 ```
 
+### Mobile Drawer Navigation
+```
+[Mobile Drawer]
+   │
+   ├── Rankings (/rankings)
+   ├── Career Tools
+   │     ├── Career Fit (/career-fit)
+   │     └── Compare Careers (/compare)
+   ├── News (/news)
+   └── About (/about)
+```
+
 - **Home Link:** Removed from desktop primary nav; the JobsVsAI logo remains the authoritative home link.
-- **Methodology:** Relocated from primary header to trust destinations (Footer, About page, and contextual "How we calculate this" sections).
+- **Methodology:** Relocated from primary header (both desktop and mobile) to trust destinations (Footer, About page, and contextual "How we calculate this" links).
 - **Public Directory:** No 507-occupation public directory is exposed. All 507 occupation pages remain public and indexed, accessible via search, Career Fit, Transitions, Rankings, and SEO.
 
 ---
@@ -64,13 +77,12 @@ The `CareerToolsDropdown` component is implemented as a compact, accessible clie
 
 ## 4. Mobile Navigation
 
-The mobile navigation menu (`<details className="mobile-menu">`) reflects the exact same IA:
+The mobile navigation menu (`<details className="mobile-menu">`) strictly reflects the exact same product hierarchy as desktop:
 - `Rankings`
 - **Career Tools Group:**
   - `Career Fit` (with subtext *"Find careers matching your strengths"*)
   - `Compare Careers` (with subtext *"Side-by-side AI risk comparison"*)
 - `News`
-- `Methodology`
 - `About`
 
 ---
@@ -79,6 +91,7 @@ The mobile navigation menu (`<details className="mobile-menu">`) reflects the ex
 
 `Methodology` is now prominently anchored as a primary trust destination:
 - **Site Footer:** Listed across all pages.
+- **About Page:** Linked directly within trust copy.
 - **Contextual Explanations:** Linked in scoring methodology sections.
 - **Direct Route:** `/methodology` remains intact with no SEO deindexing.
 
@@ -157,7 +170,7 @@ When a user searches for an occupation on the homepage (`/`):
 ## 10. Automated Test Results
 
 - **Frontend Test Suite:** **64 passed, 0 failed** (`npm test`)
-  - `navigation.test.mjs`: Primary nav items, absence of Home/Methodology in top nav, Career Tools dropdown items, mobile menu items, footer links, homepage search handoff, rankings Top 10 sections (`PASS`)
+  - `navigation.test.mjs`: Primary nav items, absence of Home/Methodology in desktop and mobile nav, Career Tools dropdown items, mobile menu items, footer links, homepage search handoff, rankings Top 10 sections (`PASS`)
   - `careerFit.test.mjs`: Assessment integrity, scoring bounds, navigation links (`PASS`)
   - `analytics.test.mjs`: Property allowlists, value sanitization, viewport observation (`PASS`)
   - `actionPlan.test.mjs`, `transitions.test.mjs`, `ads.test.mjs`: All passing (`PASS`)
@@ -179,4 +192,4 @@ When a user searches for an occupation on the homepage (`/`):
 
 Navigation & Discovery UX V1 has been implemented and tested on branch `agent/navigation-discovery-ux-v1`.
 
-**STATUS:** **READY FOR ARCHITECT REVIEW**
+**STATUS:** **READY FOR MAIN INTEGRATION**

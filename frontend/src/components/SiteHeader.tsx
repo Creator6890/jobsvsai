@@ -43,7 +43,6 @@ export function SiteHeader() {
               </div>
             </div>
             <Link href="/news">News</Link>
-            <Link href="/methodology">Methodology</Link>
             <Link href="/about">About</Link>
           </nav>
         </details>
