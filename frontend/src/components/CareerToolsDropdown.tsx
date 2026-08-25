@@ -10,6 +10,8 @@ export function CareerToolsDropdown() {
   const [prevPathname, setPrevPathname] = useState(pathname);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const item0Ref = useRef<HTMLAnchorElement | null>(null);
+  const item1Ref = useRef<HTMLAnchorElement | null>(null);
   const menuId = useId();
 
   // Reset open state when navigating to a new pathname without calling setState in an effect
@@ -22,29 +24,68 @@ export function CareerToolsDropdown() {
   const isCompareActive = pathname === "/compare" || pathname.startsWith("/compare/");
   const isAnyActive = isCareerFitActive || isCompareActive;
 
-  // Close when clicking outside
+  // Close when clicking or touching outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handlePointerDown(event: PointerEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("pointerdown", handlePointerDown);
     }
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("pointerdown", handlePointerDown);
     };
   }, [isOpen]);
 
-  // Close when pressing Escape
-  function handleKeyDown(event: React.KeyboardEvent) {
-    if (event.key === "Escape") {
+  // Close on focusout when focus leaves the entire dropdown container
+  function handleBlur(event: React.FocusEvent) {
+    const nextTarget = event.relatedTarget as Node | null;
+    if (dropdownRef.current && nextTarget && !dropdownRef.current.contains(nextTarget)) {
       setIsOpen(false);
-      buttonRef.current?.focus();
-    } else if (event.key === "ArrowDown" && !isOpen) {
+    }
+  }
+
+  // Keyboard navigation on the trigger button
+  function handleButtonKeyDown(event: React.KeyboardEvent) {
+    if (event.key === "ArrowDown") {
       event.preventDefault();
       setIsOpen(true);
+      setTimeout(() => item0Ref.current?.focus(), 20);
+    } else if (event.key === "Escape" && isOpen) {
+      event.preventDefault();
+      setIsOpen(false);
+    }
+  }
+
+  // Keyboard navigation on item 0 (Career Fit)
+  function handleItem0KeyDown(event: React.KeyboardEvent) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setIsOpen(false);
+      buttonRef.current?.focus();
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      item1Ref.current?.focus();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      buttonRef.current?.focus();
+    }
+  }
+
+  // Keyboard navigation on item 1 (Compare Careers)
+  function handleItem1KeyDown(event: React.KeyboardEvent) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setIsOpen(false);
+      buttonRef.current?.focus();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      item0Ref.current?.focus();
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      item0Ref.current?.focus();
     }
   }
 
@@ -52,7 +93,7 @@ export function CareerToolsDropdown() {
     <div
       className={`nav-dropdown ${isOpen ? "open" : ""}`}
       ref={dropdownRef}
-      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
     >
       <button
         ref={buttonRef}
@@ -62,6 +103,7 @@ export function CareerToolsDropdown() {
         aria-haspopup="true"
         aria-controls={menuId}
         onClick={() => setIsOpen((prev) => !prev)}
+        onKeyDown={handleButtonKeyDown}
       >
         <span>Career Tools</span>
         <svg
@@ -83,41 +125,48 @@ export function CareerToolsDropdown() {
         </svg>
       </button>
 
-      {isOpen && (
-        <div className="nav-dropdown-menu" id={menuId} role="menu">
-          <Link
-            href="/career-fit"
-            className={`nav-dropdown-item ${isCareerFitActive ? "current" : ""}`}
-            role="menuitem"
-            onClick={() => setIsOpen(false)}
-          >
-            <div className="dropdown-item-header">
-              <strong className="dropdown-item-title">Career Fit</strong>
-              <span className="dropdown-item-arrow" aria-hidden="true">→</span>
-            </div>
-            <span className="dropdown-item-desc">
-              Find careers aligned with your work preferences and strengths.
-            </span>
-          </Link>
+      <div
+        className="nav-dropdown-menu"
+        id={menuId}
+        role="menu"
+        aria-hidden={!isOpen}
+      >
+        <Link
+          ref={item0Ref}
+          href="/career-fit"
+          className={`nav-dropdown-item ${isCareerFitActive ? "current" : ""}`}
+          role="menuitem"
+          tabIndex={isOpen ? 0 : -1}
+          onKeyDown={handleItem0KeyDown}
+        >
+          <div className="dropdown-item-header">
+            <strong className="dropdown-item-title">Career Fit</strong>
+            <span className="dropdown-item-arrow" aria-hidden="true">→</span>
+          </div>
+          <span className="dropdown-item-desc">
+            Find careers aligned with your work preferences and strengths.
+          </span>
+        </Link>
 
-          <div className="dropdown-divider" role="separator" aria-hidden="true" />
+        <div className="dropdown-divider" role="separator" aria-hidden="true" />
 
-          <Link
-            href="/compare"
-            className={`nav-dropdown-item ${isCompareActive ? "current" : ""}`}
-            role="menuitem"
-            onClick={() => setIsOpen(false)}
-          >
-            <div className="dropdown-item-header">
-              <strong className="dropdown-item-title">Compare Careers</strong>
-              <span className="dropdown-item-arrow" aria-hidden="true">→</span>
-            </div>
-            <span className="dropdown-item-desc">
-              Compare AI Exposure and Replacement Risk side by side.
-            </span>
-          </Link>
-        </div>
-      )}
+        <Link
+          ref={item1Ref}
+          href="/compare"
+          className={`nav-dropdown-item ${isCompareActive ? "current" : ""}`}
+          role="menuitem"
+          tabIndex={isOpen ? 0 : -1}
+          onKeyDown={handleItem1KeyDown}
+        >
+          <div className="dropdown-item-header">
+            <strong className="dropdown-item-title">Compare Careers</strong>
+            <span className="dropdown-item-arrow" aria-hidden="true">→</span>
+          </div>
+          <span className="dropdown-item-desc">
+            Compare AI Exposure and Replacement Risk side by side.
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }
