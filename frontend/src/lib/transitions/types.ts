@@ -9,12 +9,26 @@ export type TransitionSortOption = "fit" | "risk" | "exposure";
 
 export type CandidateTier = "DIRECT" | "2-HOP" | "CATEGORY_FALLBACK";
 
+export type RiskDeltaType =
+  | "meaningful_reduction"
+  | "slight_reduction"
+  | "similar"
+  | "higher";
+
+export type RiskDeltaPresentation = {
+  deltaType: RiskDeltaType;
+  deltaLabel: string;
+  chipTone: "lower" | "neutral" | "higher";
+  isMeaningfulReduction: boolean;
+};
+
 export type CareerTransition = {
   occupation: Occupation;
   transitionFit: number; // 15..98%
   transferabilityScore: number; // 10..99%
-  riskDelta: number; // source.replacementRisk - dest.replacementRisk (positive = safer)
+  riskDelta: number; // source.replacementRisk - dest.replacementRisk (positive = lower risk)
   exposureDelta: number; // source.aiExposure - dest.aiExposure (positive = lower exposure)
+  riskPresentation: RiskDeltaPresentation;
   difficulty: TransitionDifficulty;
   difficultySummary: string;
   candidateTier: CandidateTier;
@@ -27,6 +41,7 @@ export type CareerTransition = {
 export type TransitionAnalysis = {
   sourceOccupation: Occupation;
   isLowRiskSource: boolean;
+  hasMeaningfulReduction: boolean;
   directRelatedCount: number;
   transitions: CareerTransition[];
   summaryHeadline: string;

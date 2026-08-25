@@ -8,6 +8,7 @@ import {
 import type {
   CandidateTier,
   CareerTransition,
+  RiskDeltaPresentation,
   TransitionAnalysis,
   TransitionDifficulty,
   TransitionSortOption,
@@ -25,6 +26,43 @@ export function computeVectorDistance(
     sumSq += Math.pow(v1[k] - v2[k], 2);
   }
   return Math.sqrt(sumSq / DIMENSION_KEYS.length);
+}
+
+/**
+ * Formats factual risk-delta presentation distinguishing meaningful reduction from similar/higher risk.
+ */
+export function getRiskDeltaPresentation(riskDelta: number): RiskDeltaPresentation {
+  if (riskDelta >= 5) {
+    return {
+      deltaType: "meaningful_reduction",
+      deltaLabel: `${riskDelta} points lower`,
+      chipTone: "lower",
+      isMeaningfulReduction: true,
+    };
+  }
+  if (riskDelta >= 1) {
+    return {
+      deltaType: "slight_reduction",
+      deltaLabel: riskDelta === 1 ? "1 point lower" : `${riskDelta} points lower`,
+      chipTone: "lower",
+      isMeaningfulReduction: false,
+    };
+  }
+  if (riskDelta === 0) {
+    return {
+      deltaType: "similar",
+      deltaLabel: "similar replacement risk",
+      chipTone: "neutral",
+      isMeaningfulReduction: false,
+    };
+  }
+  const abs = Math.abs(riskDelta);
+  return {
+    deltaType: "higher",
+    deltaLabel: abs === 1 ? "1 point higher" : `${abs} points higher`,
+    chipTone: "higher",
+    isMeaningfulReduction: false,
+  };
 }
 
 /**
@@ -268,8 +306,9 @@ export function calculateCareerTransitions(
     transferability = Math.max(10, Math.min(99, Math.round(transferability)));
 
     // 2. Risk & Exposure Deltas
-    const riskDelta = source.replacementRisk - dest.replacementRisk; // positive = safer
+    const riskDelta = source.replacementRisk - dest.replacementRisk; // positive = lower risk
     const exposureDelta = source.aiExposure - dest.aiExposure;
+    const riskPresentation = getRiskDeltaPresentation(riskDelta);
 
     // 3. Replacement Risk Contribution
     let riskScore = 50 + riskDelta * 2.2;
@@ -317,6 +356,7 @@ export function calculateCareerTransitions(
       transferabilityScore: transferability,
       riskDelta,
       exposureDelta,
+      riskPresentation,
       difficulty,
       difficultySummary,
       candidateTier: item.candidateTier,
@@ -332,23 +372,30 @@ export function calculateCareerTransitions(
 
   const topTransitions = evaluatedTransitions.slice(0, limit);
 
-  // Generate headline & narrative
+  // Generate headline & narrative with precise risk-framing
   const directRelatedCount = directRelations.length;
+  const hasMeaningfulReduction = topTransitions.some(
+    (t) => t.riskPresentation.isMeaningfulReduction
+  );
   let summaryHeadline = `Career alternatives for ${source.title}`;
   let summaryNarrative = "";
 
   if (isLowRiskSource) {
     summaryHeadline = `Related career paths for ${source.title}`;
     summaryNarrative = `${source.title} currently ranks among the lower-risk occupations in our database (${source.replacementRisk}/100 Replacement Risk). The alternatives below represent adjacent career moves with shared work characteristics.`;
-  } else if (topTransitions.length > 0 && topTransitions[0].riskDelta >= 10) {
-    summaryNarrative = `Explore occupations with transferable characteristics and up to ${topTransitions[0].riskDelta} points lower AI replacement risk.`;
+  } else if (hasMeaningfulReduction) {
+    const maxDrop = Math.max(...topTransitions.map((t) => t.riskDelta));
+    summaryHeadline = `Career alternatives for ${source.title}`;
+    summaryNarrative = `Explore related occupations with transferable characteristics, including options with up to ${maxDrop} points lower AI-replacement risk.`;
   } else {
-    summaryNarrative = `Explore transferable career moves with compatible competency profiles and resilient work characteristics.`;
+    summaryHeadline = `Career alternatives for ${source.title}`;
+    summaryNarrative = `Explore related career paths for ${source.title} with transferable occupational characteristics and compatible competency profiles.`;
   }
 
   return {
     sourceOccupation: source,
     isLowRiskSource,
+    hasMeaningfulReduction,
     directRelatedCount,
     transitions: topTransitions,
     summaryHeadline,

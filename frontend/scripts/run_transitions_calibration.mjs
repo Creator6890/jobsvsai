@@ -1,6 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+
 
 const CATEGORY_ARCHETYPES = {
   "Technology & Data": { analytical: 90, creativity: 60, communication: 45, people: 30, practical: 15, organization: 75, technology: 95, leadership: 50 },

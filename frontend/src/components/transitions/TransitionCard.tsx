@@ -25,8 +25,8 @@ export function TransitionCard({
   rank: number;
 }) {
   const dest = transition.occupation;
-  const riskDelta = transition.riskDelta;
   const exposureDelta = transition.exposureDelta;
+  const riskPres = transition.riskPresentation;
 
   return (
     <article className="card transition-card" key={dest.slug}>
@@ -68,17 +68,9 @@ export function TransitionCard({
             <span className="metric-from">{source.replacementRisk}</span>
             <span className="metric-arrow">→</span>
             <span className="metric-to">{dest.replacementRisk}</span>
-            {riskDelta > 0 && (
-              <span className="delta-chip lower">↓ {riskDelta} pts lower</span>
-            )}
-            {riskDelta < 0 && (
-              <span className="delta-chip higher">
-                ↑ {Math.abs(riskDelta)} pts higher
-              </span>
-            )}
-            {riskDelta === 0 && (
-              <span className="delta-chip neutral">Same risk</span>
-            )}
+            <span className={`delta-chip ${riskPres.chipTone}`}>
+              {riskPres.deltaLabel}
+            </span>
           </div>
         </div>
 
@@ -99,7 +91,7 @@ export function TransitionCard({
               </span>
             )}
             {exposureDelta === 0 && (
-              <span className="delta-sub neutral">(Same exposure)</span>
+              <span className="delta-sub neutral">(similar exposure)</span>
             )}
           </div>
         </div>

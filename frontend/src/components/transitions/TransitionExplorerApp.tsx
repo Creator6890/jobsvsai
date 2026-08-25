@@ -42,7 +42,9 @@ export function TransitionExplorerApp({
               <span className="section-kicker">
                 {analysis.isLowRiskSource
                   ? "Adjacent Career Moves"
-                  : "Safer Career Alternatives"}
+                  : analysis.hasMeaningfulReduction
+                    ? "Lower-Risk Career Alternatives"
+                    : "Related Career Paths"}
               </span>
               <h2>{analysis.summaryHeadline}</h2>
               <p>{analysis.summaryNarrative}</p>

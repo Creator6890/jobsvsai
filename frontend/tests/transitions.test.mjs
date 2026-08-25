@@ -461,3 +461,123 @@ test("Score bounds: Transition Fit is strictly between 15 and 98", () => {
     }
   }
 });
+
+// ---------------------------------------------------------------------------
+// 3. Risk Delta Presentation & Copy Invariant Tests
+// ---------------------------------------------------------------------------
+
+function getRiskDeltaPresentationPure(riskDelta) {
+  if (riskDelta >= 5) {
+    return {
+      deltaType: "meaningful_reduction",
+      deltaLabel: `${riskDelta} points lower`,
+      chipTone: "lower",
+      isMeaningfulReduction: true,
+    };
+  }
+  if (riskDelta >= 1) {
+    return {
+      deltaType: "slight_reduction",
+      deltaLabel: riskDelta === 1 ? "1 point lower" : `${riskDelta} points lower`,
+      chipTone: "lower",
+      isMeaningfulReduction: false,
+    };
+  }
+  if (riskDelta === 0) {
+    return {
+      deltaType: "similar",
+      deltaLabel: "similar replacement risk",
+      chipTone: "neutral",
+      isMeaningfulReduction: false,
+    };
+  }
+  const abs = Math.abs(riskDelta);
+  return {
+    deltaType: "higher",
+    deltaLabel: abs === 1 ? "1 point higher" : `${abs} points higher`,
+    chipTone: "higher",
+    isMeaningfulReduction: false,
+  };
+}
+
+test("Risk Delta Presentation: delta >= 5 grants meaningful reduction", () => {
+  const p1 = getRiskDeltaPresentationPure(5);
+  assert.equal(p1.deltaType, "meaningful_reduction");
+  assert.equal(p1.isMeaningfulReduction, true);
+  assert.equal(p1.chipTone, "lower");
+  assert.equal(p1.deltaLabel, "5 points lower");
+
+  const p2 = getRiskDeltaPresentationPure(23);
+  assert.equal(p2.deltaType, "meaningful_reduction");
+  assert.equal(p2.isMeaningfulReduction, true);
+  assert.equal(p2.chipTone, "lower");
+  assert.equal(p2.deltaLabel, "23 points lower");
+});
+
+test("Risk Delta Presentation: delta 1-4 produces slight reduction wording", () => {
+  const p1 = getRiskDeltaPresentationPure(1);
+  assert.equal(p1.deltaType, "slight_reduction");
+  assert.equal(p1.isMeaningfulReduction, false);
+  assert.equal(p1.chipTone, "lower");
+  assert.equal(p1.deltaLabel, "1 point lower");
+
+  const p4 = getRiskDeltaPresentationPure(4);
+  assert.equal(p4.deltaType, "slight_reduction");
+  assert.equal(p4.isMeaningfulReduction, false);
+  assert.equal(p4.chipTone, "lower");
+  assert.equal(p4.deltaLabel, "4 points lower");
+});
+
+test("Risk Delta Presentation: delta 0 produces similar replacement risk", () => {
+  const p0 = getRiskDeltaPresentationPure(0);
+  assert.equal(p0.deltaType, "similar");
+  assert.equal(p0.isMeaningfulReduction, false);
+  assert.equal(p0.chipTone, "neutral");
+  assert.equal(p0.deltaLabel, "similar replacement risk");
+});
+
+test("Risk Delta Presentation: negative delta produces explicit higher wording and tone", () => {
+  const pNeg1 = getRiskDeltaPresentationPure(-1);
+  assert.equal(pNeg1.deltaType, "higher");
+  assert.equal(pNeg1.isMeaningfulReduction, false);
+  assert.equal(pNeg1.chipTone, "higher");
+  assert.equal(pNeg1.deltaLabel, "1 point higher");
+
+  const pNeg10 = getRiskDeltaPresentationPure(-10);
+  assert.equal(pNeg10.deltaType, "higher");
+  assert.equal(pNeg10.isMeaningfulReduction, false);
+  assert.equal(pNeg10.chipTone, "higher");
+  assert.equal(pNeg10.deltaLabel, "10 points higher");
+});
+
+test("Risk Invariant: higher-risk destination never receives lower-risk badge/copy", () => {
+  for (let delta = -30; delta < 0; delta++) {
+    const pres = getRiskDeltaPresentationPure(delta);
+    assert.equal(pres.isMeaningfulReduction, false);
+    assert.equal(pres.chipTone, "higher");
+    assert.ok(!pres.deltaLabel.includes("lower"), `Label for delta ${delta} should not contain 'lower'`);
+    assert.ok(pres.deltaLabel.includes("higher"), `Label for delta ${delta} must contain 'higher'`);
+  }
+});
+
+test("Page Framing Invariant: low-risk source never gets universal 'safer alternatives' framing", () => {
+  const lowRiskSrc = MOCK_OCCUPATIONS[6]; // Pile Driver Operators (risk 30)
+  const res = calculateCareerTransitionsPure(lowRiskSrc, MOCK_OCCUPATIONS, 5);
+
+  assert.equal(res.isLowRiskSource, true);
+  assert.ok(!res.summaryHeadline.toLowerCase().includes("safer alternatives"));
+  assert.ok(!res.summaryNarrative.toLowerCase().includes("safer alternatives"));
+  assert.ok(res.summaryHeadline.includes("Related career paths"));
+});
+
+test("Calculation Invariant: Transition Fit calculation is unaltered by presentation logic", () => {
+  const src = MOCK_OCCUPATIONS[0];
+  const res = calculateCareerTransitionsPure(src, MOCK_OCCUPATIONS, 5);
+
+  // Transition Fit values must remain strictly within [15..98]
+  for (const t of res.transitions) {
+    assert.ok(t.transitionFit >= 15 && t.transitionFit <= 98);
+    assert.ok(typeof t.transitionFit === "number");
+  }
+});
+
