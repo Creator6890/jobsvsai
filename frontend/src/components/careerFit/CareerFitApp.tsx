@@ -111,12 +111,12 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
         <div className="container narrow">
           <div className="card career-fit-intro-card">
             <span className="section-kicker">3–5 Minute Assessment</span>
-            <h2>Discover careers tailored to your work strengths.</h2>
+            <h2>Discover careers matched to your work strengths.</h2>
             <p className="intro-copy">
               Answer 20 concise questions about your problem-solving, creative,
-              interpersonal, and practical work preferences. We evaluate your
-              strengths across 8 core dimensions and match you directly with
-              compatible roles from JobsVsAI&apos;s 507 published occupations.
+              interpersonal, and operational work preferences. We evaluate your
+              profile across 8 core dimensions and highlight compatible roles from
+              JobsVsAI&apos;s 507 published occupations.
             </p>
 
             <div className="intro-dimensions-preview">
@@ -132,10 +132,11 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
             </div>
 
             <div className="intro-privacy-box">
-              <strong>Private & Deterministic</strong>
+              <strong>Exploratory & Private</strong>
               <p>
-                No login required. Your responses are evaluated locally in your
-                browser and are never stored or associated with personal identity.
+                Career Fit is an exploratory match based on your self-reported responses
+                and occupation characteristics. It is not a validated aptitude or
+                psychological assessment. No login required — all evaluations run locally in your browser.
               </p>
             </div>
 
@@ -274,7 +275,7 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
             <div className="section-heading-row">
               <div>
                 <span className="section-kicker">Compatible Career Matches</span>
-                <h2>Best roles matched to your profile</h2>
+                <h2>Careers that align with your profile</h2>
                 <p>
                   Occupations from the JobsVsAI database with the highest
                   competency alignment, shown alongside verified AI Exposure
@@ -336,6 +337,9 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
                   competency mix demanded by the occupation.
                 </li>
                 <li>
+                  <strong>Exploratory Match</strong>: Career Fit is an exploratory discovery tool based on your self-reported preferences. It is not a validated aptitude or psychological test.
+                </li>
+                <li>
                   <strong>AI Exposure</strong> measures how much of the
                   occupation&apos;s daily task volume can be augmented or automated
                   by modern language/vision models.
@@ -346,8 +350,7 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
                   to estimate net workforce pressure.
                 </li>
                 <li>
-                  A high Career Fit with low Replacement Risk represents your
-                  safest and most naturally engaging transition path.
+                  A high Career Fit with low Replacement Risk highlights careers that align with your work preferences while maintaining strong AI resilience.
                 </li>
               </ul>
             </div>

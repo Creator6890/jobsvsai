@@ -101,7 +101,7 @@ export function calculateProfile(answers: Record<number, number>): UserProfile {
 
   const topLabels = topStrengths.map((k) => DIMENSIONS[k].label);
   const summaryHeadline = `${topLabels[0]} & ${topLabels[1]}`;
-  const summaryNarrative = `Your assessment reveals strong aptitude in ${topLabels[0]} (${dimensionScores[topStrengths[0]]}/100), ${topLabels[1]} (${dimensionScores[topStrengths[1]]}/100), and ${topLabels[2]} (${dimensionScores[topStrengths[2]]}/100). Occupations requiring these core competencies will offer the highest day-to-day engagement and career velocity.`;
+  const summaryNarrative = `Your responses indicate strong preferences and self-reported strengths in ${topLabels[0]} (${dimensionScores[topStrengths[0]]}/100), ${topLabels[1]} (${dimensionScores[topStrengths[1]]}/100), and ${topLabels[2]} (${dimensionScores[topStrengths[2]]}/100). Occupations aligning with these competencies offer the strongest structural fit with how you work.`;
 
   return {
     dimensionScores,

@@ -51,7 +51,7 @@ export default async function Home() {
               <div>
                 <div className="section-kicker">Not sure which career to search for?</div>
                 <h2 id="career-fit-cta-title">Find careers that match how you work.</h2>
-                <p>Take a 3-minute assessment across 8 core work dimensions to discover occupations matched to your natural abilities, paired with verified AI risk metrics.</p>
+                <p>Take a 3-minute assessment across 8 core work dimensions to discover occupations aligned with your work preferences and strengths, paired with verified AI risk metrics.</p>
               </div>
               <Link className="button" href="/career-fit">Take Career Fit Assessment →</Link>
             </div>
