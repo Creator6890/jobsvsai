@@ -13,17 +13,28 @@ const srcRoot = path.join(frontendRoot, "src");
 // 1. Desktop Primary Navigation Invariants
 // ---------------------------------------------------------------------------
 
-test("Desktop primary nav contains Rankings, Career Tools dropdown, News, About and excludes Home and Methodology", () => {
+test("Desktop primary nav contains Rankings, Career Tools dropdown, News, About and excludes Home, Methodology, and duplicate CTA", () => {
   const headerPath = path.join(srcRoot, "components", "SiteHeader.tsx");
+  const logoPath = path.join(srcRoot, "components", "Logo.tsx");
   assert.ok(fs.existsSync(headerPath), "SiteHeader.tsx must exist");
+  assert.ok(fs.existsSync(logoPath), "Logo.tsx must exist");
   const headerContent = fs.readFileSync(headerPath, "utf8");
+  const logoContent = fs.readFileSync(logoPath, "utf8");
 
-  // Home link must NOT be present in primary nav (Logo handles '/')
+  // Logo handles home link to '/'
+  assert.ok(headerContent.includes("<Logo />"), "Header must include Logo component");
+  assert.ok(logoContent.includes('href="/"'), "Logo must link to '/'");
+
+  // Home link must NOT be present as an explicit primary text link
   assert.ok(!headerContent.includes('["Home", "/"]'), "Header must NOT contain an explicit Home link");
   assert.ok(!headerContent.includes('<Link href="/">Home</Link>'), "Header must NOT contain an explicit Home link");
 
   // Methodology must NOT be present in header navigation
   assert.ok(!headerContent.includes('href="/methodology"'), "Methodology must NOT be in header primary navigation");
+
+  // Duplicate CTA button must NOT be present in header
+  assert.ok(!headerContent.includes("Explore the rankings"), "Header must NOT contain duplicate 'Explore the rankings' CTA button");
+  assert.ok(!headerContent.includes("nav-cta"), "Header must NOT contain nav-cta");
 
   // Desktop nav must render Rankings, CareerToolsDropdown, News, About
   assert.ok(headerContent.includes('<Link href="/rankings">Rankings</Link>'), "Desktop nav must include Rankings link");

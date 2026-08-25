@@ -16,10 +16,6 @@ export function SiteHeader() {
           <Link href="/about">About</Link>
         </nav>
 
-        <Link className="button nav-cta" href="/rankings">
-          Explore the rankings <span aria-hidden="true">→</span>
-        </Link>
-
         {/* Mobile Navigation */}
         <details className="mobile-menu">
           <summary aria-label="Open navigation">
