@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero, PageShell } from "@/components/PageShell";
 import { NewsImpactBadge } from "@/components/NewsImpactBadge";
+import { AdSlot } from "@/components/AdSlot";
 import { getNewsArticle } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -84,6 +85,8 @@ export default async function NewsArticlePage({ params }: PageProps<"/news/[slug
             <div className="section-kicker">What happened</div>
             <p>{article.whatHappened}</p>
           </section>
+
+          <AdSlot slot="newsArticle" format="auto" />
 
           <section className="content-section">
             <div className="section-kicker">Why it matters for jobs</div>

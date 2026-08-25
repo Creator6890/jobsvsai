@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdSlot } from "@/components/AdSlot";
 import { OccupationSearch } from "@/components/OccupationSearch";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -43,6 +44,9 @@ export default async function Home() {
             <Link className="button secondary mobile-ranking-link" href="/rankings">Explore all rankings →</Link>
           </div>
         </section>
+
+        {/* Ad: after hero + search + ranking previews — user value first. */}
+        <AdSlot slot="home" format="horizontal" />
       </main>
       <SiteFooter />
     </>

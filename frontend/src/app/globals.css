@@ -532,3 +532,20 @@
 .incoming-card h3 { margin: 0; font-size: 1.02rem; line-height: 1.4; }
 .incoming-card p { margin: 0; color: var(--muted); font-size: .9rem; }
 .incoming-meta { display: flex; flex-wrap: wrap; gap: 14px; color: var(--muted); font-size: .78rem; padding-top: 8px; border-top: 1px solid var(--line); }
+
+/* ---------------------------------------------------------------- AdSense
+   Live ad slots and development debug placeholders. Ads must never overflow
+   the viewport, never cover content, and collapse to zero when unfilled. */
+.ad-slot { width: 100%; max-width: var(--container); margin: var(--gap-lg) auto; overflow: hidden; text-align: center; }
+.ad-slot .adsbygoogle { max-width: 100%; }
+/* Collapse unfilled slots so disabled ads leave no empty space. */
+.ad-slot:empty { display: none; }
+
+/* Debug placeholders — layout-review tool, not fake advertising. */
+.ad-slot-debug { width: 100%; max-width: var(--container); margin: var(--gap-lg) auto; padding: 18px 16px; border: 2px dashed var(--line); border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 90px; background: var(--soft); }
+.ad-slot-debug-label { font-size: .65rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.ad-slot-debug-name { font-size: .78rem; font-weight: 700; color: var(--violet); font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace; }
+
+/* News list: ad must be visually distinct from article cards. */
+.ad-slot-news-list { grid-column: 1 / -1; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: var(--gap) 0; }
+.ad-slot-debug.ad-slot-news-list { grid-column: 1 / -1; }

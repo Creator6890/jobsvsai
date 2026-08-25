@@ -36,7 +36,7 @@ def _declared_in(path: pathlib.Path) -> set[str]:
 
 
 def _passed_by_compose() -> set[str]:
-    return set(re.findall(r"(NEWS_[A-Z_0-9]+):", (ROOT / "docker-compose.yml").read_text()))
+    return set(re.findall(r"^\s*(NEWS_[A-Z_0-9]+):", (ROOT / "docker-compose.yml").read_text(), re.M))
 
 
 async def test_compose_passes_every_news_setting_the_app_reads() -> None:

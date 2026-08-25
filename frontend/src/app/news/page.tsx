@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero, PageShell } from "@/components/PageShell";
 import { NewsImpactBadge } from "@/components/NewsImpactBadge";
+import { AdSlot } from "@/components/AdSlot";
 import { getNewsArticles, type NewsImpactLevel } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +65,40 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
             </div>
           ) : (
             <div className="news-grid">
-              {articles.map((article) => (
+              {articles.slice(0, 4).map((article) => (
+                <article className="card news-card" key={article.slug}>
+                  <NewsImpactBadge level={article.impactLevel} />
+                  <h2><Link href={`/news/${article.slug}`}>{article.headline}</Link></h2>
+                  <p>{article.whatHappened}</p>
+                  {article.jobAreas.length > 0 && (
+                    <div className="news-areas">
+                      {article.jobAreas.map((area) => <span className="chip" key={area}>{area}</span>)}
+                    </div>
+                  )}
+                  <footer className="news-meta">
+                    {/* Source name and the source's own publication date, when the source
+                        supplied one. Never a date we inferred: an absent source date is
+                        left absent rather than substituted with ours. */}
+                    {article.primarySource && (
+                      <span>
+                        {article.primarySource.sourceName}
+                        {article.primarySource.sourcePublishedAt && (
+                          <> · <time dateTime={article.primarySource.sourcePublishedAt}>
+                            {formatDate(article.primarySource.sourcePublishedAt)}
+                          </time></>
+                        )}
+                      </span>
+                    )}
+                    {article.publishedAt && (
+                      <time dateTime={article.publishedAt} title="JobsVsAI publication date">
+                        {formatDate(article.publishedAt)}
+                      </time>
+                    )}
+                  </footer>
+                </article>
+              ))}
+              {articles.length > 4 && <AdSlot slot="newsList" format="horizontal" className="ad-slot-news-list" />}
+              {articles.slice(4).map((article) => (
                 <article className="card news-card" key={article.slug}>
                   <NewsImpactBadge level={article.impactLevel} />
                   <h2><Link href={`/news/${article.slug}`}>{article.headline}</Link></h2>

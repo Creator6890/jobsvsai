@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { AdsenseScript } from "@/components/AdsenseScript";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -48,6 +49,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Script>
           </>
         )}
+        {/* AdSense script — renders nothing when NEXT_PUBLIC_ADS_ENABLED is not "true"
+            or when NEXT_PUBLIC_ADSENSE_CLIENT_ID is absent. */}
+        <AdsenseScript />
       </body>
     </html>
   );
