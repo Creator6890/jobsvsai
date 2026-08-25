@@ -42,6 +42,10 @@ print('guard: accepted ->', target.describe())
 # that failed open would be invisible to a Python-only test. `docker compose` is absent
 # inside the container, which is what makes "the guard returned before reaching compose"
 # and "the run reached compose and failed" distinguishable.
+#
+# docker-compose.yml and the two .env TEMPLATES are mounted for the env-drift tests,
+# which compare what the application reads against what an operator is given. The real
+# .env is deliberately NOT mounted: it holds secrets and no test needs it.
 docker compose run --rm \
   -e DATABASE_URL="$TEST_DATABASE_URL" \
   -e ENVIRONMENT=test \
@@ -49,4 +53,7 @@ docker compose run --rm \
   -v "$PWD/backend/tests:/app/tests:ro" \
   -v "$PWD/scripts:/app/scripts:ro" \
   -v "$PWD/deploy:/app/deploy:ro" \
+  -v "$PWD/docker-compose.yml:/app/docker-compose.yml:ro" \
+  -v "$PWD/.env.example:/app/.env.example:ro" \
+  -v "$PWD/.env.production.example:/app/.env.production.example:ro" \
   backend python -m pytest tests "$@"
