@@ -62,6 +62,7 @@ export function AdSlot({ slot, format = "auto", className }: AdSlotProps) {
       >
         <span className="ad-slot-debug-label">ADVERTISEMENT</span>
         <span className="ad-slot-debug-name">{slot}</span>
+        <span className="ad-slot-debug-spec">{format === "auto" ? "responsive · auto" : `${format} banner`}</span>
       </div>
     );
   }
@@ -75,6 +76,7 @@ export function AdSlot({ slot, format = "auto", className }: AdSlotProps) {
       className={`ad-slot${className ? ` ${className}` : ""}`}
       aria-hidden="true"
     >
+      <span className="ad-label">Advertisement</span>
       <ins
         className="adsbygoogle"
         style={{ display: "block" }}

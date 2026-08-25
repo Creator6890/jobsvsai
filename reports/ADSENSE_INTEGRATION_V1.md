@@ -184,7 +184,31 @@ Templates updated:
 
 ---
 
-## 9. AdSense Owner Pre-Monetization Checklist
+## 9. Visual Integration & Merge Gate Review
+
+All placements were audited visually using layout-representative debug placeholders (`NEXT_PUBLIC_ADS_DEBUG=true`) across responsive viewports: `360px`, `390px`, `768px`, `1024px`, and `1440px`.
+
+### Visual Quality Standards Applied
+- **Native Typography & Colors**: Advertisement label uses `.ad-label` with `var(--muted)` (`#676776`), uppercase tracking (`.62rem`, `letter-spacing: .12em`), clearly identifying ads without masquerading as editorial badges or recommendation chips.
+- **Understated Chrome**: Neutral background (`var(--soft)`), subtle borders (`1px dashed #dcd8e8` in debug, `1px solid var(--line)` for dividers), zero gradients, zero heavy shadows.
+- **Container Alignment**: All placements adhere to the site's responsive container scale (`1180px` max, with `min(calc(100% - 40px), var(--container))` and `min(calc(100% - 24px), ...)` gutters on mobile).
+- **Responsive Overflow Guard**: Container-constrained with `overflow: hidden` to eliminate horizontal body scrolling on mobile devices.
+
+### Placement-by-Placement Merge Gate
+
+| Placement Surface | Status | Visual Fit & Invariant Assessment |
+| :--- | :--- | :--- |
+| **HOMEPAGE** | **PASS** | Appears after hero, search, and the complete top-5 ranking previews in `.container.ad-break`. First viewport remains 100% ad-free. Landing page aesthetic preserved. |
+| **JOB PRIMARY** | **PASS** | Sits in `.container.ad-break` between the 3-column Score Grid and the Task Evidence Table. The user receives their full core answer (AI Exposure, Replacement Risk, Evidence Quality) before encountering any ad. |
+| **JOB SECONDARY** | **PASS** | Placed in `.container.ad-break` at a natural content boundary between the 2-Column Deep Dive ("Most exposed" / "Hardest to automate") and "Related occupations". No score cards or task lists are fragmented. |
+| **RANKINGS** | **PASS** | Sits below `RankingsExplorer` within `.container`. Never injected inside row structures; does not interfere with ranking tabs, search input, or sorting. |
+| **COMPARE** | **PASS** | Placed below `CareerComparison` within `.container`. Full 7-metric comparison table and AI resilience verdict precede the unit. |
+| **NEWS LIST** | **PASS** | Spans full grid width (`grid-column: 1 / -1`) with top and bottom dividers between the 4th and 5th article cards. Visually distinct from article cards; cannot be mistaken for editorial news. |
+| **NEWS ARTICLE** | **PASS** | Sits inside `.container.news-article` (capped at reading measure `68ch`) between "What happened" and "Why it matters for jobs". Creates a natural editorial pause. Headline and source attribution remain uninterrupted. |
+
+---
+
+## 10. AdSense Owner Pre-Monetization Checklist
 
 Before turning monetization on in production, the site owner must complete the following steps:
 
@@ -204,7 +228,7 @@ Before turning monetization on in production, the site owner must complete the f
 
 ---
 
-## 10. Rollback & Emergency Procedures
+## 11. Rollback & Emergency Procedures
 
 If ads cause layout degradation, performance issues, or policy flags:
 

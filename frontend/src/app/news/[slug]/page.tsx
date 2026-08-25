@@ -86,7 +86,7 @@ export default async function NewsArticlePage({ params }: PageProps<"/news/[slug
             <p>{article.whatHappened}</p>
           </section>
 
-          <AdSlot slot="newsArticle" format="auto" />
+          <AdSlot slot="newsArticle" format="auto" className="ad-slot-article" />
 
           <section className="content-section">
             <div className="section-kicker">Why it matters for jobs</div>

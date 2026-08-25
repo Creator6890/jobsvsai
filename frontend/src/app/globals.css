@@ -536,16 +536,27 @@
 /* ---------------------------------------------------------------- AdSense
    Live ad slots and development debug placeholders. Ads must never overflow
    the viewport, never cover content, and collapse to zero when unfilled. */
-.ad-slot { width: 100%; max-width: var(--container); margin: var(--gap-lg) auto; overflow: hidden; text-align: center; }
+.ad-slot { width: 100%; margin: var(--gap-lg) auto; overflow: hidden; text-align: center; }
 .ad-slot .adsbygoogle { max-width: 100%; }
 /* Collapse unfilled slots so disabled ads leave no empty space. */
 .ad-slot:empty { display: none; }
 
-/* Debug placeholders — layout-review tool, not fake advertising. */
-.ad-slot-debug { width: 100%; max-width: var(--container); margin: var(--gap-lg) auto; padding: 18px 16px; border: 2px dashed var(--line); border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 90px; background: var(--soft); }
-.ad-slot-debug-label { font-size: .65rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.ad-slot-debug-name { font-size: .78rem; font-weight: 700; color: var(--violet); font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace; }
+/* Subtle, secondary label that unambiguously identifies advertising without looking like editorial content. */
+.ad-label { display: block; font-size: .62rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; text-align: center; }
 
-/* News list: ad must be visually distinct from article cards. */
-.ad-slot-news-list { grid-column: 1 / -1; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: var(--gap) 0; }
+/* Debug placeholders — layout-review tool, not fake advertising. */
+.ad-slot-debug { width: 100%; margin: var(--gap-lg) auto; padding: 22px 16px; border: 1px dashed #dcd8e8; border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 96px; background: var(--soft); box-sizing: border-box; }
+.ad-slot-debug-label { font-size: .62rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.ad-slot-debug-name { font-size: .78rem; font-weight: 600; color: var(--muted); font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace; }
+.ad-slot-debug-spec { font-size: .68rem; color: #9a96a2; }
+
+/* Full-width container breaks for page-level placements (homepage, job detail) */
+.ad-break { margin: var(--gap) auto; }
+
+/* News list: ad must span full grid width and be clearly separated from article cards. */
+.ad-slot-news-list { grid-column: 1 / -1; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: var(--gap) 0; margin: var(--gap-sm) 0; }
 .ad-slot-debug.ad-slot-news-list { grid-column: 1 / -1; }
+
+/* News article: natural editorial break with subtle dividers */
+.ad-slot-article { margin: var(--gap-lg) 0; padding: var(--gap-sm) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.ad-slot-debug.ad-slot-article { margin: var(--gap-lg) 0; }

@@ -46,7 +46,9 @@ export default async function Home() {
         </section>
 
         {/* Ad: after hero + search + ranking previews — user value first. */}
-        <AdSlot slot="home" format="horizontal" />
+        <div className="container ad-break">
+          <AdSlot slot="home" format="horizontal" />
+        </div>
       </main>
       <SiteFooter />
     </>
