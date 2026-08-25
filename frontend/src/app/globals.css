@@ -750,3 +750,53 @@
   .transition-cta-banner .button { width: 100%; text-align: center; }
 }
 
+/* ---------------------------------------------------------------- Action Plan V1
+   Strategic guidance, risk-band priorities, and defensible/exposed task advice. */
+
+.action-plan-section { padding-top: var(--gap-lg); }
+.action-band-chip { font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: .72rem; }
+.action-band-chip.low { background: var(--green-soft); color: var(--green); }
+.action-band-chip.medium { background: #fff5dd; color: var(--amber); }
+.action-band-chip.high { background: var(--violet-soft); color: var(--violet); }
+
+.action-profile-card { padding: 18px 22px; margin-bottom: var(--gap); background: var(--soft); border-left: 4px solid var(--violet); }
+.action-profile-body strong { display: block; font-size: 1.05rem; margin-bottom: 4px; color: var(--text); }
+.action-profile-body p { margin: 0; font-size: .92rem; color: var(--muted); line-height: 1.5; }
+
+.action-priorities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); margin-bottom: var(--gap-lg); }
+.priority-card { display: flex; flex-direction: column; gap: 8px; padding: 20px; border-radius: var(--radius-md); }
+.priority-badge { align-self: flex-start; font-size: .66rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--violet); background: var(--violet-soft); padding: 3px 8px; border-radius: 999px; }
+.priority-card h4 { margin: 0; font-size: 1.02rem; font-weight: 750; line-height: 1.35; }
+.priority-card p { margin: 0; font-size: .85rem; color: var(--muted); line-height: 1.45; }
+
+.action-pillars-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+.action-pillar-card { display: flex; flex-direction: column; gap: 16px; padding: var(--pad-card-lg); border-radius: var(--radius-md); }
+.pillar-header h3 { margin: 4px 0 6px; font-size: 1.25rem; font-weight: 750; }
+.pillar-header p { margin: 0; font-size: .88rem; color: var(--muted); line-height: 1.45; }
+
+.resilient-characteristics-list { display: grid; gap: 8px; margin: 4px 0; }
+.characteristic-item { display: flex; align-items: flex-start; gap: 10px; font-size: .85rem; color: var(--text); line-height: 1.45; }
+.characteristic-item .bullet-icon { color: var(--violet); font-size: .9rem; flex-shrink: 0; line-height: 1.3; }
+
+.pillar-tasks-wrap { display: grid; gap: 10px; margin-top: 4px; }
+.pillar-subhead { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.pillar-tasks-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.pillar-task-item { padding: 12px 14px; background: var(--soft); border-radius: var(--radius-sm); border: 1px solid var(--line); display: grid; gap: 4px; }
+.task-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.task-item-head strong { font-size: .88rem; color: var(--text); line-height: 1.35; }
+.task-meta-tag { font-size: .66rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.task-meta-tag.tag-resilient { background: var(--green-soft); color: var(--green); }
+.task-meta-tag.tag-augment { background: var(--violet-soft); color: var(--violet); }
+.task-meta-tag.tag-exposed { background: #fee2e2; color: #b91c1c; }
+.task-guidance { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; }
+
+.alternatives-cta-wrap { display: flex; flex-direction: column; gap: 14px; margin-top: auto; padding-top: 8px; }
+.alternatives-cta-wrap .button { text-align: center; justify-content: center; width: 100%; }
+.career-fit-secondary-callout { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: .84rem; color: var(--muted); flex-wrap: wrap; text-align: center; }
+
+@media (max-width: 950px) {
+  .action-priorities-grid { grid-template-columns: 1fr; }
+  .action-pillars-grid { grid-template-columns: 1fr; }
+}
+
+

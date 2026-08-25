@@ -3,6 +3,7 @@ import type { Occupation } from "@/types/occupation";
 import { AdSlot } from "./AdSlot";
 import { MetricBar, ScoreCard } from "./ScoreCard";
 import { RelatedOccupationLink } from "./RelatedOccupationLink";
+import { ActionPlanSection } from "./actionPlan/ActionPlanSection";
 
 // O*NET's relatedness tiers, rendered for readers. The tier is a source fact; the wording
 // is a presentation of it and deliberately claims nothing about transition difficulty.
@@ -33,10 +34,13 @@ export function OccupationDetail({ job }: { job: Occupation }) {
 
     <section className="content-section section-tint"><div className="container two-column"><article className="card"><span className="section-kicker">Most exposed</span><h2>Where AI can do more</h2><p>Routine, digitized, and highly repeatable tasks face the greatest pressure.</p><ol className="insight-list">{vulnerable.map((task) => <li key={task.onetTaskId}><span>{task.name}</span><b>{task.exposure}</b></li>)}</ol></article><article className="card human-card"><span className="section-kicker">Hardest to automate</span><h2>Where people still matter</h2><p>These tasks score lowest on automation feasibility—physical presence, judgement, accountability and real-world variability all resist end-to-end automation.</p><ol className="insight-list">{job.hardestToAutomateTasks.map((task, index) => <li key={task}><span>{task}</span><b>0{index + 1}</b></li>)}</ol></article></div></section>
 
-    {/* Ad 2: natural content boundary before related occupations. */}
+    {/* Ad 2: natural content boundary before Action Plan & related occupations. */}
     <div className="container ad-break">
       <AdSlot slot="jobSecondary" format="horizontal" />
     </div>
+
+    {/* Action Plan V1 */}
+    <ActionPlanSection job={job} />
 
     <section className="content-section"><div className="container"><div className="section-head"><div><div className="section-kicker">Where else this work leads</div><h2>Related occupations</h2><p>Occupations O*NET links to this one. Relatedness reflects shared work, not a claim that these roles are safer.</p></div><div className="section-actions"><Link className="button secondary" href={`/jobs/${job.slug}/transitions`}>Explore Career Transitions →</Link></div></div>{job.relatedCareers.length ? <div className="career-grid">{job.relatedCareers.map((career) => <article className="card career-card" key={career.slug}><span className="chip safe">AI risk {career.replacementRisk}</span><h3>{career.title}</h3><p>{relatednessLabel(career.relatednessTier)}</p><RelatedOccupationLink sourceSlug={job.slug} relatedSlug={career.slug} relatedTitle={career.title} href={`/compare/${job.slug}-vs-${career.slug}`}>Compare these careers →</RelatedOccupationLink></article>)}</div> : <div className="empty-state">No related occupation is published yet.</div>}<div className="card transition-cta-banner"><div><strong>Looking for career alternatives?</strong><p>Explore realistic career transitions with transferable skills and comparative AI replacement risk.</p></div><Link className="button primary" href={`/jobs/${job.slug}/transitions`}>Explore Transitions for {job.title} →</Link></div></div></section>
 
@@ -45,3 +49,4 @@ export function OccupationDetail({ job }: { job: Occupation }) {
     <section className="source-strip"><div className="container"><div><strong>Methodology & sources</strong><p>O*NET 30.3 occupational data interpreted through the JobsVsAI capability, automation and structural-constraint models.</p></div><div><span className="metric-label">Confidence</span><strong>{Math.round(job.confidence)}/100</strong></div><div><span className="metric-label">Calculated</span><strong>{new Date(job.updatedAt).toLocaleDateString("en", { dateStyle: "medium" })}</strong></div><Link className="text-link" href="/methodology">Read methodology →</Link></div></section>
   </>;
 }
+
