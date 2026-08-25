@@ -119,79 +119,78 @@ function deriveResilientCharacteristics(job: Occupation): string[] {
 }
 
 /**
+ * Calculates importance bonus to ensure core occupational tasks are prioritized over obscure peripheral items.
+ */
+function getImportanceBonus(importance: "High" | "Medium" | "Low"): number {
+  switch (importance) {
+    case "High":
+      return 10;
+    case "Medium":
+      return 5;
+    case "Low":
+    default:
+      return 0;
+  }
+}
+
+/**
+ * Calculates automation pressure score combining exposure, automation feasibility, and task importance.
+ */
+function getAutomationPressureScore(t: TaskImpact): number {
+  const bonus = getImportanceBonus(t.importance);
+  return t.exposure * 0.55 + t.automationFeasibility * 0.45 + bonus;
+}
+
+/**
+ * Calculates augmentation score emphasizing high augmentation potential and co-pilot utility.
+ */
+function getAugmentationScore(t: TaskImpact): number {
+  const bonus = getImportanceBonus(t.importance);
+  const gapBonus = Math.max(0, t.augmentationPotential - t.automationFeasibility * 0.4);
+  return t.augmentationPotential * 0.6 + t.exposure * 0.2 + gapBonus * 0.2 + bonus;
+}
+
+/**
+ * Calculates defensibility score for Lean Into section (lower exposure/automation feasibility + importance).
+ */
+function getDefensibilityScore(t: TaskImpact, isHardest: boolean): number {
+  const bonus = getImportanceBonus(t.importance);
+  const hardestBonus = isHardest ? 30 : 0;
+  // Lower exposure and automation feasibility give higher defensibility
+  const resistance = (100 - t.exposure) * 0.5 + (100 - t.automationFeasibility) * 0.5;
+  return resistance + hardestBonus + bonus;
+}
+
+/**
  * Generates deterministic Occupation Action Plan data from structured evidence.
+ * Enforces mutually distinct task selections across Lean Into, Use AI For, and Watch Closely.
  */
 export function generateActionPlan(job: Occupation): ActionPlanData {
   const riskBand = getActionRiskBand(job.replacementRisk);
   const priorities = buildActionPriorities(riskBand, job);
   const tasks = job.tasks || [];
+  const claimedTasks = new Set<string>();
 
-  // 1. WATCH CLOSELY: Most exposed tasks (highest exposure, up to 4)
-  const sortedByExposureDesc = [...tasks].sort(
-    (a, b) => b.exposure - a.exposure
-  );
-  const watchTasks: TaskActionItem[] = sortedByExposureDesc.slice(0, 4).map((t) => ({
-    name: t.name,
-    exposure: t.exposure,
-    automationFeasibility: t.automationFeasibility,
-    augmentationPotential: t.augmentationPotential,
-    importance: t.importance,
-    guidance:
-      t.exposure >= 70
-        ? "High AI exposure: Standardized or repeatable components make this a primary focus of automation tooling."
-        : "Moderate AI exposure: Machine capabilities can assist with portions of this task mix.",
-    tag: `Exposure ${t.exposure}/100`,
-  }));
-
-
-
-  // 2. USE AI FOR: Tasks with high augmentation potential and notable exposure
-  // Look for tasks where augmentationPotential >= 50 or exposure >= 50, sorted by augmentationPotential desc
-  const sortedByAugmentation = [...tasks]
-    .filter((t) => t.exposure >= 45 || t.augmentationPotential >= 50)
-    .sort((a, b) => b.augmentationPotential - a.augmentationPotential);
-
-  const useAiCandidates: TaskImpact[] = [];
-  for (const t of sortedByAugmentation) {
-    if (useAiCandidates.length >= 3) break;
-    useAiCandidates.push(t);
-  }
-
-  // Fallback if no task matched filter
-  if (useAiCandidates.length === 0 && sortedByExposureDesc.length > 0) {
-    useAiCandidates.push(sortedByExposureDesc[0]);
-  }
-
-  const useAiTasks: TaskActionItem[] = useAiCandidates.map((t) => ({
-    name: t.name,
-    exposure: t.exposure,
-    automationFeasibility: t.automationFeasibility,
-    augmentationPotential: t.augmentationPotential,
-    importance: t.importance,
-    guidance: `Augmentation opportunity: Use AI tools to accelerate drafting, initial data structuring, or research while applying human review.`,
-    tag: `Augmentation ${t.augmentationPotential}/100`,
-  }));
-
-  // 3. LEAN INTO: Resilient / Hardest to Automate Tasks
-  // Match hardestToAutomateTasks strings back to TaskImpact if possible, or sort by exposure asc
   const hardestNames = new Set(job.hardestToAutomateTasks || []);
-  const hardestMatched: TaskImpact[] = [];
 
-  for (const t of tasks) {
-    if (hardestNames.has(t.name)) {
-      hardestMatched.push(t);
-    }
+  // Determine target count per section to maintain mutually distinct selections
+  const maxPerSection = tasks.length <= 4 ? 1 : tasks.length <= 7 ? 2 : 3;
+
+  // -------------------------------------------------------------------------
+  // 1. LEAN INTO: Select most defensible tasks
+  // -------------------------------------------------------------------------
+  const sortedForLean = [...tasks].sort((a, b) => {
+    const scoreA = getDefensibilityScore(a, hardestNames.has(a.name));
+    const scoreB = getDefensibilityScore(b, hardestNames.has(b.name));
+    return scoreB - scoreA;
+  });
+
+  const leanCandidates: TaskImpact[] = [];
+  for (const t of sortedForLean) {
+    if (leanCandidates.length >= maxPerSection) break;
+    leanCandidates.push(t);
+    claimedTasks.add(t.name);
   }
-  hardestMatched.sort((a, b) => a.exposure - b.exposure);
-
-  const sortedByExposureAsc = [...tasks].sort(
-    (a, b) => a.exposure - b.exposure
-  );
-
-  const leanCandidates: TaskImpact[] =
-    hardestMatched.length >= 2
-      ? hardestMatched.slice(0, 4)
-      : sortedByExposureAsc.slice(0, 4);
 
   const leanTasks: TaskActionItem[] = leanCandidates.map((t) => ({
     name: t.name,
@@ -201,9 +200,70 @@ export function generateActionPlan(job: Occupation): ActionPlanData {
     importance: t.importance,
     guidance:
       t.exposure <= 45
-        ? "Lower exposure: Real-world complexity, interpersonal nuance, or judgment resist automated replacement."
-        : "Defensible execution: Human context and situational discernment remain essential for reliable outcomes.",
+        ? "Lower exposure: Real-world complexity, physical execution, or interpersonal nuance resist automated replacement."
+        : "Defensible execution: Situational discernment, stakeholder trust, and human context remain essential.",
     tag: `Exposure ${t.exposure}/100`,
+  }));
+
+  // -------------------------------------------------------------------------
+  // 2. WATCH CLOSELY: Select tasks facing high automation pressure
+  // -------------------------------------------------------------------------
+  const availableForWatch = tasks.filter((t) => !claimedTasks.has(t.name));
+  const sortedForWatch = [...availableForWatch].sort(
+    (a, b) => getAutomationPressureScore(b) - getAutomationPressureScore(a)
+  );
+
+  const watchCandidates: TaskImpact[] = [];
+  for (const t of sortedForWatch) {
+    if (watchCandidates.length >= maxPerSection) break;
+    watchCandidates.push(t);
+    claimedTasks.add(t.name);
+  }
+
+  const watchTasks: TaskActionItem[] = watchCandidates.map((t) => ({
+    name: t.name,
+    exposure: t.exposure,
+    automationFeasibility: t.automationFeasibility,
+    augmentationPotential: t.augmentationPotential,
+    importance: t.importance,
+    guidance:
+      t.automationFeasibility >= 70
+        ? "High automation feasibility: Standardized workflows and structured deliverables face increasing automation capability."
+        : "Notable AI exposure: Machine capabilities can assist with portions of this task mix, shifting workflow expectations.",
+    tag: `Feasibility ${t.automationFeasibility}/100`,
+  }));
+
+  // -------------------------------------------------------------------------
+  // 3. USE AI FOR: Select tasks with high augmentation potential
+  // -------------------------------------------------------------------------
+  const availableForAugment = tasks.filter((t) => !claimedTasks.has(t.name));
+  const sortedForAugment = [...availableForAugment].sort(
+    (a, b) => getAugmentationScore(b) - getAugmentationScore(a)
+  );
+
+  const useAiCandidates: TaskImpact[] = [];
+  for (const t of sortedForAugment) {
+    if (useAiCandidates.length >= maxPerSection) break;
+    useAiCandidates.push(t);
+    claimedTasks.add(t.name);
+  }
+
+  // If very few tasks exist and useAi is still empty, take highest augmentation task with explicit co-pilot tag
+  if (useAiCandidates.length === 0 && tasks.length > 0) {
+    const bestAug = [...tasks].sort(
+      (a, b) => getAugmentationScore(b) - getAugmentationScore(a)
+    )[0];
+    useAiCandidates.push(bestAug);
+  }
+
+  const useAiTasks: TaskActionItem[] = useAiCandidates.map((t) => ({
+    name: t.name,
+    exposure: t.exposure,
+    automationFeasibility: t.automationFeasibility,
+    augmentationPotential: t.augmentationPotential,
+    importance: t.importance,
+    guidance: `High augmentation potential: Well-suited for AI co-piloting, initial drafting, and structured analysis under human oversight.`,
+    tag: `Augmentation ${t.augmentationPotential}/100`,
   }));
 
   // Characteristics
@@ -257,7 +317,7 @@ export function generateActionPlan(job: Occupation): ActionPlanData {
     watchClosely: {
       title: "Watch closely for automation pressure",
       description:
-        "These tasks have higher exposure to machine capability and are most likely to experience shifting workflow demands.",
+        "These tasks have comparatively higher automation feasibility and are most likely to experience shifting workflow demands.",
       tasks: watchTasks,
     },
     alternatives: {

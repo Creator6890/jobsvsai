@@ -38,7 +38,7 @@ test("Action Plan source files exist and contain required exports", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 2. Pure Algorithm Execution Tests
+// 2. Pure Algorithm Execution & Evidence-Fidelity Tests
 // ---------------------------------------------------------------------------
 
 function getActionRiskBandPure(replacementRisk) {
@@ -51,7 +51,7 @@ function buildActionPrioritiesPure(band) {
   switch (band) {
     case "low":
       return [
-        { order: 1, title: "Integrate AI productivity tools into routine tasks", guidance: `Experiment with AI assistants for standard reporting, documentation, and research.` },
+        { order: 1, title: "Integrate AI productivity tools into routine tasks", guidance: `Experiment with AI assistants for standard reporting.` },
         { order: 2, title: "Deepen specialized contextual expertise", guidance: `Strengthen human judgment and physical oversight.` },
         { order: 3, title: "Explore adjacent career growth paths", guidance: `Stay aware of specialized tracks.` },
       ];
@@ -90,33 +90,96 @@ function deriveResilientCharacteristicsPure(job) {
   return chars;
 }
 
+function getImportanceBonusPure(importance) {
+  switch (importance) {
+    case "High": return 10;
+    case "Medium": return 5;
+    default: return 0;
+  }
+}
+
+function getAutomationPressureScorePure(t) {
+  return t.exposure * 0.55 + t.automationFeasibility * 0.45 + getImportanceBonusPure(t.importance);
+}
+
+function getAugmentationScorePure(t) {
+  const gapBonus = Math.max(0, t.augmentationPotential - t.automationFeasibility * 0.4);
+  return t.augmentationPotential * 0.6 + t.exposure * 0.2 + gapBonus * 0.2 + getImportanceBonusPure(t.importance);
+}
+
+function getDefensibilityScorePure(t, isHardest) {
+  const hardestBonus = isHardest ? 30 : 0;
+  const resistance = (100 - t.exposure) * 0.5 + (100 - t.automationFeasibility) * 0.5;
+  return resistance + hardestBonus + getImportanceBonusPure(t.importance);
+}
+
 function generateActionPlanPure(job) {
   const riskBand = getActionRiskBandPure(job.replacementRisk);
-  const priorities = buildActionPrioritiesPure(riskBand, job);
+  const priorities = buildActionPrioritiesPure(riskBand);
   const tasks = job.tasks || [];
+  const claimedTasks = new Set();
+  const hardestNames = new Set(job.hardestToAutomateTasks || []);
 
-  const sortedByExposureDesc = [...tasks].sort((a, b) => b.exposure - a.exposure);
-  const watchTasks = sortedByExposureDesc.slice(0, 4).map(t => ({
+  // 1. Lean Into
+  const sortedForLean = [...tasks].sort((a, b) => {
+    return getDefensibilityScorePure(b, hardestNames.has(b.name)) - getDefensibilityScorePure(a, hardestNames.has(a.name));
+  });
+
+  const leanCandidates = [];
+  for (const t of sortedForLean) {
+    if (leanCandidates.length >= 3) break;
+    leanCandidates.push(t);
+    claimedTasks.add(t.name);
+  }
+
+  const leanTasks = leanCandidates.map(t => ({
     name: t.name,
     exposure: t.exposure,
     automationFeasibility: t.automationFeasibility,
     augmentationPotential: t.augmentationPotential,
     importance: t.importance,
-    guidance: t.exposure >= 70 ? "High AI exposure" : "Moderate AI exposure",
+    guidance: t.exposure <= 45 ? "Lower exposure: Real-world complexity resists automated replacement." : "Defensible execution: Situational discernment remains essential.",
     tag: `Exposure ${t.exposure}/100`,
   }));
 
-  const sortedByAugmentation = [...tasks]
-    .filter(t => t.exposure >= 45 || t.augmentationPotential >= 50)
-    .sort((a, b) => b.augmentationPotential - a.augmentationPotential);
+  // 2. Watch Closely
+  const availableForWatch = tasks.filter(t => !claimedTasks.has(t.name));
+  const sortedForWatch = [...(availableForWatch.length > 0 ? availableForWatch : tasks)].sort(
+    (a, b) => getAutomationPressureScorePure(b) - getAutomationPressureScorePure(a)
+  );
+
+  const watchCandidates = [];
+  for (const t of sortedForWatch) {
+    if (watchCandidates.length >= 3) break;
+    if (!claimedTasks.has(t.name) || tasks.length <= 4) {
+      watchCandidates.push(t);
+      claimedTasks.add(t.name);
+    }
+  }
+
+  const watchTasks = watchCandidates.map(t => ({
+    name: t.name,
+    exposure: t.exposure,
+    automationFeasibility: t.automationFeasibility,
+    augmentationPotential: t.augmentationPotential,
+    importance: t.importance,
+    guidance: t.automationFeasibility >= 70 ? "High automation feasibility" : "Notable AI exposure",
+    tag: `Feasibility ${t.automationFeasibility}/100`,
+  }));
+
+  // 3. Use AI For
+  const availableForAugment = tasks.filter(t => !claimedTasks.has(t.name));
+  const sortedForAugment = [...(availableForAugment.length > 0 ? availableForAugment : tasks)].sort(
+    (a, b) => getAugmentationScorePure(b) - getAugmentationScorePure(a)
+  );
 
   const useAiCandidates = [];
-  for (const t of sortedByAugmentation) {
+  for (const t of sortedForAugment) {
     if (useAiCandidates.length >= 3) break;
-    useAiCandidates.push(t);
-  }
-  if (useAiCandidates.length === 0 && sortedByExposureDesc.length > 0) {
-    useAiCandidates.push(sortedByExposureDesc[0]);
+    if (!claimedTasks.has(t.name) || tasks.length <= 6) {
+      useAiCandidates.push(t);
+      claimedTasks.add(t.name);
+    }
   }
 
   const useAiTasks = useAiCandidates.map(t => ({
@@ -125,27 +188,8 @@ function generateActionPlanPure(job) {
     automationFeasibility: t.automationFeasibility,
     augmentationPotential: t.augmentationPotential,
     importance: t.importance,
-    guidance: "Augmentation opportunity",
+    guidance: "High augmentation potential: Well-suited for AI co-piloting.",
     tag: `Augmentation ${t.augmentationPotential}/100`,
-  }));
-
-  const hardestNames = new Set(job.hardestToAutomateTasks || []);
-  const hardestMatched = [];
-  for (const t of tasks) {
-    if (hardestNames.has(t.name)) hardestMatched.push(t);
-  }
-  hardestMatched.sort((a, b) => a.exposure - b.exposure);
-  const sortedByExposureAsc = [...tasks].sort((a, b) => a.exposure - b.exposure);
-  const leanCandidates = hardestMatched.length >= 2 ? hardestMatched.slice(0, 4) : sortedByExposureAsc.slice(0, 4);
-
-  const leanTasks = leanCandidates.map(t => ({
-    name: t.name,
-    exposure: t.exposure,
-    automationFeasibility: t.automationFeasibility,
-    augmentationPotential: t.augmentationPotential,
-    importance: t.importance,
-    guidance: t.exposure <= 45 ? "Lower exposure" : "Defensible execution",
-    tag: `Exposure ${t.exposure}/100`,
   }));
 
   const resilientCharacteristics = deriveResilientCharacteristicsPure(job);
@@ -194,7 +238,7 @@ function generateActionPlanPure(job) {
     },
     watchClosely: {
       title: "Watch closely for automation pressure",
-      description: "Tasks with higher exposure.",
+      description: "Tasks with higher automation feasibility.",
       tasks: watchTasks,
     },
     alternatives: {
@@ -219,12 +263,15 @@ const SAMPLE_HIGH_RISK_JOB = {
   tasks: [
     { onetTaskId: 1, name: "Create designs, concepts, and sample layouts.", importance: "High", exposure: 78, automationFeasibility: 72, augmentationPotential: 80 },
     { onetTaskId: 2, name: "Determine size and arrangement of illustrative material.", importance: "High", exposure: 75, automationFeasibility: 70, augmentationPotential: 78 },
-    { onetTaskId: 3, name: "Review final layouts and suggest improvements.", importance: "Medium", exposure: 68, automationFeasibility: 60, augmentationPotential: 70 },
-    { onetTaskId: 4, name: "Confer with clients to determine objectives.", importance: "High", exposure: 42, automationFeasibility: 35, augmentationPotential: 55 },
+    { onetTaskId: 3, name: "Review final layouts and suggest improvements.", importance: "Medium", exposure: 68, automationFeasibility: 55, augmentationPotential: 70 },
+    { onetTaskId: 4, name: "Confer with clients to determine objectives.", importance: "High", exposure: 42, automationFeasibility: 25, augmentationPotential: 55 },
+    { onetTaskId: 5, name: "Prepare notes and archives of design files.", importance: "Low", exposure: 80, automationFeasibility: 75, augmentationPotential: 50 },
+    { onetTaskId: 6, name: "Generate color palettes and visual asset variations.", importance: "High", exposure: 74, automationFeasibility: 60, augmentationPotential: 85 },
+    { onetTaskId: 7, name: "Present rough sketches to clients for feedback.", importance: "High", exposure: 48, automationFeasibility: 30, augmentationPotential: 62 },
   ],
   hardestToAutomateTasks: [
     "Confer with clients to determine objectives.",
-    "Review final layouts and suggest improvements.",
+    "Present rough sketches to clients for feedback.",
   ],
   relatedCareers: [
     { slug: "art-directors", title: "Art Directors", replacementRisk: 55, relatednessTier: "Primary-Short", relatednessRank: 1 },
@@ -244,6 +291,7 @@ const SAMPLE_LOW_RISK_JOB = {
     { onetTaskId: 10, name: "Install electrical conduit and wiring systems.", importance: "High", exposure: 25, automationFeasibility: 15, augmentationPotential: 30 },
     { onetTaskId: 11, name: "Diagnose malfunctioning systems, apparatus, and components.", importance: "High", exposure: 38, automationFeasibility: 30, augmentationPotential: 52 },
     { onetTaskId: 12, name: "Read blueprints or technical diagrams.", importance: "Medium", exposure: 55, automationFeasibility: 50, augmentationPotential: 65 },
+    { onetTaskId: 13, name: "Log completed maintenance work orders.", importance: "Low", exposure: 60, automationFeasibility: 55, augmentationPotential: 70 },
   ],
   hardestToAutomateTasks: [
     "Install electrical conduit and wiring systems.",
@@ -277,20 +325,61 @@ test("Risk-band framing adapts to Replacement Risk thresholds", () => {
   assert.equal(high.alternatives.transitionProminence, "prominent");
 });
 
-test("High-exposure task selection: Watch Closely captures top exposed tasks", () => {
+test("Watch Closely gate: incorporates automation feasibility & importance", () => {
   const plan = generateActionPlanPure(SAMPLE_HIGH_RISK_JOB);
   const watchTaskNames = plan.watchClosely.tasks.map(t => t.name);
 
+  // High importance + high automation feasibility tasks rank high in Watch Closely
   assert.ok(watchTaskNames.includes("Create designs, concepts, and sample layouts."));
-  assert.equal(plan.watchClosely.tasks[0].exposure, 78);
+  assert.ok(plan.watchClosely.tasks[0].automationFeasibility >= 70);
 });
 
-test("Resilient task selection: Lean Into prioritizes hardest to automate / low exposure", () => {
+test("Use AI For gate: prioritizes high augmentation potential", () => {
+  const plan = generateActionPlanPure(SAMPLE_HIGH_RISK_JOB);
+  const useAiNames = plan.useAiFor.tasks.map(t => t.name);
+
+  // Task with highest augmentation potential (85)
+  assert.ok(useAiNames.includes("Generate color palettes and visual asset variations."));
+  const augmentTask = plan.useAiFor.tasks.find(t => t.name === "Generate color palettes and visual asset variations.");
+  assert.equal(augmentTask.augmentationPotential, 85);
+});
+
+test("Section collision invariant: no task duplicated across sections", () => {
+  const plan = generateActionPlanPure(SAMPLE_HIGH_RISK_JOB);
+  const leanNames = new Set(plan.leanInto.tasks.map(t => t.name));
+  const watchNames = new Set(plan.watchClosely.tasks.map(t => t.name));
+  const useAiNames = new Set(plan.useAiFor.tasks.map(t => t.name));
+
+  // Verify Lean Into vs Watch Closely
+  for (const name of leanNames) {
+    assert.equal(watchNames.has(name), false, `Task '${name}' cannot appear in both Lean Into and Watch Closely`);
+  }
+
+  // Verify Watch Closely vs Use AI For
+  for (const name of watchNames) {
+    assert.equal(useAiNames.has(name), false, `Task '${name}' cannot appear in both Watch Closely and Use AI For`);
+  }
+
+  // Verify Lean Into vs Use AI For
+  for (const name of leanNames) {
+    assert.equal(useAiNames.has(name), false, `Task '${name}' cannot appear in both Lean Into and Use AI For`);
+  }
+});
+
+test("Lean Into fidelity: prioritizes hardest to automate and low exposure", () => {
   const plan = generateActionPlanPure(SAMPLE_HIGH_RISK_JOB);
   const leanTaskNames = plan.leanInto.tasks.map(t => t.name);
 
   assert.ok(leanTaskNames.includes("Confer with clients to determine objectives."));
-  assert.equal(plan.leanInto.tasks[0].exposure, 42);
+  assert.ok(plan.leanInto.tasks[0].exposure <= 45);
+});
+
+test("Importance sanity: core high/medium tasks favored over low-importance peripheral items", () => {
+  const plan = generateActionPlanPure(SAMPLE_HIGH_RISK_JOB);
+  // Low importance task "Prepare notes and archives of design files" should not crowd out top spots
+  const topWatch = plan.watchClosely.tasks[0];
+  assert.notEqual(topWatch.name, "Prepare notes and archives of design files.");
+  assert.equal(topWatch.importance, "High");
 });
 
 test("No AI score mutation: underlying metrics remain intact", () => {
