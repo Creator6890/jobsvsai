@@ -10,6 +10,8 @@ import type {
 import { sortTransitions } from "@/lib/transitions/scoring";
 import { TransitionSourceBanner } from "./TransitionSourceBanner";
 import { TransitionCard } from "./TransitionCard";
+import { trackEvent } from "@/lib/analytics";
+import { CareerTransitionsViewTracker } from "../analytics/AnalyticsTrackers";
 
 export function TransitionExplorerApp({
   analysis,
@@ -24,6 +26,11 @@ export function TransitionExplorerApp({
 
   return (
     <div className="transition-explorer-root">
+      <CareerTransitionsViewTracker
+        sourceSlug={source.slug}
+        sourceRisk={source.replacementRisk}
+        candidateCount={analysis.transitions.length}
+      />
       {/* 1. Persistent Source Occupation Banner */}
       <section className="section section-tint">
         <div className="container">
@@ -137,7 +144,15 @@ export function TransitionExplorerApp({
                 creative, and operational preferences and find compatible careers from scratch.
               </p>
             </div>
-            <Link className="button primary" href="/career-fit">
+            <Link
+              className="button primary"
+              href="/career-fit"
+              onClick={() =>
+                trackEvent("transition_career_fit_clicked", {
+                  source_slug: source.slug,
+                })
+              }
+            >
               Take Career Fit Assessment →
             </Link>
           </div>

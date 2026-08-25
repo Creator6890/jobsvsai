@@ -45,11 +45,8 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
       setSearchState("not-found");
       return;
     }
-    // Submit only — the debounced effect above runs on every keystroke and must stay
-    // silent. Fired before the lookup resolves so that searches returning nothing are
-    // still recorded; a term with no match is the more useful half of search analytics.
-    trackEvent("occupation_search", { search_term: trimmed });
     let job = selected ?? matches[0] ?? null;
+    let resultCount = matches.length;
     if (!job) {
       setSearchState("searching");
       try {
@@ -57,12 +54,19 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
         if (!response.ok) throw new Error("Search unavailable");
         const results = await response.json() as Occupation[];
         setMatches(results);
+        resultCount = results.length;
         job = results[0] ?? null;
       } catch {
         setSearchState("error");
         return;
       }
     }
+
+    trackEvent("occupation_search_used", {
+      query_result_count: resultCount,
+      selected_occupation_slug: job ? job.slug : undefined,
+    });
+
     if (!job) {
       setSearchState("not-found");
       return;
@@ -104,11 +108,6 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
       <Link
         className="button result-link"
         href={`/jobs/${selected.slug}`}
-        onClick={() => trackEvent("occupation_open", {
-          occupation_slug: selected.slug,
-          occupation_title: selected.title,
-          source: "homepage_search",
-        })}
       >See the full analysis <span aria-hidden="true">→</span></Link>
     </article>
   );

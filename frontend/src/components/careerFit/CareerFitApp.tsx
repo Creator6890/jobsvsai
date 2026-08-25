@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import type { Occupation } from "@/types/occupation";
 import {
   ASSESSMENT_QUESTIONS,
@@ -31,6 +31,7 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
   const [matches, setMatches] = useState<CareerMatch[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>("fit");
   const [, startTransition] = useTransition();
+  const startTimeRef = useRef<number | null>(null);
 
   const totalQuestions = ASSESSMENT_QUESTIONS.length;
   const currentQuestion = ASSESSMENT_QUESTIONS[currentIndex];
@@ -40,7 +41,8 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
   // --- Handlers ---
 
   const handleStart = () => {
-    trackEvent("career_fit_started");
+    startTimeRef.current = Date.now();
+    trackEvent("career_fit_started", { entry_source: "career_fit_page" });
     setView("assessment");
     setCurrentIndex(0);
   };
@@ -79,8 +81,11 @@ export function CareerFitApp({ occupations }: CareerFitAppProps) {
       setProfile(calculatedProfile);
       setMatches(matchedCareers);
       setView("results");
+      const durationSeconds = startTimeRef.current
+        ? Math.round((Date.now() - startTimeRef.current) / 1000)
+        : undefined;
       trackEvent("career_fit_completed", {
-        topStrength: calculatedProfile.topStrengths[0],
+        duration_seconds: durationSeconds,
       });
       // Scroll to top of results
       if (typeof window !== "undefined") {

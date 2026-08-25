@@ -14,7 +14,7 @@ export function CompareSelector({ occupations, initialA, initialB }: { occupatio
   function submit(e: FormEvent) {
     e.preventDefault();
     if (a === b) return;
-    trackEvent("compare_started", { occupation_a: a, occupation_b: b });
+    trackEvent("comparison_created", { occupation_a_slug: a, occupation_b_slug: b });
     router.push(`/compare/${a}-vs-${b}`);
   }
   if (occupations.length < 2) return <p className="empty-state">Career comparisons open up once at least two occupations are published.</p>;

@@ -13,8 +13,8 @@ export function CareerMatchCard({ match, rank }: CareerMatchCardProps) {
 
   const handleClick = () => {
     trackEvent("career_fit_job_opened", {
-      slug: occupation.slug,
-      fitScore: careerFit,
+      destination_slug: occupation.slug,
+      fit_rank: rank,
     });
   };
 

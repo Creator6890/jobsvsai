@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Occupation } from "@/types/occupation";
 import type { CareerTransition } from "@/lib/transitions/types";
+import { trackEvent, getAnalyticsRiskBand } from "@/lib/analytics";
 
 function difficultyTone(difficulty: string): string {
   switch (difficulty) {
@@ -28,6 +29,15 @@ export function TransitionCard({
   const exposureDelta = transition.exposureDelta;
   const riskPres = transition.riskPresentation;
 
+  const handleOpenDestination = () => {
+    trackEvent("transition_destination_opened", {
+      source_slug: source.slug,
+      destination_slug: dest.slug,
+      source_risk_band: getAnalyticsRiskBand(source.replacementRisk),
+      destination_risk_band: getAnalyticsRiskBand(dest.replacementRisk),
+    });
+  };
+
   return (
     <article className="card transition-card" key={dest.slug}>
       {/* Card Header */}
@@ -36,7 +46,9 @@ export function TransitionCard({
           <span className="transition-rank-pill">#{rank}</span>
           <div>
             <h3 className="transition-card-title">
-              <Link href={`/jobs/${dest.slug}`}>{dest.title}</Link>
+              <Link href={`/jobs/${dest.slug}`} onClick={handleOpenDestination}>
+                {dest.title}
+              </Link>
             </h3>
             <span className="transition-category-tag">{dest.category}</span>
           </div>
@@ -111,12 +123,22 @@ export function TransitionCard({
 
       {/* Action Links */}
       <div className="transition-card-actions">
-        <Link className="button secondary" href={`/jobs/${dest.slug}`}>
+        <Link
+          className="button secondary"
+          href={`/jobs/${dest.slug}`}
+          onClick={handleOpenDestination}
+        >
           View Career →
         </Link>
         <Link
           className="button tertiary"
           href={`/compare/${source.slug}-vs-${dest.slug}`}
+          onClick={() =>
+            trackEvent("transition_compare_clicked", {
+              source_slug: source.slug,
+              destination_slug: dest.slug,
+            })
+          }
         >
           Compare with {source.title} ⇄
         </Link>

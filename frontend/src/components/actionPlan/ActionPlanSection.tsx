@@ -1,12 +1,16 @@
 import Link from "next/link";
 import type { Occupation } from "@/types/occupation";
 import { generateActionPlan } from "@/lib/actionPlan";
+import { trackEvent, getAnalyticsRiskBand } from "@/lib/analytics";
+import { ActionPlanViewTracker } from "../analytics/AnalyticsTrackers";
 
 export function ActionPlanSection({ job }: { job: Occupation }) {
   const plan = generateActionPlan(job);
+  const riskBand = getAnalyticsRiskBand(job.replacementRisk);
 
   return (
     <section className="content-section action-plan-section" id="action-plan">
+      <ActionPlanViewTracker slug={job.slug} replacementRisk={job.replacementRisk} />
       <div className="container">
         {/* Section Header */}
         <div className="section-head">
@@ -145,12 +149,27 @@ export function ActionPlanSection({ job }: { job: Occupation }) {
               <Link
                 className={`button ${plan.alternatives.transitionProminence === "prominent" ? "primary" : "secondary"}`}
                 href={`/jobs/${job.slug}/transitions`}
+                onClick={() =>
+                  trackEvent("action_plan_transition_clicked", {
+                    occupation_slug: job.slug,
+                    replacement_risk_band: riskBand,
+                  })
+                }
               >
                 Explore Career Transitions for {job.title} →
               </Link>
               <div className="career-fit-secondary-callout">
                 <span>Considering a broader change?</span>
-                <Link className="text-link" href="/career-fit">
+                <Link
+                  className="text-link"
+                  href="/career-fit"
+                  onClick={() =>
+                    trackEvent("action_plan_career_fit_clicked", {
+                      occupation_slug: job.slug,
+                      replacement_risk_band: riskBand,
+                    })
+                  }
+                >
                   Take the private Career Fit assessment →
                 </Link>
               </div>

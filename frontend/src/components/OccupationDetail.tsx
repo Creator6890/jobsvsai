@@ -4,6 +4,7 @@ import { AdSlot } from "./AdSlot";
 import { MetricBar, ScoreCard } from "./ScoreCard";
 import { RelatedOccupationLink } from "./RelatedOccupationLink";
 import { ActionPlanSection } from "./actionPlan/ActionPlanSection";
+import { OccupationViewTracker } from "./analytics/AnalyticsTrackers";
 
 // O*NET's relatedness tiers, rendered for readers. The tier is a source fact; the wording
 // is a presentation of it and deliberately claims nothing about transition difficulty.
@@ -23,6 +24,7 @@ function relatednessLabel(tier: string): string {
 export function OccupationDetail({ job }: { job: Occupation }) {
   const vulnerable = [...job.tasks].sort((a, b) => b.exposure - a.exposure).slice(0, 4);
   return <>
+    <OccupationViewTracker slug={job.slug} aiExposure={job.aiExposure} replacementRisk={job.replacementRisk} />
     <section className="score-section"><div className="container score-grid"><ScoreCard label="AI Exposure" value={job.aiExposure} description="How much of this occupation's work can be materially affected by current AI systems." /><div className="score-card-stack"><ScoreCard label="Replacement Risk" value={job.replacementRisk} description="How likely exposure is to translate into reduced human demand." tone="red" /><p className="score-footnote">Includes provisional estimates for AI adoption pressure and labour-market resilience. <Link className="text-link" href="/methodology#provisional-factors">How this is measured</Link></p></div><article className="card score-card"><span className="metric-label">Evidence quality</span><MetricBar label="Confidence" value={Math.round(job.confidence)} suffix="/100" /><MetricBar label="Task coverage" value={Math.round(job.weightedTaskCoverage)} suffix="%" /><p>Confidence reflects task coverage, mapping and capability-evidence quality, and how much of the score rests on provisional inputs.</p></article></div></section>
 
     {/* Ad 1: after scores + evidence quality, before task-level detail. */}
