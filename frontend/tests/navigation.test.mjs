@@ -56,6 +56,8 @@ test("CareerToolsDropdown contains Career Fit and Compare Careers destinations w
   assert.ok(dropdownContent.includes("Career Tools"), "Dropdown must have Career Tools label");
   assert.ok(dropdownContent.includes('aria-haspopup="true"'), "Dropdown button must declare aria-haspopup");
   assert.ok(dropdownContent.includes("aria-expanded"), "Dropdown button must declare aria-expanded");
+  assert.ok(dropdownContent.includes('role="menu"'), "Menu must declare role='menu'");
+  assert.ok(dropdownContent.includes('role="menuitem"'), "Menu links must declare role='menuitem'");
 
   // Career Fit destination
   assert.ok(dropdownContent.includes('href="/career-fit"'), "Dropdown must link to /career-fit");
@@ -65,8 +67,20 @@ test("CareerToolsDropdown contains Career Fit and Compare Careers destinations w
   assert.ok(dropdownContent.includes('href="/compare"'), "Dropdown must link to /compare");
   assert.ok(dropdownContent.includes("Compare AI Exposure and Replacement Risk side by side."), "Compare description must match specification");
 
-  // Keyboard navigation & a11y
-  assert.ok(dropdownContent.includes('"Escape"'), "Dropdown must handle Escape key");
+  // Interaction robustness & outside click handling
+  assert.ok(dropdownContent.includes("pointerdown"), "Outside click listener must use pointerdown for cross-device support");
+  assert.ok(dropdownContent.includes("onBlur={handleBlur}"), "Dropdown must handle blur/focusout when tabbing away");
+
+  // Keyboard navigation & accessibility handlers
+  assert.ok(dropdownContent.includes('"Escape"'), "Dropdown must handle Escape key to close and restore focus");
+  assert.ok(dropdownContent.includes('"ArrowDown"'), "Dropdown must handle ArrowDown key to open and move focus");
+  assert.ok(dropdownContent.includes('"ArrowUp"'), "Dropdown must handle ArrowUp key to move focus");
+
+  // CSS interaction contract in globals.css
+  const cssContent = fs.readFileSync(path.join(srcRoot, "app", "globals.css"), "utf8");
+  assert.ok(cssContent.includes(".nav-dropdown.open .nav-dropdown-menu"), "CSS must declare open menu selector");
+  assert.ok(cssContent.includes("pointer-events: auto"), "Open menu must have pointer-events: auto");
+  assert.ok(cssContent.includes("pointer-events: none"), "Closed menu must have pointer-events: none");
 });
 
 // ---------------------------------------------------------------------------

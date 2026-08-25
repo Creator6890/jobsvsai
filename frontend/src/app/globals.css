@@ -57,7 +57,8 @@
   .nav-dropdown-toggle:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
   .dropdown-chevron { width: 12px; height: 12px; transition: transform .2s cubic-bezier(.16,1,.3,1); display: inline-block; vertical-align: middle; flex-shrink: 0; }
   .nav-dropdown.open .dropdown-chevron { transform: rotate(180deg); }
-  .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: 320px; max-width: 90vw; background: #ffffff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 32px -4px rgba(24,14,48,.10), 0 2px 8px -2px rgba(0,0,0,.04); padding: 6px; display: flex; flex-direction: column; gap: 2px; z-index: 50; animation: dropdownFadeIn .15s cubic-bezier(.16,1,.3,1); }
+  .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 50%; width: 320px; max-width: 90vw; background: #ffffff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 32px -4px rgba(24,14,48,.10), 0 2px 8px -2px rgba(0,0,0,.04); padding: 6px; display: flex; flex-direction: column; gap: 2px; z-index: 50; opacity: 0; visibility: hidden; pointer-events: none; transform: translate(-50%, -4px); transition: opacity .15s ease, transform .15s ease, visibility .15s; }
+  .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0); }
   .dropdown-divider { height: 1px; background: var(--line); margin: 3px 6px; opacity: .7; }
   .nav-dropdown-item { display: flex; flex-direction: column; padding: 10px 12px; border-radius: 8px; text-decoration: none; color: var(--ink); transition: background-color .15s ease; text-align: left; outline: none; }
   .nav-dropdown-item:hover { background-color: var(--soft); }
@@ -69,7 +70,6 @@
   .dropdown-item-arrow { font-size: .85rem; color: var(--violet); opacity: 0; transform: translateX(-4px); transition: opacity .15s ease, transform .15s ease; font-weight: 700; }
   .nav-dropdown-item:hover .dropdown-item-arrow, .nav-dropdown-item:focus-visible .dropdown-item-arrow { opacity: 1; transform: translateX(0); }
   .dropdown-item-desc { font-size: .80rem; color: var(--muted); line-height: 1.4; font-weight: 450; margin-top: 3px; display: block; }
-  @keyframes dropdownFadeIn { from { opacity: 0; transform: translate(-50%, -4px); } to { opacity: 1; transform: translate(-50%, 0); } }
   .button, .occupation-search button { min-height: var(--control); border: 0; border-radius: var(--radius-sm); padding: 0 19px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--violet), var(--violet-3)); color: white; font-weight: 850; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
   .button:hover, .occupation-search button:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(109,40,217,.24); }
   .button.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
