@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { adsenseClientId } from "@/lib/ads";
 
 export const dynamic = "force-dynamic";
 
@@ -10,17 +11,16 @@ export const dynamic = "force-dynamic";
  *
  *   google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
  *
- * This route returns the record only when NEXT_PUBLIC_ADSENSE_CLIENT_ID is
- * configured with a real publisher ID. When unconfigured, it returns a valid
- * but empty text/plain response — search engines treat an empty ads.txt as
- * "no authorised sellers declared", which is correct before AdSense approval.
+ * This route returns the record when NEXT_PUBLIC_ADSENSE_CLIENT_ID or
+ * adsenseClientId is configured with a real publisher ID. When unconfigured,
+ * it returns a valid but empty text/plain response.
  *
  * The publisher ID is public by design (it appears in every ad request and
  * in the page source of every AdSense-enabled site), so exposing it here
  * is not a security concern.
  */
 export function GET() {
-  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "";
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? adsenseClientId;
 
   // Extract the pub-XXXX portion. The env var may be "ca-pub-1234567890123456"
   // but ads.txt uses just the "pub-1234567890123456" part.

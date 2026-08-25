@@ -10,11 +10,21 @@
  */
 
 // ---------------------------------------------------------------------------
+// AdSense identifiers
+// ---------------------------------------------------------------------------
+
+/** AdSense publisher/client ID, e.g. "ca-pub-1234567890123456".
+ *  Official publisher ID for JobsVsAI account. */
+export const adsenseClientId: string =
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "ca-pub-7855774194309157";
+
+// ---------------------------------------------------------------------------
 // Global switches
 // ---------------------------------------------------------------------------
 
-/** Master kill-switch. When false, no AdSense script is loaded, no ad
- *  containers are rendered, and no Google advertising requests are issued. */
+/** Master ad serving kill-switch for manual ad units. When false, no ad
+ *  containers (<ins>) are rendered, no adsbygoogle queue pushes occur,
+ *  and no manual ad inventory is requested. */
 export const adsEnabled: boolean =
   process.env.NEXT_PUBLIC_ADS_ENABLED === "true";
 
@@ -23,15 +33,6 @@ export const adsEnabled: boolean =
  *  enabling live ads. When adsEnabled is true, debug mode is ignored. */
 export const adsDebug: boolean =
   process.env.NEXT_PUBLIC_ADS_DEBUG === "true";
-
-// ---------------------------------------------------------------------------
-// AdSense identifiers
-// ---------------------------------------------------------------------------
-
-/** AdSense publisher/client ID, e.g. "ca-pub-1234567890123456".
- *  Empty string means unconfigured — the script will not load. */
-export const adsenseClientId: string =
-  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "";
 
 // ---------------------------------------------------------------------------
 // Slot registry
@@ -56,7 +57,7 @@ export type SlotName = keyof typeof slots;
 // Derived helpers
 // ---------------------------------------------------------------------------
 
-/** True when ads should actually render (enabled + client ID present). */
+/** True when ad units should actually render (enabled + client ID present). */
 export const adsReady: boolean = adsEnabled && adsenseClientId !== "";
 
 /** True when debug placeholders should show (debug on, live ads off). */

@@ -10,7 +10,7 @@ const frontendRoot = path.resolve(__dirname, "..");
 const srcRoot = path.join(frontendRoot, "src");
 
 // ---------------------------------------------------------------------------
-// 1. ads.txt Route Logic Tests
+// 1. ads.txt Route Logic & Verification Tests
 // ---------------------------------------------------------------------------
 
 test("ads.txt route logic - unconfigured client ID returns empty response", () => {
@@ -34,18 +34,27 @@ test("ads.txt route logic - valid client ID returns correctly formatted record",
   }
 
   assert.strictEqual(
-    formatAdsTxt("ca-pub-1234567890123456"),
-    "google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n"
+    formatAdsTxt("ca-pub-7855774194309157"),
+    "google.com, pub-7855774194309157, DIRECT, f08c47fec0942fa0\n"
   );
   assert.strictEqual(
-    formatAdsTxt("pub-9876543210987654"),
-    "google.com, pub-9876543210987654, DIRECT, f08c47fec0942fa0\n"
+    formatAdsTxt("pub-7855774194309157"),
+    "google.com, pub-7855774194309157, DIRECT, f08c47fec0942fa0\n"
   );
 });
 
 // ---------------------------------------------------------------------------
-// 2. Central Ads Config Logic Tests
+// 2. Central Ads Config & Publisher ID Invariants
 // ---------------------------------------------------------------------------
+
+test("Official publisher ID is configured as ca-pub-7855774194309157", () => {
+  const adsSource = fs.readFileSync(path.join(srcRoot, "lib", "ads.ts"), "utf8");
+  assert.match(
+    adsSource,
+    /ca-pub-7855774194309157/,
+    "ads.ts must configure official publisher ID ca-pub-7855774194309157"
+  );
+});
 
 test("ads config logic - adsReady requires both adsEnabled=true and clientId", () => {
   function computeAdsReady(enabledStr, clientIdStr) {
@@ -54,12 +63,12 @@ test("ads config logic - adsReady requires both adsEnabled=true and clientId", (
     return adsEnabled && adsenseClientId !== "";
   }
 
-  assert.strictEqual(computeAdsReady("false", "ca-pub-12345"), false);
-  assert.strictEqual(computeAdsReady("", "ca-pub-12345"), false);
-  assert.strictEqual(computeAdsReady(undefined, "ca-pub-12345"), false);
+  assert.strictEqual(computeAdsReady("false", "ca-pub-7855774194309157"), false);
+  assert.strictEqual(computeAdsReady("", "ca-pub-7855774194309157"), false);
+  assert.strictEqual(computeAdsReady(undefined, "ca-pub-7855774194309157"), false);
   assert.strictEqual(computeAdsReady("true", ""), false);
   assert.strictEqual(computeAdsReady("true", undefined), false);
-  assert.strictEqual(computeAdsReady("true", "ca-pub-12345"), true);
+  assert.strictEqual(computeAdsReady("true", "ca-pub-7855774194309157"), true);
 });
 
 test("ads config logic - showDebugPlaceholders requires debug=true and adsEnabled=false", () => {
@@ -76,10 +85,51 @@ test("ads config logic - showDebugPlaceholders requires debug=true and adsEnable
 });
 
 // ---------------------------------------------------------------------------
-// 3. Slot Registry & Component Architecture Invariants
+// 3. Site Verification Meta Tag & Loader Script Invariants
 // ---------------------------------------------------------------------------
 
-test("ads.ts declares all expected slot names", () => {
+test("Root layout includes google-adsense-account verification meta tag", () => {
+  const layoutSource = fs.readFileSync(path.join(srcRoot, "app", "layout.tsx"), "utf8");
+  assert.match(
+    layoutSource,
+    /google-adsense-account/,
+    "Root layout metadata must include google-adsense-account"
+  );
+  assert.match(
+    layoutSource,
+    /<AdsenseScript\s*\/>/,
+    "Root layout must mount AdsenseScript component"
+  );
+});
+
+test("Single centralized AdSense loader script in codebase with no duplicates", () => {
+  const scriptSource = fs.readFileSync(path.join(srcRoot, "components", "AdsenseScript.tsx"), "utf8");
+  assert.match(scriptSource, /if\s*\(!adsenseClientId\)\s*return\s*null;/);
+  assert.match(scriptSource, /strategy="afterInteractive"/);
+  assert.match(scriptSource, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=\$\{adsenseClientId\}/);
+  assert.match(scriptSource, /crossOrigin="anonymous"/);
+
+  // Verify no other files include raw adsbygoogle script loaders
+  const filesToCheck = [
+    path.join(srcRoot, "app", "page.tsx"),
+    path.join(srcRoot, "app", "rankings", "page.tsx"),
+    path.join(srcRoot, "app", "compare", "page.tsx"),
+    path.join(srcRoot, "app", "career-fit", "page.tsx"),
+    path.join(srcRoot, "app", "news", "page.tsx"),
+  ];
+  for (const filePath of filesToCheck) {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, "utf8");
+      assert.doesNotMatch(content, /pagead2\.googlesyndication\.com/, `${filePath} must not contain duplicate raw AdSense script`);
+    }
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 4. Slot Registry & Auto Ads Prevention Invariants
+// ---------------------------------------------------------------------------
+
+test("ads.ts declares all expected slot names with unconfigured empty defaults (no invented slot IDs)", () => {
   const adsSource = fs.readFileSync(path.join(srcRoot, "lib", "ads.ts"), "utf8");
   const expectedSlots = [
     "home",
@@ -92,17 +142,21 @@ test("ads.ts declares all expected slot names", () => {
   ];
   for (const slot of expectedSlots) {
     assert.match(adsSource, new RegExp(`\\b${slot}:`), `Slot '${slot}' must be declared in lib/ads.ts`);
+    assert.match(adsSource, new RegExp(`process\\.env\\.NEXT_PUBLIC_ADSENSE_SLOT_[A-Z_]+\\s*\\?\\?\\s*""`), `Slot '${slot}' must default to empty string`);
   }
 });
 
-test("AdsenseScript component does not render when adsReady is false", () => {
+test("Auto Ads remains strictly off with no auto-ad configuration", () => {
   const scriptSource = fs.readFileSync(path.join(srcRoot, "components", "AdsenseScript.tsx"), "utf8");
-  assert.match(scriptSource, /if\s*\(!adsReady\)\s*return\s*null;/);
-  assert.match(scriptSource, /strategy="afterInteractive"/);
-  assert.match(scriptSource, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
+  const adsSource = fs.readFileSync(path.join(srcRoot, "lib", "ads.ts"), "utf8");
+  const layoutSource = fs.readFileSync(path.join(srcRoot, "app", "layout.tsx"), "utf8");
+
+  assert.doesNotMatch(scriptSource, /enable_page_level_ads/i, "Auto ads must not be enabled in AdsenseScript");
+  assert.doesNotMatch(adsSource, /auto_ads/i, "Auto ads must not be enabled in lib/ads.ts");
+  assert.doesNotMatch(layoutSource, /enable_page_level_ads/i, "Auto ads must not be enabled in layout.tsx");
 });
 
-test("AdSlot component safety invariants", () => {
+test("AdSlot component safety invariants (renders null when adsEnabled=false or slotId is empty)", () => {
   const slotSource = fs.readFileSync(path.join(srcRoot, "components", "AdSlot.tsx"), "utf8");
   assert.match(slotSource, /if\s*\(!adsReady\s*\|\|\s*!slotId\)\s*return\s*null;/);
   assert.match(slotSource, /if\s*\(showDebugPlaceholders\)/);
@@ -112,7 +166,7 @@ test("AdSlot component safety invariants", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4. Page Placement Invariants: User Value First -> Ads After Value
+// 5. Page Placement Invariants: User Value First -> Ads After Value
 // ---------------------------------------------------------------------------
 
 test("Homepage - ad is placed after ranking preview and before footer", () => {
