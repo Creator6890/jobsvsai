@@ -334,6 +334,16 @@ variable to `""` and pydantic cannot parse that as a bool.
 - `NEWS_MAX_GENERATIONS_PER_RUN` / `_PER_DAY` are **aliases** for
   `NEWS_GENERATION_BATCH_SIZE` / `NEWS_DAILY_GENERATION_LIMIT`, resolved by a property. Two
   independent settings for one cap would let someone raise one while the other still binds.
+- **Metrics live in three layers**: `repositories/news_metrics.py` (SQL only),
+  `app/news/metrics.py` (every derived value), `app/news/cli.py` (formatting only). A test
+  asserts `cmd_metrics` contains no arithmetic — derivations were in the CLI before, where
+  they could not be tested without capturing stdout.
+- Two honesty rules in the metrics service: a rate with a zero denominator is **`None`, never
+  `0`** (a 0% failure rate for a pipeline that never ran is a reassuring lie), and
+  per-article cost plus all projections are **withheld below 5 successful generations**
+  rather than caveated, because a dashboard renders numbers and drops footnotes.
+- Currency needs **both** `NEWS_LLM_COST_PER_1M_INPUT` and `_OUTPUT`. Half a price would
+  silently omit one side, so with one supplied the output says so instead.
 - `NEWS_*` must be listed in the compose `environment` blocks: `.env` is in `.dockerignore`
   and is not mounted, so pydantic's `env_file` never sees it inside a container.
 

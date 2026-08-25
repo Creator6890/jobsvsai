@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import sys
 from datetime import UTC, datetime
 
@@ -170,14 +171,16 @@ async def cmd_generate(args: argparse.Namespace) -> int:
     # The numbers Step 5 needs to answer whether this is worth doing. Printed per run rather
     # than aggregated, because a single run is the unit an operator is deciding about.
     if c.calls_made:
-        accept_rate = 100 * c.accepted / c.calls_made
-        reject_rate = 100 * c.rejected / c.calls_made
-        fail_rate = 100 * c.failed / c.calls_made
-        per_article = ((c.input_tokens + c.output_tokens) / c.accepted) if c.accepted else 0
-        print(f"\n  acceptance {accept_rate:.0f}%   rejection {reject_rate:.0f}%   "
-              f"failure {fail_rate:.0f}%")
+        # Same helpers the metrics layer uses, so a run summary and the aggregate report
+        # cannot express the same quantity two different ways.
+        from app.news.metrics import _rate
+
+        print(f"\n  acceptance {_pct(_rate(c.accepted, c.calls_made))}"
+              f"   rejection {_pct(_rate(c.rejected, c.calls_made))}"
+              f"   failure {_pct(_rate(c.failed, c.calls_made))}")
+        tokens = c.input_tokens + c.output_tokens
         print(f"  tokens per accepted article: "
-              f"{per_article:.0f}" if c.accepted else "  tokens per accepted article: n/a")
+              f"{round(tokens / c.accepted) if c.accepted else '—'}")
 
     for o in result.outcomes:
         print(f"\n  --- #{o.ingest_item_id} [{o.source_name}] det={o.relevance_score} "
@@ -278,73 +281,125 @@ async def cmd_runs(args: argparse.Namespace) -> int:
     return 0
 
 
+def _pct(value: float | None) -> str:
+    """A rate as a percentage, or an em dash. None means "nothing to divide by"."""
+    return f"{value * 100:.0f}%" if value is not None else "—"
+
+
+def _ms(value: object) -> str:
+    return f"{int(value)}ms" if value is not None else "—"
+
+
+def _money(value: float | None) -> str:
+    return f"{value:.4f}" if value is not None else "—"
+
+
 async def cmd_metrics(args: argparse.Namespace) -> int:
-    """Cost, reliability and quality, read from what the pipeline already recorded."""
-    from app.repositories import news_metrics
+    """Report cost, reliability and editorial usefulness.
 
-    settings = get_settings()
+    Formatting only. Every derived value comes from app.news.metrics, so the numbers here
+    and in `--json` cannot drift apart.
+    """
+    from app.news import metrics as metrics_service
+
     async with SessionFactory() as session:
-        data = await news_metrics.collect(session, days=args.days)
+        data = await metrics_service.collect(session, days=args.days)
 
-    ing, gen, qual = data["ingestion"], data["generation"], data["quality"]
-    print(f"AI News metrics · last {args.days} days")
+    if args.json:
+        print(json.dumps(data, indent=2, default=str))
+        return 0
 
-    print("\n  INGESTION")
-    print(f"    runs {ing['runs']}   fetched {ing['fetched']}   stored {ing['stored']}"
-          f"   candidates {ing['candidates']}   ignored {ing['ignored']}")
-    print(f"    duplicates: exact {ing['exact_duplicates']}  near {ing['near_duplicates']}"
-          f"   outside window {ing['outside_window']}")
-    print(f"    source failures {ing['source_failures']}   last run {_fmt_date(ing['last_run'])}")
+    src, cand, ing = data["sources"], data["candidates"], data["ingestion"]
+    gen, cost, rel, qual = data["generation"], data["cost"], data["reliability"], data["quality"]
 
-    attempts = int(gen["attempts"] or 0)
-    print("\n  GENERATION")
-    print(f"    attempts {attempts}   accepted {gen['accepted']}   rejected {gen['rejected']}"
-          f"   failed {gen['failed']}")
-    if attempts:
-        print(f"    acceptance {100 * gen['accepted'] / attempts:.0f}%"
-              f"   rejection {100 * gen['rejected'] / attempts:.0f}%"
-              f"   failure {100 * gen['failed'] / attempts:.0f}%")
-    print(f"    latency p50 {gen['latency_p50'] or '—'}ms   p95 {gen['latency_p95'] or '—'}ms"
-          f"   max {gen['latency_max'] or '—'}ms")
-    print(f"    last attempt {_fmt_date(gen['last_attempt'])}")
+    print(f"AI NEWS METRICS · last {data['windowDays']} days")
+    if data["status"] == metrics_service.INSUFFICIENT:
+        print("\n  No ingestion runs and no generation attempts in this window.")
+        print("  Every figure below is zero because nothing has run, not because it failed.")
 
-    if data["failures"]:
-        print("\n  FAILURES BY KIND")
-        for row in data["failures"]:
-            print(f"    {row['kind']:<18}{row['total']:>5}   last {_fmt_date(row['last_seen'])}")
+    print("\nINGESTION\n-----------")
+    print(f"  Sources configured   : {src['configured']} ({src['enabled']} enabled, "
+          f"{src['failing']} currently failing)")
+    print(f"  Fetch attempts       : {rel['ingestionFetchAttempts']}")
+    print(f"  Successful fetches   : {rel['ingestionFetchSuccesses']}")
+    print(f"  Failed fetches       : {ing['source_failures']}")
+    print(f"  Success rate         : {_pct(rel['ingestionSuccessRate'])}")
+    print(f"  Runs                 : {ing['runs']}   last {_fmt_date(ing['last_run'])}")
 
-    print("\n  COST")
-    input_tokens, output_tokens = int(gen["input_tokens"]), int(gen["output_tokens"])
-    total = input_tokens + output_tokens
-    print(f"    tokens: input {input_tokens}   output {output_tokens}   total {total}")
-    accepted = int(gen["accepted"] or 0)
-    if accepted:
-        print(f"    tokens per accepted article: {total / accepted:.0f}")
-    if settings.news_llm_cost_per_1m_input is not None and \
-            settings.news_llm_cost_per_1m_output is not None:
-        cost = (input_tokens / 1_000_000 * settings.news_llm_cost_per_1m_input
-                + output_tokens / 1_000_000 * settings.news_llm_cost_per_1m_output)
-        print(f"    estimated cost: {cost:.4f}"
-              + (f"   per accepted article: {cost / accepted:.4f}" if accepted else ""))
+    print("\nCANDIDATES\n-----------")
+    print(f"  Entries fetched      : {ing['fetched']}   outside window {ing['outside_window']}")
+    print(f"  Candidates created   : {qual['candidatesCreated']}")
+    print(f"  Ignored (relevance)  : {qual['candidatesIgnored']}")
+    print(f"  Duplicates           : exact {ing['exact_duplicates']}   "
+          f"near {ing['near_duplicates']}")
+
+    print("\nGENERATION\n-----------")
+    print(f"  Attempts             : {rel['generationAttempts']}")
+    print(f"  Accepted / rejected  : {gen['accepted']} / {gen['rejected']}")
+    print(f"  Failed               : {gen['failed']}")
+    print(f"  Success rate         : {_pct(rel['generationSuccessRate'])}   "
+          f"(a rejection is a successful call)")
+    print(f"  Provider failure rate: {_pct(rel['providerFailureRate'])}   "
+          f"timeouts {_pct(rel['timeoutRate'])}   retries {_pct(rel['retryRate'])}")
+    print(f"  Latency mean         : {_ms(rel['latencyMeanMs'])}")
+    print(f"  Latency median (p50) : {_ms(rel['latencyP50Ms'])}")
+    print(f"  Latency p95 / max    : {_ms(rel['latencyP95Ms'])} / {_ms(rel['latencyMaxMs'])}")
+    if rel["failuresByKind"]:
+        for kind, total in sorted(rel["failuresByKind"].items(), key=lambda kv: -kv[1]):
+            print(f"    {kind:<18}{total}")
+
+    print("\nTOKENS\n-----------")
+    print(f"  Input tokens         : {cost['inputTokens']}")
+    print(f"  Output tokens        : {cost['outputTokens']}")
+    print(f"  Total tokens         : {cost['totalTokens']}")
+    print(f"  Tokens / attempt     : {cost['tokensPerAttempt'] if cost['tokensPerAttempt'] is not None else '—'}")
+    print(f"  Tokens / article     : {cost['tokensPerArticle'] if cost['tokensPerArticle'] is not None else '—'}")
+
+    print("\nCOST\n-----------")
+    if not cost["priced"]:
+        print("  No currency estimate: set NEWS_LLM_COST_PER_1M_INPUT and "
+              "NEWS_LLM_COST_PER_1M_OUTPUT.")
+        print("  A rate is not guessed here — an invented price produces a number that")
+        print("  looks authoritative and is not.")
     else:
-        # Stated rather than silently omitted, so nobody reads "no cost line" as "no cost".
-        print("    (no currency estimate: set NEWS_LLM_COST_PER_1M_INPUT and _OUTPUT)")
+        print(f"  Estimated spend      : {_money(cost['estimatedSpend'])}")
+        print(f"  Cost / attempt       : {_money(cost['costPerAttempt'])}")
+        print(f"  Cost / article       : {_money(cost['costPerArticle'])}")
+        print(f"  Cost / 100 articles  : {_money(cost['costPer100Articles'])}")
+    if cost["status"] == metrics_service.INSUFFICIENT:
+        print(f"  INSUFFICIENT SAMPLE SIZE: {cost['sampleSize']} successful generation(s); "
+              f"{cost['minimumSampleForProjection']} needed.")
+        print("  Per-article figures and projections are withheld rather than estimated.")
+    elif cost["monthlyProjections"]:
+        print("  Monthly projection at:")
+        for volume, amount in cost["monthlyProjections"].items():
+            print(f"    {volume.replace('_', ' '):<14} {_money(amount)}")
 
-    print("\n  ARTICLES")
-    print(f"    total {qual['articles']}   draft {qual['draft']}"
-          f"   review_required {qual['review_required']}   published {qual['published']}")
-    print(f"    rejected {qual['rejected']}   archived {qual['archived']}")
-    print(f"    regenerated {qual['regenerated']} article(s), {qual['regenerations']} time(s)"
-          f"   impact overridden {qual['overridden']}")
+    print("\nEDITORIAL\n-----------")
+    print(f"  Articles created     : {qual['articlesCreated']}")
+    print(f"  Draft / review req.  : {qual['draft']} / {qual['reviewRequired']}")
+    print(f"  Published            : {qual['published']}")
+    print(f"  Rejected             : {qual['rejected']}")
+    print(f"  Archived             : {qual['archived']}")
+    print(f"  Regenerated          : {qual['regeneratedArticles']} article(s), "
+          f"{qual['regenerations']} time(s)")
+    print(f"  Impact overrides     : {qual['impactOverrides']}")
 
-    print("\n  QUALITY PROXIES")
-    print(f"    impact: low {qual['impact_low']}  medium {qual['impact_medium']}"
-          f"  high {qual['impact_high']}   avg score {qual['avg_impact_score'] or '—'}")
-    print(f"    avg impact confidence {qual['avg_impact_confidence'] or '—'}"
-          f"   avg semantic confidence {qual['avg_semantic_confidence'] or '—'}"
-          f"   min semantic {qual['min_semantic_confidence'] or '—'}")
-    print("    These are self-reported confidences and policy scores, not measured outcomes:")
-    print("    nothing here has been validated against whether a story mattered.")
+    print("\nQUALITY\n-----------")
+    print(f"  Semantic acceptance  : {_pct(qual['semanticAcceptanceRate'])}   "
+          f"(of candidates the model assessed)")
+    print(f"  Editorial acceptance : {_pct(qual['editorialAcceptanceRate'])}   "
+          f"(of {qual['editoriallyResolved']} resolved; draft/review excluded as undecided)")
+    print(f"  Regeneration rate    : {_pct(qual['regenerationRate'])}")
+    print(f"  Impact distribution  : low {qual['impactDistribution']['low']}  "
+          f"medium {qual['impactDistribution']['medium']}  "
+          f"high {qual['impactDistribution']['high']}")
+    print(f"  Avg impact score     : {qual['avgImpactScore'] if qual['avgImpactScore'] is not None else '—'}")
+    print(f"  Avg confidence       : impact {qual['avgImpactConfidence'] or '—'}   "
+          f"semantic {qual['avgSemanticConfidence'] or '—'}")
+    print("\n  Quality figures are proxies: self-reported confidences, policy scores and")
+    print("  what editors did. Nothing here has been validated against whether a story")
+    print("  mattered to a reader.")
     return 0
 
 
@@ -391,6 +446,8 @@ def build_parser() -> argparse.ArgumentParser:
     metrics = sub.add_parser("metrics", help="cost, reliability and quality readings")
     metrics.add_argument("--days", type=int, default=30, metavar="N",
                          help="reporting window; default 30")
+    metrics.add_argument("--json", action="store_true",
+                         help="machine-readable output for dashboards")
     metrics.set_defaults(handler=cmd_metrics)
 
     runs = sub.add_parser("runs", help="recent ingestion runs")

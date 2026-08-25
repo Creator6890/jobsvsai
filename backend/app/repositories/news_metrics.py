@@ -28,6 +28,8 @@ async def ingestion_summary(session: AsyncSession, days: int = 30) -> dict[str, 
         coalesce(sum(items_exact_duplicate), 0)             AS exact_duplicates,
         coalesce(sum(items_near_duplicate), 0)              AS near_duplicates,
         coalesce(sum(items_outside_window), 0)              AS outside_window,
+        coalesce(sum(sources_attempted), 0)                 AS fetch_attempts,
+        coalesce(sum(sources_succeeded), 0)                 AS fetch_successes,
         coalesce(sum(sources_failed), 0)                    AS source_failures,
         max(started_at)                                     AS last_run
       FROM news_ingestion_runs
@@ -55,6 +57,8 @@ async def generation_summary(session: AsyncSession, days: int = 30) -> dict[str,
         percentile_disc(0.95) WITHIN GROUP (ORDER BY generation_latency_ms)
           FILTER (WHERE generation_latency_ms IS NOT NULL)           AS latency_p95,
         max(generation_latency_ms)                                   AS latency_max,
+        round(avg(generation_latency_ms))                            AS latency_mean,
+        count(*) FILTER (WHERE generation_attempted_at IS NOT NULL)  AS items_attempted,
         max(generation_attempted_at)                                 AS last_attempt
       FROM news_ingest_items
       WHERE generation_attempted_at >= now() - make_interval(days => :days)
@@ -110,9 +114,33 @@ async def quality_summary(session: AsyncSession, days: int = 30) -> dict[str, An
     return dict(row) | dict(semantic)
 
 
+async def source_count(session: AsyncSession) -> dict[str, Any]:
+    """Configured feeds. Not windowed — configuration is current, not historical."""
+    row = (await session.execute(text("""
+      SELECT count(*) AS configured,
+             count(*) FILTER (WHERE enabled) AS enabled,
+             count(*) FILTER (WHERE consecutive_failures > 0) AS failing
+      FROM news_sources
+    """))).mappings().one()
+    return dict(row)
+
+
+async def candidate_counts(session: AsyncSession, days: int = 30) -> dict[str, Any]:
+    """Current queue state, by status. Complements the per-run ingestion counters."""
+    rows = (await session.execute(text("""
+      SELECT status, count(*) AS total FROM news_ingest_items
+      WHERE fetched_at >= now() - make_interval(days => :days)
+      GROUP BY status
+    """), {"days": days})).mappings().all()
+    counts = {"new": 0, "candidate": 0, "ignored": 0, "duplicate": 0, "processed": 0}
+    return counts | {r["status"]: r["total"] for r in rows}
+
+
 async def collect(session: AsyncSession, days: int = 30) -> dict[str, Any]:
     return {
         "windowDays": days,
+        "sources": await source_count(session),
+        "candidates": await candidate_counts(session, days),
         "ingestion": await ingestion_summary(session, days),
         "generation": await generation_summary(session, days),
         "failures": await failure_breakdown(session, days),
