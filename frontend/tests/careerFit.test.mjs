@@ -151,7 +151,7 @@ const MOCK_OCCUPATIONS = [
   {
     slug: "registered-nurse",
     title: "Registered Nurse",
-    category: "Healthcare Practitioners & Technical",
+    category: "Healthcare",
     aiExposure: 48,
     replacementRisk: 28,
     humanDependency: 92,
@@ -160,7 +160,7 @@ const MOCK_OCCUPATIONS = [
   {
     slug: "graphic-designer",
     title: "Graphic Designer",
-    category: "Arts, Design, Entertainment, Sports, & Media",
+    category: "Creative & Media",
     aiExposure: 82,
     replacementRisk: 64,
     humanDependency: 60,
@@ -169,7 +169,7 @@ const MOCK_OCCUPATIONS = [
   {
     slug: "electrician",
     title: "Electrician",
-    category: "Installation, Maintenance, & Repair",
+    category: "Installation & Repair",
     aiExposure: 35,
     replacementRisk: 22,
     humanDependency: 50,
@@ -178,7 +178,7 @@ const MOCK_OCCUPATIONS = [
   {
     slug: "operations-manager",
     title: "General and Operations Manager",
-    category: "Management",
+    category: "Management & Leadership",
     aiExposure: 62,
     replacementRisk: 38,
     humanDependency: 88,
@@ -192,31 +192,31 @@ function deriveOccupationVector(occ) {
     practical: 50, organization: 60, technology: 50, leadership: 50,
   };
 
-  if (occ.category.includes("Computer")) {
+  if (occ.category.includes("Technology")) {
     vector.technology = 95;
     vector.analytical = 90;
-    vector.creativity = 65;
+    vector.creativity = 60;
   } else if (occ.category.includes("Healthcare")) {
-    vector.people = 90;
-    vector.analytical = 80;
+    vector.people = 92;
+    vector.analytical = 85;
     vector.communication = 75;
-  } else if (occ.category.includes("Arts")) {
+  } else if (occ.category.includes("Creative")) {
     vector.creativity = 95;
-    vector.communication = 80;
+    vector.communication = 85;
   } else if (occ.category.includes("Installation")) {
     vector.practical = 95;
     vector.analytical = 70;
   } else if (occ.category.includes("Management")) {
     vector.leadership = 95;
     vector.organization = 85;
-    vector.communication = 85;
+    vector.communication = 90;
   }
 
   if (typeof occ.physicalDependency === "number") {
-    vector.practical = Math.round(vector.practical * 0.4 + occ.physicalDependency * 0.6);
+    vector.practical = Math.round(vector.practical * 0.35 + occ.physicalDependency * 0.65);
   }
   if (typeof occ.humanDependency === "number") {
-    vector.people = Math.round(vector.people * 0.45 + occ.humanDependency * 0.55);
+    vector.people = Math.round(vector.people * 0.40 + occ.humanDependency * 0.60);
   }
 
   for (const k of DIMENSION_KEYS) {
@@ -234,16 +234,20 @@ function matchOccupations(userProfile, occupations, limit = 12) {
     let weightedSquaredDiff = 0;
 
     for (const key of DIMENSION_KEYS) {
-      const userScore = userProfile.dimensionScores[key];
-      const occScore = occVector[key];
-      const weight = userScore >= 60 ? 1.6 : 1.0;
-      totalWeight += weight;
-      weightedSquaredDiff += weight * Math.pow(userScore - occScore, 2);
+      const u = userProfile.dimensionScores[key];
+      const o = occVector[key];
+      let w = 1.0;
+      if (u >= 80) w = 2.5;
+      else if (u >= 60) w = 1.8;
+      else if (u <= 20) w = 1.4;
+
+      totalWeight += w;
+      weightedSquaredDiff += w * Math.pow(u - o, 2);
     }
 
     const rms = Math.sqrt(weightedSquaredDiff / totalWeight);
-    const rawFit = Math.round(100 - (rms / 55) * 100);
-    const careerFit = Math.max(10, Math.min(99, rawFit));
+    const fitPct = Math.round(98 - Math.pow(rms / 4.2, 1.45));
+    const careerFit = Math.max(12, Math.min(98, fitPct));
 
     matches.push({
       occupation: occ,

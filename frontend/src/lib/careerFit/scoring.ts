@@ -116,46 +116,46 @@ export function calculateProfile(answers: Record<number, number>): UserProfile {
 // 2. Occupational Vector Derivation
 // ---------------------------------------------------------------------------
 
-// Baseline archetype vectors per SOC major category
+// Baseline archetype vectors per SOC major category (all 22 JobsVsAI published categories)
 const CATEGORY_ARCHETYPES: Record<string, Record<DimensionKey, number>> = {
-  "Computer & Mathematical": {
+  "Technology & Data": {
     analytical: 90,
-    creativity: 65,
-    communication: 50,
-    people: 35,
-    practical: 20,
+    creativity: 60,
+    communication: 45,
+    people: 30,
+    practical: 15,
     organization: 75,
     technology: 95,
     leadership: 50,
   },
-  "Architecture & Engineering": {
-    analytical: 88,
-    creativity: 70,
-    communication: 55,
-    people: 40,
-    practical: 65,
-    organization: 80,
-    technology: 85,
-    leadership: 60,
-  },
-  "Life, Physical, & Social Science": {
+  "Science & Research": {
     analytical: 95,
-    creativity: 60,
+    creativity: 65,
     communication: 65,
-    people: 45,
-    practical: 55,
+    people: 35,
+    practical: 45,
     organization: 80,
     technology: 75,
+    leadership: 50,
+  },
+  "Engineering & Architecture": {
+    analytical: 90,
+    creativity: 75,
+    communication: 55,
+    people: 35,
+    practical: 60,
+    organization: 80,
+    technology: 85,
     leadership: 55,
   },
-  "Healthcare Practitioners & Technical": {
+  "Healthcare": {
     analytical: 85,
-    creativity: 40,
+    creativity: 35,
     communication: 75,
-    people: 90,
-    practical: 70,
+    people: 92,
+    practical: 65,
     organization: 85,
-    technology: 65,
+    technology: 60,
     leadership: 65,
   },
   "Healthcare Support": {
@@ -165,90 +165,90 @@ const CATEGORY_ARCHETYPES: Record<string, Record<DimensionKey, number>> = {
     people: 90,
     practical: 75,
     organization: 70,
-    technology: 40,
+    technology: 35,
     leadership: 35,
   },
-  "Business & Financial Operations": {
-    analytical: 85,
+  "Business & Finance": {
+    analytical: 88,
     creativity: 45,
     communication: 75,
-    people: 65,
-    practical: 20,
+    people: 60,
+    practical: 15,
     organization: 90,
     technology: 70,
     leadership: 70,
   },
-  Management: {
+  "Management & Leadership": {
     analytical: 75,
     creativity: 60,
     communication: 90,
     people: 85,
-    practical: 25,
+    practical: 20,
     organization: 85,
-    technology: 60,
+    technology: 55,
     leadership: 95,
   },
-  "Arts, Design, Entertainment, Sports, & Media": {
+  "Creative & Media": {
     analytical: 40,
     creativity: 95,
     communication: 85,
-    people: 60,
-    practical: 45,
-    organization: 50,
+    people: 55,
+    practical: 40,
+    organization: 45,
     technology: 65,
-    leadership: 55,
+    leadership: 50,
   },
-  "Educational Instruction & Library": {
+  "Education & Training": {
     analytical: 70,
     creativity: 65,
     communication: 90,
-    people: 90,
-    practical: 30,
+    people: 92,
+    practical: 25,
     organization: 75,
-    technology: 55,
+    technology: 50,
     leadership: 70,
   },
-  Legal: {
+  "Community & Social Services": {
+    analytical: 55,
+    creativity: 45,
+    communication: 85,
+    people: 95,
+    practical: 20,
+    organization: 65,
+    technology: 35,
+    leadership: 60,
+  },
+  "Legal": {
     analytical: 92,
     creativity: 55,
     communication: 95,
     people: 70,
     practical: 15,
     organization: 90,
-    technology: 55,
+    technology: 50,
     leadership: 80,
   },
-  "Community & Social Service": {
-    analytical: 55,
-    creativity: 50,
-    communication: 85,
-    people: 95,
-    practical: 25,
-    organization: 65,
-    technology: 40,
-    leadership: 65,
-  },
-  "Sales & Related": {
+  "Sales": {
     analytical: 55,
     creativity: 55,
     communication: 90,
     people: 85,
-    practical: 25,
+    practical: 20,
     organization: 65,
     technology: 50,
     leadership: 75,
   },
-  "Office & Administrative Support": {
+  "Office & Administration": {
     analytical: 50,
     creativity: 30,
     communication: 65,
     people: 60,
-    practical: 30,
+    practical: 25,
     organization: 90,
     technology: 60,
     leadership: 40,
   },
-  "Protective Service": {
+  "Protective Services": {
     analytical: 60,
     creativity: 30,
     communication: 70,
@@ -259,26 +259,26 @@ const CATEGORY_ARCHETYPES: Record<string, Record<DimensionKey, number>> = {
     leadership: 75,
   },
   "Construction & Extraction": {
-    analytical: 50,
+    analytical: 45,
     creativity: 35,
     communication: 35,
-    people: 35,
+    people: 30,
     practical: 95,
     organization: 60,
-    technology: 45,
-    leadership: 50,
+    technology: 40,
+    leadership: 45,
   },
-  "Installation, Maintenance, & Repair": {
+  "Installation & Repair": {
     analytical: 70,
     creativity: 35,
     communication: 40,
-    people: 40,
+    people: 35,
     practical: 95,
     organization: 70,
     technology: 70,
     leadership: 45,
   },
-  "Production / Manufacturing": {
+  "Manufacturing & Production": {
     analytical: 50,
     creativity: 30,
     communication: 35,
@@ -288,7 +288,7 @@ const CATEGORY_ARCHETYPES: Record<string, Record<DimensionKey, number>> = {
     technology: 55,
     leadership: 40,
   },
-  "Transportation & Material Moving": {
+  "Transport & Logistics": {
     analytical: 40,
     creativity: 20,
     communication: 40,
@@ -298,11 +298,11 @@ const CATEGORY_ARCHETYPES: Record<string, Record<DimensionKey, number>> = {
     technology: 45,
     leadership: 35,
   },
-  "Food Preparation & Serving": {
+  "Food & Hospitality": {
     analytical: 30,
     creativity: 55,
-    communication: 60,
-    people: 75,
+    communication: 65,
+    people: 80,
     practical: 85,
     organization: 65,
     technology: 25,
@@ -318,17 +318,17 @@ const CATEGORY_ARCHETYPES: Record<string, Record<DimensionKey, number>> = {
     technology: 30,
     leadership: 45,
   },
-  "Farming, Fishing, & Forestry": {
-    analytical: 45,
-    creativity: 30,
-    communication: 30,
+  "Agriculture & Environment": {
+    analytical: 55,
+    creativity: 35,
+    communication: 35,
     people: 30,
     practical: 95,
-    organization: 55,
-    technology: 40,
+    organization: 60,
+    technology: 45,
     leadership: 45,
   },
-  "Building & Grounds Cleaning": {
+  "Facilities & Grounds": {
     analytical: 25,
     creativity: 20,
     communication: 30,
@@ -355,47 +355,45 @@ const DEFAULT_ARCHETYPE: Record<DimensionKey, number> = {
 export function deriveOccupationVector(
   occupation: Occupation
 ): Record<DimensionKey, number> {
-  const categoryMatch = Object.entries(CATEGORY_ARCHETYPES).find(([cat]) =>
-    occupation.category.toLowerCase().includes(cat.toLowerCase().split(" ")[0])
-  );
-  const baseline = categoryMatch ? categoryMatch[1] : DEFAULT_ARCHETYPE;
+  const cat = occupation.category || "";
+  const baseline = CATEGORY_ARCHETYPES[cat] || DEFAULT_ARCHETYPE;
 
   const vector: Record<DimensionKey, number> = { ...baseline };
 
   // 1. Calibrate practical with real physicalDependency
   if (typeof occupation.physicalDependency === "number") {
     vector.practical = Math.round(
-      baseline.practical * 0.4 + occupation.physicalDependency * 0.6
+      baseline.practical * 0.35 + occupation.physicalDependency * 0.65
     );
   }
 
   // 2. Calibrate people & communication with real humanDependency
   if (typeof occupation.humanDependency === "number") {
     vector.people = Math.round(
-      baseline.people * 0.45 + occupation.humanDependency * 0.55
+      baseline.people * 0.40 + occupation.humanDependency * 0.60
     );
     vector.communication = Math.round(
-      baseline.communication * 0.55 + occupation.humanDependency * 0.45
+      baseline.communication * 0.50 + occupation.humanDependency * 0.50
     );
   }
 
   // 3. Keyword / title refinements for specialized domains
-  const titleLower = occupation.title.toLowerCase();
+  const titleLower = (occupation.title || "").toLowerCase();
   if (titleLower.includes("data") || titleLower.includes("statistician") || titleLower.includes("analyst") || titleLower.includes("scientist") || titleLower.includes("economist")) {
-    vector.analytical = Math.min(100, vector.analytical + 12);
-    vector.technology = Math.min(100, vector.technology + 10);
+    vector.analytical = Math.min(100, vector.analytical + 10);
+    vector.technology = Math.min(100, vector.technology + 8);
   }
   if (titleLower.includes("designer") || titleLower.includes("writer") || titleLower.includes("artist") || titleLower.includes("architect")) {
     vector.creativity = Math.min(100, vector.creativity + 15);
   }
-  if (titleLower.includes("manager") || titleLower.includes("director") || titleLower.includes("executive") || titleLower.includes("chief")) {
+  if (titleLower.includes("manager") || titleLower.includes("director") || titleLower.includes("executive") || titleLower.includes("chief") || titleLower.includes("supervisor")) {
     vector.leadership = Math.min(100, vector.leadership + 15);
     vector.organization = Math.min(100, vector.organization + 8);
   }
   if (titleLower.includes("nurse") || titleLower.includes("therapist") || titleLower.includes("counselor") || titleLower.includes("social worker")) {
     vector.people = Math.min(100, vector.people + 12);
   }
-  if (titleLower.includes("developer") || titleLower.includes("programmer") || titleLower.includes("engineer") || titleLower.includes("cybersecurity")) {
+  if (titleLower.includes("developer") || titleLower.includes("programmer") || titleLower.includes("engineer") || titleLower.includes("cybersecurity") || titleLower.includes("software")) {
     vector.technology = Math.min(100, vector.technology + 12);
     vector.analytical = Math.min(100, vector.analytical + 8);
   }
@@ -427,21 +425,25 @@ export function matchOccupations(
     let weightedSquaredDiff = 0;
 
     for (const key of DIMENSION_KEYS) {
-      const userScore = userProfile.dimensionScores[key];
-      const occScore = occVector[key];
+      const u = userProfile.dimensionScores[key];
+      const o = occVector[key];
 
-      // Give higher weight (1.6x) to dimensions where user scored High/Very High (>= 60)
-      const weight = userScore >= 60 ? 1.6 : 1.0;
-      totalWeight += weight;
-      weightedSquaredDiff += weight * Math.pow(userScore - occScore, 2);
+      // Give higher weight to dimensions where user scored High (>=60) or Very High (>=80)
+      let w = 1.0;
+      if (u >= 80) w = 2.5;
+      else if (u >= 60) w = 1.8;
+      else if (u <= 20) w = 1.4; // Penalty if user explicitly rejects a dimension
+
+      totalWeight += w;
+      weightedSquaredDiff += w * Math.pow(u - o, 2);
     }
 
     const meanSquaredError = weightedSquaredDiff / totalWeight;
     const rootMeanSquare = Math.sqrt(meanSquaredError);
 
-    // RMS error ranges from 0 to ~60 in practical profiles. Scale to 0..100%
-    const rawFit = Math.round(100 - (rootMeanSquare / 55) * 100);
-    const careerFit = Math.max(10, Math.min(99, rawFit));
+    // Non-linear calibration curve mapping RMS error to 12%..98% Career Fit
+    const fitPct = Math.round(98 - Math.pow(rootMeanSquare / 4.2, 1.45));
+    const careerFit = Math.max(12, Math.min(98, fitPct));
 
     // Find the top overlapping competencies for this specific pairing
     const keyStrengths = [...DIMENSION_KEYS]
