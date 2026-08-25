@@ -31,7 +31,7 @@ from sqlalchemy import text
 
 from app.core.config import get_settings
 from app.db.session import SessionFactory
-from app.news import relevance
+from app.news import priority, relevance
 from app.news.ingestion import ItemDecision, run_ingestion
 from app.repositories import news_ingest as repo
 
@@ -46,40 +46,64 @@ def _truncate(value: str, width: int) -> str:
 
 
 def _print_decisions(decisions: list[ItemDecision], show_ignored: bool) -> None:
-    """One line per entry: source, score, dedupe, status, date, title."""
+    """One line per entry, carrying both scores.
+
+    AI relevance and JobsVsAI priority answer different questions and regularly disagree, so
+    showing only one of them hides the disagreement an operator most needs to see. Ordering
+    here is by priority, because that is the order generation will actually consume.
+    """
     shown = [d for d in decisions if show_ignored or d.status not in ("not_stored",)]
     if not shown:
         print("  (no entries to show)")
         return
 
-    print(f"\n  {'SOURCE':<22}{'SCORE':>6} {'DEDUPE':<16}{'STATUS':<11}{'PUBLISHED':<17}TITLE")
-    print(f"  {'-'*22}{'-'*6} {'-'*16}{'-'*11}{'-'*17}{'-'*40}")
-    for d in sorted(shown, key=lambda x: (x.status, -(x.relevance_score or -1))):
+    print(f"\n  {'SOURCE':<22}{'AI':>4}{'PRIO':>6} {'BAND':<8}{'STATUS':<11}"
+          f"{'PUBLISHED':<17}TITLE")
+    print(f"  {'-'*22}{'-'*4}{'-'*6} {'-'*8}{'-'*11}{'-'*17}{'-'*40}")
+    for d in sorted(shown, key=lambda x: (x.status, -(x.priority_score or -1),
+                                          -(x.relevance_score or -1))):
         score = str(d.relevance_score) if d.relevance_score is not None else "—"
         if d.relevance_confident:
             score += "*"
-        dedupe = d.dedupe
+        prio = str(d.priority_score) if d.priority_score is not None else "—"
+        band = d.priority_band or ""
+        if d.title_only:
+            band += "!"
         if d.near_duplicate_of:
             # A negative id means the match was against an earlier entry in this same run
             # rather than a stored row — only possible on a dry run.
             target = ("earlier-in-run" if d.near_duplicate_of < 0
                       else f"#{d.near_duplicate_of}")
-            dedupe = f"near {target}@{d.near_duplicate_similarity}"
-        print(f"  {_truncate(d.source_name, 21):<22}{score:>6} {_truncate(dedupe, 15):<16}"
+            band = f"near {target}"
+        print(f"  {_truncate(d.source_name, 21):<22}{score:>4}{prio:>6} {band:<8}"
               f"{d.status:<11}{_fmt_date(d.source_published_at):<17}"
-              f"{_truncate(d.original_title, 58)}")
-    print("\n  * = above the confident threshold "
-          f"({relevance.CONFIDENT_THRESHOLD}); candidate threshold is "
-          f"{relevance.CANDIDATE_THRESHOLD}")
+              f"{_truncate(d.original_title, 52)}")
+    print("\n  AI   = relevance "
+          f"({relevance.POLICY_VERSION}); * above confident threshold "
+          f"{relevance.CONFIDENT_THRESHOLD}, candidate threshold {relevance.CANDIDATE_THRESHOLD}")
+    print(f"  PRIO = JobsVsAI generation priority ({priority.POLICY_VERSION}); "
+          f"HIGH >= {priority.HIGH_THRESHOLD}, MEDIUM >= {priority.MEDIUM_THRESHOLD}")
+    print("  !    = feed supplied no excerpt; judged on the headline alone")
+
+    ranked = [d for d in shown if d.status == "candidate" and d.priority_score is not None]
+    if ranked:
+        ranked.sort(key=lambda x: (-(x.priority_score or 0), -(x.relevance_score or 0)))
+        print("\n  Top candidates by generation priority:")
+        for d in ranked[:15]:
+            signals = ", ".join(d.priority_signals[:6]) or "(no substantive signal)"
+            print(f"    AI {str(d.relevance_score or '—'):>3} · "
+                  f"Priority {d.priority_score:>3} {d.priority_band:<6} "
+                  f"{_truncate(d.original_title, 56)}")
+            print(f"        {_truncate(signals, 96)}")
 
 
 def _print_urls(decisions: list[ItemDecision]) -> None:
     stored = [d for d in decisions if d.status in ("candidate", "new")]
     if not stored:
         return
-    print("\n  URLs of stored candidates:")
-    for d in stored:
-        print(f"    [{d.relevance_score}] {d.external_url}")
+    print("\n  URLs of stored candidates (priority order):")
+    for d in sorted(stored, key=lambda x: -(x.priority_score or 0)):
+        print(f"    [AI {d.relevance_score} / prio {d.priority_score}] {d.external_url}")
 
 
 async def cmd_ingest(args: argparse.Namespace) -> int:

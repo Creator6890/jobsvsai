@@ -22,7 +22,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
-from app.news import dedupe, relevance
+from app.news import dedupe, priority, relevance
 from app.news.feeds import FeedError, HttpFeedFetcher, ParsedEntry
 from app.repositories import news_ingest as repo
 
@@ -61,6 +61,12 @@ class ItemDecision:
     near_duplicate_of: int | None = None
     near_duplicate_similarity: float | None = None
     matched_signals: list[str] = field(default_factory=list)
+    # JobsVsAI generation priority — a separate policy from relevance, reported alongside it
+    # so an operator can see the two disagree rather than having to infer it.
+    priority_score: int | None = None
+    priority_band: str | None = None
+    priority_signals: list[str] = field(default_factory=list)
+    title_only: bool = False
 
 
 @dataclass
@@ -189,6 +195,13 @@ async def run_ingestion(
                 signals = assessment.signals if assessment else {}
                 matched = [t for key in ("aiTerms", "capabilityTerms", "workTerms")
                            for t in (signals.get(key) or [])]
+                # Only scored items get a priority: an entry rejected by the window or by
+                # exact dedupe never reaches the queue, so ranking it would be noise.
+                prio = priority.assess(
+                    title=entry.original_title, excerpt=entry.original_excerpt,
+                    categories=entry.categories,
+                    source_trust_tier=source["trust_tier"],
+                ) if assessment else None
                 decisions.append(ItemDecision(
                     source_name=source["name"], original_title=entry.original_title,
                     external_url=entry.external_url,
@@ -199,6 +212,10 @@ async def run_ingestion(
                     near_duplicate_of=match.ingest_item_id if match else None,
                     near_duplicate_similarity=match.similarity if match else None,
                     matched_signals=matched[:8],
+                    priority_score=prio.score if prio else None,
+                    priority_band=prio.band if prio else None,
+                    priority_signals=prio.top_signals[:8] if prio else [],
+                    title_only=bool(prio.title_only) if prio else False,
                 ))
 
             if not _within_window(entry, cutoff):

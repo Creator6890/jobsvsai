@@ -7,11 +7,15 @@ predicate here because there is no public read path to gate.
 
 from __future__ import annotations
 
+import json
+
 from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping, Sequence
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.news import priority
 
 # Sources whose own subject matter is AI. Used by the relevance prefilter to let an opaque
 # first-party headline ("Introducing Operator") through. Matched on the source name, so
@@ -254,22 +258,63 @@ async def ingest_items_for_article(session: AsyncSession, article_id: int) -> li
 
 
 async def select_generation_candidates(session: AsyncSession, limit: int) -> list[int]:
-    """Unassessed candidates, best deterministic score first, newest first within that.
+    """Unassessed candidates, highest JobsVsAI generation priority first.
 
     Excludes anything already assessed, already converted, or already linked to an article,
     so a repeated batch never reprocesses the same item.
+
+    Ordering is by `news-generation-priority-v1`, not by relevance score. Relevance decides
+    what enters the queue; priority decides what leaves it first, and the two disagree often
+    enough to matter — the first production dry run put datacentre hardware marketing above a
+    labour-market study on relevance alone. Generation is capped at a handful of calls a day,
+    so the order is the entire practical difference.
+
+    Priority is derived here rather than stored. It is a pure function of fields the row
+    already carries, so persisting it would add a column that could only ever disagree with
+    the policy, and every policy revision would need a backfill to stay truthful. The
+    eligible queue is bounded by the per-run candidate ceiling, so ranking in Python costs
+    nothing that matters.
     """
     rows = (await session.execute(text("""
-      SELECT item.id FROM news_ingest_items item
+      SELECT item.id, item.original_title, item.original_excerpt, item.feed_categories,
+             item.relevance_score, item.source_published_at, source.trust_tier
+      FROM news_ingest_items item
+      JOIN news_sources source ON source.id = item.source_id
       WHERE item.status = 'candidate'
         AND item.is_ai_news IS NULL
         AND NOT EXISTS (
           SELECT 1 FROM news_article_sources link WHERE link.ingest_item_id = item.id)
-      ORDER BY item.relevance_score DESC NULLS LAST,
-               item.source_published_at DESC NULLS LAST, item.id DESC
-      LIMIT :limit
-    """), {"limit": limit})).scalars().all()
-    return list(rows)
+    """))).mappings().all()
+
+    ranked = sorted(
+        ((priority.assess(
+            title=row["original_title"],
+            excerpt=row["original_excerpt"],
+            categories=_categories(row["feed_categories"]),
+            source_trust_tier=row["trust_tier"] or 3,
+        ), row) for row in rows),
+        key=lambda pair: (
+            -pair[0].score,
+            -(pair[1]["relevance_score"] or 0),
+            -(pair[1]["source_published_at"].timestamp()
+              if pair[1]["source_published_at"] else 0),
+            -pair[1]["id"],
+        ),
+    )
+    return [row["id"] for _, row in ranked[:limit]]
+
+
+def _categories(raw: Any) -> list[str]:
+    """`feed_categories` is stored as JSON text; tolerate null and malformed values."""
+    if not raw:
+        return []
+    if isinstance(raw, list):
+        return [str(item) for item in raw]
+    try:
+        parsed = json.loads(raw)
+    except (TypeError, ValueError):
+        return []
+    return [str(item) for item in parsed] if isinstance(parsed, list) else []
 
 
 async def record_semantic_acceptance(

@@ -137,7 +137,7 @@ def normalise(text: str | None) -> str:
     return _WS.sub(" ", _NON_WORD.sub(" ", lowered)).strip()
 
 
-def _matches(haystack: str, terms: Iterable[str]) -> list[str]:
+def matches(haystack: str, terms: Iterable[str]) -> list[str]:
     """Phrase-aware containment.
 
     Multi-word terms are matched as phrases; single words are matched on token boundaries,
@@ -192,11 +192,11 @@ def assess(
     # should not count as strongly.
     title_text = normalise(title)
 
-    ai_hits = _matches(haystack, AI_TERMS)
-    capability_hits = _matches(haystack, CAPABILITY_TERMS)
-    work_hits = _matches(haystack, WORK_TERMS)
-    ambiguous_hits = _matches(haystack, AMBIGUOUS_TERMS)
-    negative_hits = _matches(haystack, NEGATIVE_TERMS)
+    ai_hits = matches(haystack, AI_TERMS)
+    capability_hits = matches(haystack, CAPABILITY_TERMS)
+    work_hits = matches(haystack, WORK_TERMS)
+    ambiguous_hits = matches(haystack, AMBIGUOUS_TERMS)
+    negative_hits = matches(haystack, NEGATIVE_TERMS)
 
     # Scoring is presence-based, not count-based. A real headline — "Introducing GPT-5" —
     # carries one or two vocabulary hits, while a keyword-stuffed corporate post carries
