@@ -8,6 +8,7 @@ import { NavLinks, type NavLink } from "./NavLinks";
 const links: readonly NavLink[] = [
   ["Home", "/"],
   ["Rankings", "/rankings"],
+  ["Career Fit", "/career-fit"],
   ["News", "/news"],
   ["Compare", "/compare"],
   ["Methodology", "/methodology"],

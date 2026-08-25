@@ -45,7 +45,20 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Ad: after hero + search + ranking previews — user value first. */}
+        <section className="section" aria-labelledby="career-fit-cta-title">
+          <div className="container">
+            <div className="card career-fit-cta-card">
+              <div>
+                <div className="section-kicker">Not sure which career to search for?</div>
+                <h2 id="career-fit-cta-title">Find careers that match how you work.</h2>
+                <p>Take a 3-minute assessment across 8 core work dimensions to discover occupations matched to your natural abilities, paired with verified AI risk metrics.</p>
+              </div>
+              <Link className="button" href="/career-fit">Take Career Fit Assessment →</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Ad: after hero + search + ranking previews + career fit — user value first. */}
         <div className="container ad-break">
           <AdSlot slot="home" format="horizontal" />
         </div>
