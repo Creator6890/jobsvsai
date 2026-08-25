@@ -508,9 +508,19 @@ async def run_generation_batch(
             errors.append({"item": str(item_id), "error": (outcome.error or "")[:300]})
 
     counters.duration_ms = int((datetime.now(UTC) - started).total_seconds() * 1000)
-    tokens = await ingest_repo.token_totals_for_items(session, candidates)
-    counters.input_tokens = tokens["input"]
-    counters.output_tokens = tokens["output"]
+    # Usage is summed from THIS RUN's outcomes, never re-read from the ingest items.
+    #
+    # Reading it back from the items was wrong in a way that only showed up in production: an
+    # item keeps the token counts of whatever call last succeeded on it, and a failed call
+    # writes none. So a run that failed against an already-attempted candidate re-recorded that
+    # candidate's earlier usage as its own. Two failed retries of item 25 each claimed the 1469
+    # /615 tokens of the single successful call before them, and the sum over run rows reached
+    # 4407/1845 against a true 1469/615.
+    #
+    # An outcome carries usage only when the provider returned it, so a failure contributes 0
+    # and every run row now describes exactly the calls it made.
+    counters.input_tokens = sum(o.input_tokens or 0 for o in outcomes)
+    counters.output_tokens = sum(o.output_tokens or 0 for o in outcomes)
 
     await ingest_repo.complete_generation_run(
         session, run_id, asdict(counters), json.dumps(errors),

@@ -37,6 +37,19 @@ DEFAULT_MODEL = "gemini-3.7-flash"
 MAX_ATTEMPTS = 3
 BACKOFF_BASE_SECONDS = 1.5
 
+# Per-attempt client deadline, in seconds. Overridable with NEWS_LLM_TIMEOUT_SECONDS.
+#
+# Raised from 45 to 90 on evidence, not on principle. In the first supervised production batch
+# every failing attempt ran 41-45s against the 45s deadline and returned 504, while the one
+# call that ever succeeded took 10.1s. Attempts pinned to the deadline are the signature of the
+# client cutting the request off rather than the provider being down, and Google's own guidance
+# for 504 is to relax an overly restrictive client deadline.
+#
+# 90s is roughly nine times the observed successful latency and still bounded: three attempts
+# plus backoff cap a single candidate at about 275 seconds. The goal is headroom for a slow
+# call, not unlimited waiting.
+DEFAULT_TIMEOUT_SECONDS = 90.0
+
 
 class GeminiError(RuntimeError):
     """A Gemini call failed. Message is safe to show an admin and to store.
@@ -60,7 +73,7 @@ class GeminiGenerationProvider:
         self,
         api_key: str,
         model: str = DEFAULT_MODEL,
-        timeout_seconds: float = 45.0,
+        timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
         sleep=time.sleep,
     ) -> None:
         if not api_key or not api_key.strip():
@@ -108,6 +121,13 @@ class GeminiGenerationProvider:
         if status in (429,) or "ResourceExhausted" in name or "RateLimit" in name:
             return GeminiError("Rate limited by provider (429)", retryable=True,
                                kind="rate_limited")
+        # 504 is a deadline, not an outage, and the distinction decides what an operator
+        # should do about it: a 503 means wait for the provider, a 504 means the request did
+        # not finish inside the deadline it was given. Both stay retryable; only the recorded
+        # `kind` differs, using the existing vocabulary rather than a new value.
+        if status == 504 or "DeadlineExceeded" in name:
+            return GeminiError("Provider deadline exceeded (504)", retryable=True,
+                               kind="timeout")
         if isinstance(status, int) and 500 <= status < 600:
             return GeminiError(f"Provider server error ({status})", retryable=True,
                                kind="server_error")

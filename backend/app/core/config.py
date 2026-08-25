@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     # reads; these only override them when explicitly set.
     news_max_generations_per_run: int | None = None
     news_max_generations_per_day: int | None = None
-    news_llm_timeout_seconds: int = 45
+    news_llm_timeout_seconds: int = 90
     # Optional. Left unset by default so `metrics` reports tokens only — deriving a currency
     # figure from a guessed rate produces a number that looks authoritative and is not.
     news_llm_cost_per_1m_input: float | None = None

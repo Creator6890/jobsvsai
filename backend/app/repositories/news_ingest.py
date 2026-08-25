@@ -488,17 +488,6 @@ async def record_generation_failure(
            "error_kind": error_kind, "latency_ms": latency_ms})
 
 
-async def token_totals_for_items(session: AsyncSession, item_ids: list[int]) -> dict[str, int]:
-    if not item_ids:
-        return {"input": 0, "output": 0}
-    row = (await session.execute(text("""
-      SELECT coalesce(sum(generation_input_tokens), 0) AS input_tokens,
-             coalesce(sum(generation_output_tokens), 0) AS output_tokens
-      FROM news_ingest_items WHERE id = ANY(:ids)
-    """), {"ids": item_ids})).mappings().one()
-    return {"input": int(row["input_tokens"]), "output": int(row["output_tokens"])}
-
-
 async def start_generation_run(session: AsyncSession, run: Mapping[str, Any]) -> int:
     return (await session.execute(text("""
       INSERT INTO news_generation_runs
