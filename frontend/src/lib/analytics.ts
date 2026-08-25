@@ -4,11 +4,12 @@
  * Provides a strictly typed, privacy-preserving, and non-blocking event tracking
  * interface across all core product funnels.
  *
- * Core Privacy Invariants:
+ * Core Privacy & Measurement Invariants:
  * - Zero PII (no personal info, names, emails, IPs)
  * - Zero Career Fit raw answers, dimension scores, or full profiles
- * - Zero task text or sensitive payload leakage
- * - Occupation slugs and coarse risk bands (low/medium/high) only
+ * - Zero task text, task descriptions, or guidance strings
+ * - Strict property name allowlisting AND value constraint validation
+ * - View events fire on meaningful user view / viewport entry
  */
 
 export type RiskBand = "low" | "medium" | "high";
@@ -25,6 +26,17 @@ export function getAnalyticsRiskBand(score: number): RiskBand {
   if (score <= 60) return "medium";
   return "high";
 }
+
+export type KnownSortOption =
+  | "Most exposed"
+  | "Most AI-resistant"
+  | "Highest replacement risk"
+  | "Lowest replacement risk"
+  | "fit"
+  | "risk"
+  | "exposure";
+
+export type KnownEntrySource = "career_fit_page" | "action_plan" | "transitions";
 
 /**
  * Strictly defined event property schemas.
@@ -43,7 +55,7 @@ export interface AnalyticsEventMap {
     replacement_risk_band: RiskBand;
   };
 
-  // ACTION PLAN
+  // ACTION PLAN (Fires only when section enters user's viewport)
   action_plan_viewed: {
     occupation_slug: string;
     replacement_risk_band: RiskBand;
@@ -79,7 +91,7 @@ export interface AnalyticsEventMap {
 
   // CAREER FIT (STRICT PRIVACY: zero answers or raw profile)
   career_fit_started: {
-    entry_source?: string;
+    entry_source?: KnownEntrySource;
   };
   career_fit_completed: {
     duration_seconds?: number;
@@ -89,7 +101,7 @@ export interface AnalyticsEventMap {
     fit_rank?: number;
   };
 
-  // COMPARE
+  // COMPARE (Fires authoritative view event when comparison renders)
   comparison_created: {
     occupation_a_slug: string;
     occupation_b_slug: string;
@@ -97,7 +109,10 @@ export interface AnalyticsEventMap {
 
   // RANKINGS
   rankings_viewed: {
-    sort_by?: string;
+    page?: string;
+  };
+  rankings_filter_changed: {
+    sort_by?: KnownSortOption;
     filter_category?: string;
   };
   rankings_job_opened: {
@@ -134,11 +149,89 @@ const ALLOWED_PROPERTIES: Record<string, readonly string[]> = {
   career_fit_completed: ["duration_seconds"],
   career_fit_job_opened: ["destination_slug", "fit_rank"],
   comparison_created: ["occupation_a_slug", "occupation_b_slug"],
-  rankings_viewed: ["sort_by", "filter_category"],
+  rankings_viewed: ["page"],
+  rankings_filter_changed: ["sort_by", "filter_category"],
   rankings_job_opened: ["occupation_slug", "sort_by"],
   related_occupation_click: ["source_occupation_slug", "related_occupation_slug", "related_occupation_title", "source"],
   ad_slot_rendered: ["placement"],
 };
+
+// ---------------------------------------------------------------------------
+// Strict Value Validators
+// ---------------------------------------------------------------------------
+
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const KNOWN_RISK_BANDS = new Set<string>(["low", "medium", "high"]);
+const KNOWN_SORT_OPTIONS = new Set<string>([
+  "Most exposed",
+  "Most AI-resistant",
+  "Highest replacement risk",
+  "Lowest replacement risk",
+  "fit",
+  "risk",
+  "exposure",
+]);
+const KNOWN_ENTRY_SOURCES = new Set<string>(["career_fit_page", "action_plan", "transitions"]);
+
+function isValidSlug(val: unknown): val is string {
+  return typeof val === "string" && val.length >= 1 && val.length <= 100 && SLUG_REGEX.test(val);
+}
+
+function isValidRiskBand(val: unknown): val is RiskBand {
+  return typeof val === "string" && KNOWN_RISK_BANDS.has(val);
+}
+
+function isValidBoundedInt(val: unknown, min: number, max: number): val is number {
+  return typeof val === "number" && Number.isInteger(val) && val >= min && val <= max;
+}
+
+function isValidValue(key: string, val: unknown): boolean {
+  if (val === undefined || val === null || val === "") return false;
+
+  switch (key) {
+    case "occupation_slug":
+    case "source_slug":
+    case "destination_slug":
+    case "selected_occupation_slug":
+    case "occupation_a_slug":
+    case "occupation_b_slug":
+    case "source_occupation_slug":
+    case "related_occupation_slug":
+      return isValidSlug(val);
+
+    case "ai_exposure_band":
+    case "replacement_risk_band":
+    case "source_risk_band":
+    case "destination_risk_band":
+      return isValidRiskBand(val);
+
+    case "query_result_count":
+    case "candidate_count":
+      return isValidBoundedInt(val, 0, 1000);
+
+    case "fit_rank":
+      return isValidBoundedInt(val, 1, 100);
+
+    case "duration_seconds":
+      return isValidBoundedInt(val, 0, 86400);
+
+    case "sort_by":
+      return typeof val === "string" && KNOWN_SORT_OPTIONS.has(val);
+
+    case "entry_source":
+      return typeof val === "string" && KNOWN_ENTRY_SOURCES.has(val);
+
+    case "filter_category":
+    case "related_occupation_title":
+    case "source":
+    case "placement":
+    case "page":
+      return typeof val === "string" && val.length >= 1 && val.length <= 80;
+
+    default:
+      return false;
+  }
+}
 
 /** Global window gtag declaration. */
 type EventParams = Record<string, string | number | boolean | undefined>;
@@ -162,17 +255,15 @@ export function trackEvent<E extends AnalyticsEventName>(
     return;
   }
 
-  // Filter properties against strict allowlist
+  // Filter properties against strict allowlist & value constraints
   const allowedKeys = ALLOWED_PROPERTIES[eventName] ?? [];
   const rawObj = (properties || {}) as Record<string, unknown>;
   const cleanParams: EventParams = {};
 
   for (const key of allowedKeys) {
     const val = rawObj[key];
-    if (val !== undefined && val !== null && val !== "") {
-      if (typeof val === "string" || typeof val === "number" || typeof val === "boolean") {
-        cleanParams[key] = val;
-      }
+    if (isValidValue(key, val)) {
+      cleanParams[key] = val as string | number | boolean;
     }
   }
 

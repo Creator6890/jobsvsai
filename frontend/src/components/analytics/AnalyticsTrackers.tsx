@@ -5,6 +5,7 @@ import { trackEvent, getAnalyticsRiskBand } from "@/lib/analytics";
 
 /**
  * Tracks occupation_viewed on the occupation detail page once per slug.
+ * Navigating to a different occupation slug fires a new event.
  */
 export function OccupationViewTracker({
   slug,
@@ -32,7 +33,8 @@ export function OccupationViewTracker({
 }
 
 /**
- * Tracks action_plan_viewed on ActionPlanSection once per slug.
+ * Tracks action_plan_viewed when the Action Plan section actually enters the user's viewport.
+ * Uses IntersectionObserver. Fires once per occupation slug.
  */
 export function ActionPlanViewTracker({
   slug,
@@ -42,18 +44,60 @@ export function ActionPlanViewTracker({
   replacementRisk: number;
 }) {
   const trackedRef = useRef<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    // Reset trackedRef if slug changes
     if (trackedRef.current === slug) return;
-    trackedRef.current = slug;
 
-    trackEvent("action_plan_viewed", {
-      occupation_slug: slug,
-      replacement_risk_band: getAnalyticsRiskBand(replacementRisk),
-    });
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      // Fallback in environments lacking IntersectionObserver (e.g. older SSR/test runners)
+      trackedRef.current = slug;
+      trackEvent("action_plan_viewed", {
+        occupation_slug: slug,
+        replacement_risk_band: getAnalyticsRiskBand(replacementRisk),
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && trackedRef.current !== slug) {
+            trackedRef.current = slug;
+            trackEvent("action_plan_viewed", {
+              occupation_slug: slug,
+              replacement_risk_band: getAnalyticsRiskBand(replacementRisk),
+            });
+            observer.disconnect();
+          }
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
   }, [slug, replacementRisk]);
 
-  return null;
+  return (
+    <div
+      ref={sentinelRef}
+      aria-hidden="true"
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "1px",
+        pointerEvents: "none",
+      }}
+    />
+  );
 }
 
 /**
@@ -111,27 +155,17 @@ export function ComparisonViewTracker({
 }
 
 /**
- * Tracks rankings_viewed once on mount or when sort/filter changes.
+ * Tracks rankings_viewed once on mount of the rankings experience.
  */
-export function RankingsViewTracker({
-  sortBy,
-  filterCategory,
-}: {
-  sortBy?: string;
-  filterCategory?: string;
-}) {
-  const trackedRef = useRef<string | null>(null);
+export function RankingsViewTracker() {
+  const trackedRef = useRef(false);
 
   useEffect(() => {
-    const key = `${sortBy || "default"}-${filterCategory || "all"}`;
-    if (trackedRef.current === key) return;
-    trackedRef.current = key;
+    if (trackedRef.current) return;
+    trackedRef.current = true;
 
-    trackEvent("rankings_viewed", {
-      sort_by: sortBy,
-      filter_category: filterCategory,
-    });
-  }, [sortBy, filterCategory]);
+    trackEvent("rankings_viewed", { page: "rankings" });
+  }, []);
 
   return null;
 }

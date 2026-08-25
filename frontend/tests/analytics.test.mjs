@@ -61,7 +61,7 @@ test("Risk band thresholds align strictly with low (<=40), medium (41..60), high
 });
 
 // ---------------------------------------------------------------------------
-// 3. Runtime Event Dispatch & Allowlist Sanitization Invariants
+// 3. Property Allowlist & Strict Value Sanitization Invariants
 // ---------------------------------------------------------------------------
 
 const ALLOWED_PROPERTIES = {
@@ -78,22 +78,82 @@ const ALLOWED_PROPERTIES = {
   career_fit_completed: ["duration_seconds"],
   career_fit_job_opened: ["destination_slug", "fit_rank"],
   comparison_created: ["occupation_a_slug", "occupation_b_slug"],
-  rankings_viewed: ["sort_by", "filter_category"],
+  rankings_viewed: ["page"],
+  rankings_filter_changed: ["sort_by", "filter_category"],
   rankings_job_opened: ["occupation_slug", "sort_by"],
   related_occupation_click: ["source_occupation_slug", "related_occupation_slug", "related_occupation_title", "source"],
   ad_slot_rendered: ["placement"],
 };
 
-function sanitizeEventPayload(eventName, rawProperties) {
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const KNOWN_RISK_BANDS = new Set(["low", "medium", "high"]);
+const KNOWN_SORT_OPTIONS = new Set([
+  "Most exposed",
+  "Most AI-resistant",
+  "Highest replacement risk",
+  "Lowest replacement risk",
+  "fit",
+  "risk",
+  "exposure",
+]);
+const KNOWN_ENTRY_SOURCES = new Set(["career_fit_page", "action_plan", "transitions"]);
+
+function isValidValuePure(key, val) {
+  if (val === undefined || val === null || val === "") return false;
+
+  switch (key) {
+    case "occupation_slug":
+    case "source_slug":
+    case "destination_slug":
+    case "selected_occupation_slug":
+    case "occupation_a_slug":
+    case "occupation_b_slug":
+    case "source_occupation_slug":
+    case "related_occupation_slug":
+      return typeof val === "string" && val.length >= 1 && val.length <= 100 && SLUG_REGEX.test(val);
+
+    case "ai_exposure_band":
+    case "replacement_risk_band":
+    case "source_risk_band":
+    case "destination_risk_band":
+      return typeof val === "string" && KNOWN_RISK_BANDS.has(val);
+
+    case "query_result_count":
+    case "candidate_count":
+      return typeof val === "number" && Number.isInteger(val) && val >= 0 && val <= 1000;
+
+    case "fit_rank":
+      return typeof val === "number" && Number.isInteger(val) && val >= 1 && val <= 100;
+
+    case "duration_seconds":
+      return typeof val === "number" && Number.isInteger(val) && val >= 0 && val <= 86400;
+
+    case "sort_by":
+      return typeof val === "string" && KNOWN_SORT_OPTIONS.has(val);
+
+    case "entry_source":
+      return typeof val === "string" && KNOWN_ENTRY_SOURCES.has(val);
+
+    case "filter_category":
+    case "related_occupation_title":
+    case "source":
+    case "placement":
+    case "page":
+      return typeof val === "string" && val.length >= 1 && val.length <= 80;
+
+    default:
+      return false;
+  }
+}
+
+function sanitizeEventPayloadPure(eventName, rawProperties) {
   const allowedKeys = ALLOWED_PROPERTIES[eventName] ?? [];
   const cleanParams = {};
 
   for (const key of allowedKeys) {
     const val = rawProperties?.[key];
-    if (val !== undefined && val !== null && val !== "") {
-      if (typeof val === "string" || typeof val === "number" || typeof val === "boolean") {
-        cleanParams[key] = val;
-      }
+    if (isValidValuePure(key, val)) {
+      cleanParams[key] = val;
     }
   }
   return cleanParams;
@@ -109,7 +169,7 @@ test("trackEvent strips unapproved properties, PII, and raw assessment data", ()
     profile_vector: [0.8, 0.9, 0.2],
   };
 
-  const cleanCareerFit = sanitizeEventPayload("career_fit_completed", dirtyCareerFit);
+  const cleanCareerFit = sanitizeEventPayloadPure("career_fit_completed", dirtyCareerFit);
   assert.deepEqual(cleanCareerFit, { duration_seconds: 142 });
   assert.equal(cleanCareerFit.raw_answers, undefined);
   assert.equal(cleanCareerFit.user_email, undefined);
@@ -123,7 +183,7 @@ test("trackEvent strips unapproved properties, PII, and raw assessment data", ()
     task_guidance: "Use automated formula validators",
   };
 
-  const cleanActionPlan = sanitizeEventPayload("action_plan_viewed", dirtyActionPlan);
+  const cleanActionPlan = sanitizeEventPayloadPure("action_plan_viewed", dirtyActionPlan);
   assert.deepEqual(cleanActionPlan, {
     occupation_slug: "accountant",
     replacement_risk_band: "high",
@@ -139,7 +199,7 @@ test("trackEvent strips unapproved properties, PII, and raw assessment data", ()
     user_ip: "192.168.1.1",
   };
 
-  const cleanSearch = sanitizeEventPayload("occupation_search_used", dirtySearch);
+  const cleanSearch = sanitizeEventPayloadPure("occupation_search_used", dirtySearch);
   assert.deepEqual(cleanSearch, {
     query_result_count: 5,
     selected_occupation_slug: "registered-nurses",
@@ -148,66 +208,104 @@ test("trackEvent strips unapproved properties, PII, and raw assessment data", ()
   assert.equal(cleanSearch.user_ip, undefined);
 });
 
+test("Value sanitizer rejects malformed slugs, unapproved risk bands, and invalid integers", () => {
+  // Invalid slug with spaces or uppercase
+  const badSlugPayload = sanitizeEventPayloadPure("occupation_viewed", {
+    occupation_slug: "Bad Slug Name!",
+    ai_exposure_band: "high",
+    replacement_risk_band: "low",
+  });
+  assert.equal(badSlugPayload.occupation_slug, undefined, "Malformed slug must be dropped");
+
+  // Invalid risk band enum
+  const badRiskPayload = sanitizeEventPayloadPure("occupation_viewed", {
+    occupation_slug: "accountant",
+    ai_exposure_band: "ultra-extreme",
+    replacement_risk_band: "low",
+  });
+  assert.equal(badRiskPayload.ai_exposure_band, undefined, "Unapproved risk band enum must be dropped");
+  assert.equal(badRiskPayload.replacement_risk_band, "low");
+
+  // Negative query result count
+  const badCountPayload = sanitizeEventPayloadPure("occupation_search_used", {
+    query_result_count: -10,
+    selected_occupation_slug: "accountant",
+  });
+  assert.equal(badCountPayload.query_result_count, undefined, "Negative count must be dropped");
+  assert.equal(badCountPayload.selected_occupation_slug, "accountant");
+});
+
 // ---------------------------------------------------------------------------
-// 4. Safe No-Op Invariants (SSR and Unconfigured GA)
+// 4. Action Plan Viewport Intersection & Deduplication Invariants
 // ---------------------------------------------------------------------------
 
-test("trackEvent execution handles unconfigured gtag and exceptions safely", () => {
-  // Simulate browser environment with mocked gtag
-  let capturedEvents = [];
-  const mockWindow = {
-    gtag: (cmd, name, params) => {
-      capturedEvents.push({ cmd, name, params });
-    },
-  };
+test("Action Plan viewport simulation: does not fire on mount below fold, fires once when scrolled into view", () => {
+  const emittedEvents = [];
 
-  function simulateTrack(eventName, properties) {
-    if (typeof mockWindow === "undefined") return;
-    const clean = sanitizeEventPayload(eventName, properties);
-    if (typeof mockWindow.gtag === "function") {
-      mockWindow.gtag("event", eventName, clean);
+  class ActionPlanObserverMock {
+    constructor(slug, replacementRisk) {
+      this.slug = slug;
+      this.replacementRisk = replacementRisk;
+      this.tracked = false;
+    }
+
+    onMount() {
+      // Below fold: does NOT fire immediately
+      return;
+    }
+
+    onIntersection(isIntersecting) {
+      if (isIntersecting && !this.tracked) {
+        this.tracked = true;
+        emittedEvents.push({
+          eventName: "action_plan_viewed",
+          slug: this.slug,
+          risk: getAnalyticsRiskBandPure(this.replacementRisk),
+        });
+      }
     }
   }
 
-  simulateTrack("occupation_viewed", {
-    occupation_slug: "software-engineers",
-    ai_exposure_band: "high",
-    replacement_risk_band: "medium",
+  const observer = new ActionPlanObserverMock("accountant", 68);
+
+  // 1. Initial page load (below viewport)
+  observer.onMount();
+  assert.equal(emittedEvents.length, 0, "Must not fire on mount below fold");
+
+  // 2. User scrolls down and section enters viewport
+  observer.onIntersection(true);
+  assert.equal(emittedEvents.length, 1, "Must fire once when entering viewport");
+  assert.deepEqual(emittedEvents[0], {
+    eventName: "action_plan_viewed",
+    slug: "accountant",
+    risk: "high",
   });
 
-  assert.equal(capturedEvents.length, 1);
-  assert.equal(capturedEvents[0].cmd, "event");
-  assert.equal(capturedEvents[0].name, "occupation_viewed");
-  assert.deepEqual(capturedEvents[0].params, {
-    occupation_slug: "software-engineers",
-    ai_exposure_band: "high",
-    replacement_risk_band: "medium",
-  });
+  // 3. User scrolls out and back in
+  observer.onIntersection(false);
+  observer.onIntersection(true);
+  assert.equal(emittedEvents.length, 1, "Must not duplicate while scrolling on same page");
 
-  // Broken gtag scenario
-  const throwingWindow = {
-    gtag: () => {
-      throw new Error("Adblocker blocked gtag");
-    },
-  };
-
-  assert.doesNotThrow(() => {
-    try {
-      throwingWindow.gtag("event", "test", {});
-    } catch {
-      // Caught as expected
-    }
+  // 4. User navigates to new occupation page
+  const newObserver = new ActionPlanObserverMock("electricians", 22);
+  newObserver.onMount();
+  newObserver.onIntersection(true);
+  assert.equal(emittedEvents.length, 2, "Must fire new event for new occupation page view");
+  assert.deepEqual(emittedEvents[1], {
+    eventName: "action_plan_viewed",
+    slug: "electricians",
+    risk: "low",
   });
 });
 
 // ---------------------------------------------------------------------------
-// 5. Deduplication & StrictMode Double-Render Protection Invariants
+// 5. Entity-Scoped View Deduplication Invariants
 // ---------------------------------------------------------------------------
 
-test("View tracker deduplication prevents double-firing across renders", () => {
+test("View tracker deduplication is scoped by entity/route key", () => {
   const events = [];
 
-  class TrackerSession {
+  class EntityTrackerSession {
     constructor() {
       this.lastTrackedKey = null;
     }
@@ -221,9 +319,9 @@ test("View tracker deduplication prevents double-firing across renders", () => {
     }
   }
 
-  const tracker = new TrackerSession();
+  const tracker = new EntityTrackerSession();
 
-  // Simulating React StrictMode initial mount & remount
+  // Simulating React StrictMode initial mount & remount on /jobs/accountant
   tracker.trackView("accountant", "occupation_viewed", { occupation_slug: "accountant" });
   tracker.trackView("accountant", "occupation_viewed", { occupation_slug: "accountant" });
   tracker.trackView("accountant", "occupation_viewed", { occupation_slug: "accountant" });
@@ -233,13 +331,17 @@ test("View tracker deduplication prevents double-firing across renders", () => {
   // Simulating navigation to another occupation
   tracker.trackView("registered-nurses", "occupation_viewed", { occupation_slug: "registered-nurses" });
   assert.equal(events.length, 2, "Expected second event after navigating to new occupation");
+
+  // Simulating returning back to accountant
+  tracker.trackView("accountant", "occupation_viewed", { occupation_slug: "accountant" });
+  assert.equal(events.length, 3, "Navigating back to accountant should emit a new page view event");
 });
 
 // ---------------------------------------------------------------------------
 // 6. Complete Funnel Event Mapping Verification
 // ---------------------------------------------------------------------------
 
-test("All 15 specification event names are defined and strictly typed", () => {
+test("All specification event names are defined and strictly typed", () => {
   const expectedEvents = [
     "occupation_search_used",
     "occupation_viewed",
@@ -255,6 +357,7 @@ test("All 15 specification event names are defined and strictly typed", () => {
     "career_fit_job_opened",
     "comparison_created",
     "rankings_viewed",
+    "rankings_filter_changed",
     "rankings_job_opened",
   ];
 

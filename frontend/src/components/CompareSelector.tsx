@@ -3,18 +3,14 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import type { Occupation } from "@/types/occupation";
-import { trackEvent } from "@/lib/analytics";
 
 export function CompareSelector({ occupations, initialA, initialB }: { occupations: Occupation[]; initialA?: string; initialB?: string }) {
   // Hooks stay unconditional: with fewer than two published occupations there is
   // nothing to compare, so the selector renders a notice instead of a form.
   const router = useRouter(); const [a, setA] = useState(initialA ?? occupations[0]?.slug ?? ""); const [b, setB] = useState(initialB ?? occupations[1]?.slug ?? occupations[0]?.slug ?? "");
-  // Fires only for a comparison that actually happens: the a === b guard returns first,
-  // so an invalid pairing is never counted as a started comparison.
   function submit(e: FormEvent) {
     e.preventDefault();
     if (a === b) return;
-    trackEvent("comparison_created", { occupation_a_slug: a, occupation_b_slug: b });
     router.push(`/compare/${a}-vs-${b}`);
   }
   if (occupations.length < 2) return <p className="empty-state">Career comparisons open up once at least two occupations are published.</p>;
