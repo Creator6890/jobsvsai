@@ -149,9 +149,9 @@ Templates updated:
 
 ## 6. Privacy & Consent Management (CMP) Readiness
 
-- **No Custom Cookie Banners**: We do not implement home-grown cookie consent modals, which often violate GDPR/ePrivacy certification standards.
-- **Google Certified CMP Compatibility**: The integration is designed to work seamlessly with Google AdSense's built-in **Privacy & Messaging** platform (funding choices / Google-certified CMP) or any TCF v2.2 compliant CMP. When configured in the AdSense console, Google's script automatically manages GDPR/UK-GDPR/CPRA consent dialogs before serving personalized ads.
-- **Safe Initialization**: `AdsenseScript` loads via standard `afterInteractive`, allowing Google's consent management layer to intercept and respect user consent signals automatically.
+- **CMP Readiness vs. Automatic Compliance**: The codebase is architected to be **CMP-ready**, but loading via `afterInteractive` does not automatically confer legal GDPR compliance on its own.
+- **External CMP Configuration Required**: Before live ads are served in jurisdictions requiring explicit consent (EU/EEA/UK/CPRA), the site owner must configure Google AdSense's **Privacy & Messaging** console (or a Google-certified TCF v2.2 Consent Management Platform).
+- **No Custom/Homegrown Cookie Modals**: We intentionally avoid custom non-certified cookie banners that fail ePrivacy/TCF audit requirements. Google's certified consent layer manages consent dialogs and signals directly.
 
 ---
 
