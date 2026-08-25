@@ -64,9 +64,23 @@ export function CareerToolsDropdown() {
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <span>Career Tools</span>
-        <span className="dropdown-chevron" aria-hidden="true">
-          ▾
-        </span>
+        <svg
+          className="dropdown-chevron"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M2.5 4.5L6 8L9.5 4.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
       {isOpen && (
@@ -77,11 +91,16 @@ export function CareerToolsDropdown() {
             role="menuitem"
             onClick={() => setIsOpen(false)}
           >
-            <strong className="dropdown-item-title">Career Fit</strong>
+            <div className="dropdown-item-header">
+              <strong className="dropdown-item-title">Career Fit</strong>
+              <span className="dropdown-item-arrow" aria-hidden="true">→</span>
+            </div>
             <span className="dropdown-item-desc">
               Find careers aligned with your work preferences and strengths.
             </span>
           </Link>
+
+          <div className="dropdown-divider" role="separator" aria-hidden="true" />
 
           <Link
             href="/compare"
@@ -89,7 +108,10 @@ export function CareerToolsDropdown() {
             role="menuitem"
             onClick={() => setIsOpen(false)}
           >
-            <strong className="dropdown-item-title">Compare Careers</strong>
+            <div className="dropdown-item-header">
+              <strong className="dropdown-item-title">Compare Careers</strong>
+              <span className="dropdown-item-arrow" aria-hidden="true">→</span>
+            </div>
             <span className="dropdown-item-desc">
               Compare AI Exposure and Replacement Risk side by side.
             </span>
