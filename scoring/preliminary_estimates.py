@@ -38,6 +38,8 @@ indistinguishable, to the reader, from a measured result.
 
 from __future__ import annotations
 
+import math
+
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -57,20 +59,54 @@ TIER_WEIGHT: dict[str, float] = {
 FULL_COVERAGE_GATE = 80.0
 # Below this, task evidence is thin enough that the estimate renders as a range.
 THIN_COVERAGE = 70.0
-# Fewer verified relatives than this and the proxy is materially less reliable — leave-one-out
-# calibration puts p90 error at 17.8 for 3-5 relatives against 10.0 for 10 or more.
-SPARSE_RELATIVES = 6
+# How much the borrowed occupations *disagree with each other*, measured as the weighted
+# standard deviation of their own scores. This is the confidence signal, and it replaces
+# counting relatives.
+#
+# Counting was the intuitive choice and it is simply not predictive. Leave-one-out over all
+# 507 verified occupations puts the correlation between relative count and absolute error at
+# +0.003 for exposure and -0.070 for replacement risk — indistinguishable from none. Mean
+# error is essentially flat from two relatives to fourteen. Dispersion correlates at +0.221
+# and +0.235, and its strata are monotonic: when the occupations we are borrowing from agree
+# with one another, the average of them is trustworthy; when they disagree, it is not, and no
+# quantity of disagreeing sources fixes that.
+#
+# Boundaries and the half-widths below are the measured strata, not round numbers chosen for
+# looks.
+EXPOSURE_DISPERSION_BANDS = (6.0, 12.0)
+REPLACEMENT_DISPERSION_BANDS = (5.0, 9.0)
 
 Confidence = Literal["higher", "moderate", "low"]
 
-# Half-widths for rendered ranges, taken from the leave-one-out p90 error of the tier that
-# produces them, rounded up to a whole point. A range narrower than the observed p90 error
-# would understate the uncertainty it exists to communicate.
+# Half-widths are the measured p90 absolute error of each dispersion stratum, rounded up to a
+# whole point, so a rendered range is a ~90% interval rather than a decorative one. Observed
+# p90s: exposure 8.2 / 12.4 / 18.2; replacement 7.3 / 7.6-9.5 / 13.4. Middle strata are merged
+# and widened to the larger of the two so the bands stay monotonic — a range that narrowed as
+# the evidence got worse would be actively misleading.
+E3_HALF_WIDTH: dict[str, tuple[int, int, int]] = {
+    "exposure": (9, 13, 19),
+    "replacement": (8, 10, 14),
+}
+
+# E2 keeps a deliberately conservative fixed width. Its uncertainty is about *absent* task
+# coverage, not about relatives disagreeing, so the E3 strata do not describe it and reusing
+# their numbers would be borrowing a calibration that does not apply. Measuring it properly
+# means re-running the engine over truncated evidence, which is real work and is not done here.
 RANGE_HALF_WIDTH: dict[str, dict[str, int]] = {
     "E2": {"exposure": 8, "replacement": 6},
-    "E3_dense": {"exposure": 10, "replacement": 8},
-    "E3_sparse": {"exposure": 18, "replacement": 12},
 }
+
+
+def _dispersion(values: list[float], weights: list[float], mean: float) -> float:
+    """Weighted standard deviation of the borrowed scores about their weighted mean."""
+    total = sum(weights)
+    if total <= 0:
+        return 0.0
+    return math.sqrt(sum(w * (v - mean) ** 2 for v, w in zip(values, weights)) / total)
+
+
+def _band_index(dispersion: float, bounds: tuple[float, float]) -> int:
+    return 0 if dispersion < bounds[0] else 1 if dispersion < bounds[1] else 2
 
 
 @dataclass
@@ -223,20 +259,34 @@ def estimate_from_relatives(
     centre_exposure = _clamp(exposure)
     centre_replacement = _clamp(replacement)
 
-    dense = len(relatives) >= SPARSE_RELATIVES
-    half = RANGE_HALF_WIDTH["E3_dense" if dense else "E3_sparse"]
-    exp_lo, exp_hi = _band(0, 0, centre_exposure, half["exposure"])
-    rep_lo, rep_hi = _band(0, 0, centre_replacement, half["replacement"])
+    # Confidence and width come from how much the sources disagree, not how many there are.
+    weights = [r.weight for r in relatives]
+    exposure_spread = _dispersion([r.ai_exposure for r in relatives], weights, exposure)
+    replacement_spread = _dispersion(
+        [r.replacement_risk for r in relatives], weights, replacement)
+    exposure_band = _band_index(exposure_spread, EXPOSURE_DISPERSION_BANDS)
+    replacement_band = _band_index(replacement_spread, REPLACEMENT_DISPERSION_BANDS)
+
+    exp_lo, exp_hi = _band(0, 0, centre_exposure, E3_HALF_WIDTH["exposure"][exposure_band])
+    rep_lo, rep_hi = _band(
+        0, 0, centre_replacement, E3_HALF_WIDTH["replacement"][replacement_band])
+    # The worse of the two indices decides the label: a page shows both numbers, so its
+    # confidence is the weaker of the claims it makes.
+    agreement = max(exposure_band, replacement_band)
 
     return Estimate(
         identity_id=identity_id,
         occupation_code=occupation_code,
         method="E3",
         method_detail=(
-            f"Weighted average of {len(relatives)} verified related occupations, "
-            "weighted by O*NET relatedness tier. No task evidence exists for this occupation."
+            f"Weighted average of {len(relatives)} verified related occupations, weighted by "
+            f"O*NET relatedness tier. Those occupations' own scores spread by "
+            f"{exposure_spread:.0f} points on AI Exposure and {replacement_spread:.0f} on "
+            "Replacement Risk. No task evidence exists for this occupation."
         ),
-        confidence="moderate" if dense else "low",
+        # A proxy is never "higher"-confidence: it is a borrowed number, and no amount of
+        # agreement between sources turns it into a measurement of this occupation.
+        confidence="moderate" if agreement == 0 else "low",
         ai_exposure=centre_exposure,
         replacement_risk=centre_replacement,
         ai_exposure_low=exp_lo,

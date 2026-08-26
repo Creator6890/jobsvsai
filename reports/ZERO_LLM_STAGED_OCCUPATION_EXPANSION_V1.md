@@ -145,13 +145,23 @@ today. **It cannot be promoted**, and the reason is written into the mapping run
   "activationAllowed": false, "productionScoreWritesAllowed": false }
 ```
 
-The Phase 4A pilot mapper explicitly attests that its output may not be used for activation or
-production score writes. Promoting Software Developers from these mappings would mean overriding
-an attestation the run made about itself — precisely the kind of quiet quality erosion the
-project's frozen decisions exist to prevent.
+**Correction (2026-08-26).** This report originally concluded that these mappings "may not be
+used" and that Software Developers therefore needs a new mapping run. That reading of the
+provenance flags was too strong, and later reconciliation work disproved it. Mapping run 7
+covers twelve occupations, and **five of them are in the verified cohort** — Accountants and
+Auditors, Statisticians, Secondary School Teachers, Photographers and Nurse Practitioners. Run 7
+contributed 1,455 task assessments to the Phase 5 calculation runs that produced the promoted
+scores. The `activationAllowed: false` and `productionScoreWritesAllowed: false` flags constrain
+that run as a *pipeline actor* — it may not itself activate occupations or write production
+scores — rather than quarantining its mappings from downstream scoring that has since consumed
+them.
 
-**Software Developers is one production-grade mapping run away from being publishable**, and it
-is the single highest-value item in the deferred cohort. It needs 17 task assessments, not 17,000.
+What is actually true about Software Developers is narrower, and still decisive for promotion:
+it was never a Phase 5 candidate, so its 17 mappings were never converted into
+`phase5_task_assessments` and no engine score exists for it. **It therefore needs a scoring run,
+not necessarily a new mapping run** — a materially cheaper proposition than this report first
+stated, and worth testing before commissioning new task assessments. Whether the resulting score
+would clear the coverage and confidence gates cannot be known without running it.
 
 ---
 
@@ -318,8 +328,10 @@ with no mismatches in either direction.
 
 ## 15. Recommended future model-work cohort, by value per unit of work
 
-1. **Software Developers** — 17 tasks, all rated, all already mapped once. One production mapping
-   run. Highest consumer value in the entire deferred set.
+1. **Software Developers** — 17 tasks, all rated, all already mapped by a mapper whose output
+   five verified occupations already rest on. The cheapest experiment available: add it to a
+   scoring namespace and see whether the existing mappings clear the gates, before commissioning
+   any new task assessments. Highest consumer value in the deferred set.
 2. **The 15 never-assessed occupations with eligible tasks** — a bounded mapping run; the corpus
    ceiling rises by at most 15.
 3. **The 59 sensitivity-only occupations** — no per-occupation mapping needed at all. What is

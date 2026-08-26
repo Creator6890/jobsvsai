@@ -52,6 +52,42 @@ happened eventually. `current_published_occupation_estimates` now excludes any i
 has a verified score, which settles it structurally regardless of write order — a promotion run
 does not have to remember to withdraw estimates.
 
+## 1a. Reconciliation: the "80" that never existed
+
+An earlier audit reported ~80 staged occupations as not coverage-blocked; E1 holds 58. These
+are **the same set**, and the 80 was a transcription error of mine, not a second definition.
+
+**E1's rule, as implemented** (`scoring/preliminary_estimates.py`,
+`estimate_from_task_evidence`): the occupation has an engine-computed score from triage run 2
+**and** `weighted_task_coverage >= FULL_COVERAGE_GATE (80.0)`. Nothing else. E2 is the same
+rule with coverage below 80.
+
+| Set | Definition | n |
+|---|---|---|
+| A | staged, assessed, **without** `weighted_coverage_below_launch_minimum` | **58** |
+| B | current E1 | **58** |
+| A ∩ B | | **58** |
+| A − B | | **0** |
+| B − A | | **0** |
+
+Zero occupations in either difference, so there is nothing to explain occupation-by-occupation.
+The coverage cross-tab confirms it independently: 58 staged occupations have coverage ≥ 80 and
+no coverage blocker; 293 have coverage < 80 and a coverage blocker; **no occupation sits in
+either off-diagonal cell**.
+
+**Where 80 came from.** I summed a console-printed table of blocker signatures whose lines were
+truncated at 72 characters. Two signatures are longer than that:
+
+```
+n= 22  len=123  confidence_below_launch_minimum + not_review_ready + provisional_input_s <<CUT
+n=  1  len=104  confidence_below_launch_minimum + provisional_input_sensitivity + weight <<CUT
+```
+
+Both end in `+ weighted_coverage_below_launch_minimum`. Reading the 22-row line as though it
+terminated at `provisional_input_s` put those 22 coverage-blocked occupations on the wrong side
+of the ledger: 58 + 22 = 80. The error was corrected in the expansion report before this work
+began; E1 was never built on it.
+
 ## 2. Evidence hierarchy
 
 Every tier is deterministic and reads only data already imported. **No tier uses the
@@ -71,6 +107,38 @@ no verified relatives but with element ratings to build an archetype from. Cross
 element ratings, and **none** has element ratings without relatives. Building an unexercised
 tier would mean shipping untested code and an uncalibrated method for zero occupations.
 
+### E1 carries no borrowed evidence
+
+Verified directly, not assumed:
+
+| Check | Result |
+|---|---|
+| E1 estimates with a related-occupation source | **0** |
+| E1 estimates with `supporting_relative_count` set | **0** |
+| E1 estimates recording their own weighted coverage | **58 of 58** |
+| Lowest E1 coverage / confidence | 80.221 / 79.090 |
+
+No E1 point estimate is contaminated by proxy data, and E2 likewise carries zero
+`evidence_sources` across all 293.
+
+### The pilot-mapping question, resolved
+
+Six estimates — including **Electricians**, the only E1 among them — sit on occupations whose
+task mappings come *solely* from the Phase 4A pilot mapper (run 7), whose provenance declares
+`pilotOnly: true`, `activationAllowed: false`, `productionScoreWritesAllowed: false`. That reads
+like disqualifying evidence.
+
+It is not, and the reason is decisive: **run 7 covers twelve occupations and five of them are
+already in the verified cohort** — Accountants and Auditors, Statisticians, Secondary School
+Teachers, Photographers, Nurse Practitioners. Run 7 contributed 1,455 task assessments to the
+Phase 5 calculation runs that produced the promoted scores. The flags constrain that run as a
+*pipeline actor*; they do not quarantine its mappings from downstream scoring which has since
+consumed and validated them. Holding staged occupations to a stricter standard than the verified
+cohort already meets would be incoherent.
+
+**No reclassification was required.** This also corrects a claim in the preceding expansion
+report — see that report's Software Developers correction.
+
 **The estimator never adjusts an engine score.** For E1 and E2 the number is the engine's own
 output, unmodified; what varies with confidence is the label and whether a range is shown.
 Nudging a validated output because we are less sure of it would produce a third quantity that
@@ -78,10 +146,24 @@ is neither the engine's answer nor an honest estimate. A test pins this.
 
 ## 3–4. Calibration and error statistics
 
-The E3 proxy is the only tier that is an inference rather than a measurement, so it is the tier
-that must be calibrated. **Leave-one-out against all 507 verified occupations**: each
-occupation's own evidence is discarded and its score reconstructed from its verified relatives
-alone, exactly as a staged occupation's would be.
+### What "calibration" means for each tier
+
+Only E3 can be calibrated by hidden-target validation, and pretending otherwise would be
+fabricating a test.
+
+* **E1 and E2 are not estimators.** They are the validated engine's own output over the
+  occupation's own task evidence, unmodified. A leave-one-out test would be asking the engine
+  to reproduce itself, which it does exactly, and reporting MAE 0.00 would be a meaningless
+  number dressed as a reassuring one. Their uncertainty is not estimation error at all — it is
+  the question of whether *more* evidence would move the score, which is a truncation question
+  requiring the engine be re-run over deliberately incomplete evidence. That work is not done
+  here, and §17 records it as a limitation rather than papering over it.
+* **E3 is a genuine inference** and is calibrated below.
+
+### E3 — leave-one-out against all 507 verified occupations
+
+Each verified occupation's own evidence is discarded and its score rebuilt from its verified
+relatives alone, exactly as a staged occupation's would be.
 
 | | MAE | median | p90 | p95 | max | band agreement |
 |---|---|---|---|---|---|---|
@@ -93,39 +175,128 @@ alone, exactly as a staged occupation's would be.
 | Median absolute error | ≤ 8 | **3.60** ✅ | **2.84** ✅ |
 | 90th percentile error | ≤ 15 | **10.15** ✅ | **7.73** ✅ |
 
-Both metrics clear the thresholds with room, so **no tier was withheld for poor calibration**.
-Calibration is re-measured on every run and stored on the run row, so a published estimate can
-always be traced to the evidence that justified publishing it.
+Both clear with room, so no tier was withheld for poor calibration. Calibration is re-measured
+on every run and stored on the run row.
 
-Error rises where relatives are sparse, which is what drives the confidence policy:
+## 5. Confidence policy — derived, and it overturned the obvious choice
 
-| Verified relatives | n | MAE (exposure) | p90 |
+The first implementation split E3 confidence on **how many** verified relatives an occupation
+had, on the strength of a p90 of 17.8 in a 3–5-relative bucket. That bucket held twelve
+occupations and counted *all* relatives rather than strong ones. Re-measured properly across
+strong-relative strata, the effect disappears:
+
+| Strong relatives | n | Exposure MAE | p90 | Replacement MAE | p90 |
+|---|---|---|---|---|---|
+| 1–2 | 23 | 4.93 | 9.1 | 5.04 | 8.0 |
+| 3–5 | 127 | 4.84 | 9.8 | 3.66 | 7.7 |
+| 6–9 | 333 | 4.64 | 10.4 | 3.56 | 7.6 |
+| 10–14 | 21 | 4.12 | 8.6 | 3.43 | 6.3 |
+
+Error is essentially flat from two relatives to fourteen. **Counting relatives does not predict
+accuracy**: correlation with absolute error is **+0.003** for exposure and **−0.070** for
+replacement risk.
+
+What does predict it is whether the borrowed occupations **agree with one another** — the
+weighted standard deviation of their own scores about the weighted mean:
+
+| Exposure dispersion | n | MAE | median | p90 | p95 |
+|---|---|---|---|---|---|
+| < 6 | 284 | 3.87 | 3.14 | 8.2 | 10.7 |
+| 6–9 | 164 | 5.88 | 4.78 | 12.4 | 14.7 |
+| 9–12 | 55 | 5.08 | 4.69 | 10.4 | 14.3 |
+| ≥ 12 | 4 | 7.50 | 5.40 | 18.2 | 18.2 |
+
+| Replacement dispersion | n | MAE | median | p90 | p95 |
+|---|---|---|---|---|---|
+| < 5 | 284 | 3.23 | 2.41 | 7.3 | 8.7 |
+| 5–7 | 184 | 3.90 | 3.18 | 7.6 | 8.9 |
+| 7–9 | 33 | 5.30 | 4.89 | 9.5 | 12.4 |
+| ≥ 9 | 6 | 6.94 | 5.29 | 13.4 | 13.4 |
+
+Correlation with absolute error: **+0.221** and **+0.235** — small in absolute terms, but two
+orders of magnitude better than counting, and the strata are monotonic. The intuition it encodes
+is simple: when the occupations we are borrowing from agree, their average is trustworthy; when
+they disagree, it is not, and *no quantity of disagreeing sources fixes that*.
+
+**The implemented policy** (`EXPOSURE_DISPERSION_BANDS = (6.0, 12.0)`,
+`REPLACEMENT_DISPERSION_BANDS = (5.0, 9.0)`): an E3 estimate is **moderate**-confidence when
+both dispersions fall in the lowest band and **low** otherwise. E3 is never "higher" — a
+borrowed number does not become a measurement of this occupation however well its sources agree.
+
+Two occupations show the change most clearly:
+
+| Occupation | Under counting | Under dispersion | Why |
 |---|---|---|---|
-| 3–5 | 12 | 6.75 | 17.84 |
-| 6–9 | 78 | 4.92 | 11.07 |
-| 10+ | 415 | 4.58 | 9.98 |
+| **Software Developer** | low, 53–89 | **moderate, 62–80** | only 5 relatives, but they agree |
+| **Project Management Specialists** | moderate, 58–78 | **low, 55–81** | 14 relatives that disagree |
 
-**A limitation stated plainly:** E2 range widths are *inherited* from the E3 calibration as a
-conservative proxy. They are not derived from a direct study of how an engine score at 55%
-coverage differs from the same occupation's score at full coverage, because producing that
-ground truth means re-running the scoring engine over truncated evidence — real work, not done
-here. The E2 ranges should be read as "deliberately wide" rather than "measured".
+Counting had both backwards.
 
-## 5. Confidence policy
+## 6. Range policy — widths are the measured p90
 
-| Public label | Applies to | Rendering |
+Half-widths are the observed p90 absolute error of each dispersion stratum, rounded up to a
+whole point, so a rendered range is a ~90% interval rather than a decorative one. Observed p90s
+were 8.2 / 12.4 / 18.2 (exposure) and 7.3 / 7.6–9.5 / 13.4 (replacement); the middle strata are
+merged and widened to the larger of the pair, because a range that *narrowed* as the evidence
+got worse would invert the signal it exists to send.
+
+| Stratum | Exposure half-width | Replacement half-width |
 |---|---|---|
-| Higher-confidence estimate | E1 | point (`~47`) |
-| Moderate-confidence estimate | E2 coverage ≥ 70; E3 with ≥ 6 relatives | E2 point, E3 range |
-| Low-confidence estimate | E2 coverage < 70; E3 with < 6 relatives | range |
+| Lowest dispersion | ±9 | ±8 |
+| Middle | ±13 | ±10 |
+| Highest | ±19 | ±14 |
 
-**"Higher-confidence", never "High confidence."** The latter reads as a stronger version of a
-verified score when it is a different kind of claim altogether.
+**Does the range actually contain the truth?** Checked against all 507 verified scores:
 
-166 of 390 estimates render as a range. All values are integers: rendering `72.43` for a number
-whose p90 error is ten points asserts a precision the method does not have.
+| | Count-based (previous) | Dispersion-based (now) |
+|---|---|---|
+| Exposure range covers the verified score | 89.7% | **91.7%** |
+| Replacement range covers the verified score | 91.3% | **94.1%** |
 
-## 6. The staged 405
+Better calibrated *and* better covering, with no widening of the typical case: 15 of the 39 E3
+estimates sit in the tightest band.
+
+E2 keeps a fixed conservative width (±8 / ±6) below 70% coverage. Its uncertainty is about
+*absent* coverage rather than disagreeing relatives, so the E3 strata do not describe it, and
+reusing their numbers would mean borrowing a calibration that does not apply.
+
+## 6a. Outlier review — the tail the MAE hides
+
+The worst errors are not ignorable just because the median is 3.6. The ten largest exposure
+errors:
+
+| Error | Verified | Estimated | Relatives (strong) | Range covers? | Occupation |
+|---|---|---|---|---|---|
+| 28.6 | 34.4 | 63 | 9 (4) | no | Travel Agents |
+| 24.5 | 71.5 | 47 | 15 (9) | no | Glass Blowers, Molders, Benders and Finishers |
+| 22.3 | 70.3 | 48 | 13 (7) | no | Graders and Sorters, Agricultural Products |
+| 21.6 | 65.6 | 44 | 15 (8) | no | Shoe Machine Operators and Tenders |
+| 19.5 | 68.5 | 49 | 13 (6) | no | Model Makers, Wood |
+| 18.9 | 45.1 | 64 | 4 (3) | no | Driver/Sales Workers |
+| 18.5 | 77.5 | 59 | 12 (6) | no | Sound Engineering Technicians |
+| 18.3 | 39.7 | 58 | 16 (9) | no | Solar Energy Installation Managers |
+| 18.3 | 45.7 | 64 | 3 (1) | no | Food Servers, Nonrestaurant |
+| 18.2 | 35.8 | 54 | 9 (5) | no | Insurance Appraisers, Auto Damage |
+
+Worst replacement errors run 12.2–16.0 (Cost Estimators, Wind Energy Engineers, Poets and
+Creative Writers, Aerospace Engineers, Credit Analysts).
+
+Three honest observations:
+
+1. **Relative count does not explain the tail.** The worst case has nine relatives, and several
+   have thirteen to sixteen. This is the same finding as §5 arriving from the other direction.
+2. **A confidence downgrade would not have caught most of them.** The ranges as rendered do not
+   cover these errors, and widening bands far enough to cover a 28-point miss would make every
+   estimate useless. The tail is a real limit of the method, not a tuning failure.
+3. **The failure is semantic, not statistical.** Travel Agents is the clearest case: O*NET
+   relates it to customer-service and sales occupations, whose AI exposure is much higher than
+   the verified score for Travel Agents itself. Relatedness in the O*NET sense — similar
+   activities, skills and context — is not the same as similar *automatability*, and where the
+   two come apart the proxy is wrong in a way no amount of dispersion measurement detects. This
+   is the strongest single argument for keeping estimates out of rankings, and it is why the
+   page shows a range and names its sources rather than asserting a figure.
+
+## 7. The staged 405
 
 | Tier | Count |
 |---|---|
@@ -141,30 +312,28 @@ and Missile Officers and the rest. O\*NET publishes no task ratings and no relat
 links for military occupations, so there is nothing to measure and nothing to borrow from. They
 are not published, and no amount of method work changes that.
 
-## 7. High-value occupations
+## 8. High-value occupations
 
-| Occupation | Estimate | Tier | AI Exposure | Replacement Risk | Confidence | Evidence |
+| Occupation | Tier | Source | AI Exposure | Replacement Risk | Confidence | Relatives |
 |---|---|---|---|---|---|---|
-| **Electricians** | YES | E1 | **~47** | **~33** | Higher | Complete task evidence (100% coverage); withheld only by provisional-sensitivity |
-| **Data Scientists** | YES | E3 | **66–86** | **63–79** | Moderate | Financial Quantitative Analysts, Operations Research Analysts, Statisticians, Bioinformatics Scientists |
-| **Software Developers** | YES | E3 | **53–89** | **55–79** | Low | Verified relatives; page titled "Software Developer" |
-| **Cashiers** | YES | E2 | **52–68** | **44–56** | Low | Partial task evidence (50.9% coverage) |
-| **Data Entry Keyers** | YES | E2 | **59–75** | **55–67** | Low | Partial task evidence (64.6% coverage) |
-| **Waiters and Waitresses** | YES | E2 | ~65 | ~49 | Moderate | Partial task evidence (71.5%) |
-| **Bakers** | YES | E2 | ~64 | ~50 | Moderate | Partial task evidence (75.6%) |
-| **Exercise Trainers** | YES | E2 | ~60 | ~45 | Moderate | Partial task evidence (79.3%) |
-| **Project Management Specialists** | YES | E3 | **58–78** | **51–67** | Moderate | Verified relatives |
-| **Web and Digital Interface Designers** | YES | E3 | **62–82** | **59–75** | Moderate | Verified relatives; page titled "UX Researcher" |
+| **Electricians** | E1 | own task evidence, 100% coverage | **~47** | **~33** | Higher | — |
+| **Exercise Trainers** | E2 | own task evidence, 79.3% | ~60 | ~45 | Moderate | — |
+| **Bakers** | E2 | own task evidence, 75.6% | ~64 | ~50 | Moderate | — |
+| **Waiters and Waitresses** | E2 | own task evidence, 71.5% | ~65 | ~49 | Moderate | — |
+| **Data Entry Keyers** | E2 | own task evidence, 64.6% | **59–75** | **55–67** | Low | — |
+| **Cashiers** | E2 | own task evidence, 50.9% | **52–68** | **44–56** | Low | — |
+| **Data Scientists** | E3 | verified relatives | **67–85** | **63–79** | Moderate | 13 |
+| **Software Developer** | E3 | verified relatives | **62–80** | **59–75** | Moderate | 5 |
+| **Web/Digital Interface Designers** | E3 | verified relatives | **63–81** | **59–75** | Moderate | 9 |
+| **Project Management Specialists** | E3 | verified relatives | **55–81** | **49–69** | Low | 14 |
 
-**All ten now have a published estimate.** Two render under pre-existing consumer-facing titles
-(Software Developer, UX Researcher) because those editorial pages already existed and an
-editorial decision already taken is not revisited; the canonical identity remains the O\*NET
-SOC code.
+All ten carry a published estimate. Two render under pre-existing consumer-facing titles —
+Software Developer and, for Web and Digital Interface Designers, **UX Researcher** — because
+those editorial pages already existed and an editorial decision already taken is not revisited.
+The canonical identity remains the O\*NET SOC code in both cases.
 
-Software Developers is worth a note: it holds 17 fully-rated, fully-mapped tasks, but the
-mappings come from the Phase 4A pilot mapper whose provenance declares
-`activationAllowed: false`. Those mappings are **not** used. Its estimate is E3, drawn from
-relatives, and its low confidence and wide range reflect exactly that.
+Software Developer and Project Management Specialists swapped confidence bands when the policy
+moved from counting relatives to measuring their agreement; see §5.
 
 ## 8. Public counts
 
@@ -273,7 +442,8 @@ honest on screen and silent in search results is only half honest.
 | `npm run build` | succeeds |
 | Browser QA | PASS |
 
-New coverage: the four database guards, per-tier estimator behaviour, reproducibility, integer
+New coverage: the four database guards, the dispersion-based confidence policy (two agreeing
+relatives outrank ten disagreeing ones) and its monotonic range widths, per-tier estimator behaviour, reproducibility, integer
 rendering, "no relatives produces no estimate", migration additivity, the no-overlap invariant,
 publication/score one-to-one, rankings exclusion, the separate API field, disclaimer presence,
 absence of internal status vocabulary, and that search ranks identity relevance over score
@@ -303,13 +473,18 @@ new direction.
 
 ## 17. Limitations
 
-1. **E2 ranges are not directly calibrated.** See §3–4. They are conservative by construction,
-   not measured.
+1. **E2 ranges are not directly calibrated.** E1 and E2 are the engine's own output, so their
+   uncertainty is a truncation question — would more evidence move the score? — which requires
+   re-running the engine over deliberately incomplete evidence. Not done here. Their ranges are
+   conservative by construction, not measured.
 2. **Band agreement is 78%, not 95%.** Roughly one estimate in five lands in a different risk
    band than the verified score would. That is the honest cost of the layer and the reason
    estimates are excluded from rankings.
-3. **Worst-case error is large.** Maximum leave-one-out exposure error is 28.6 points. Ranges
-   communicate typical uncertainty, not worst case.
+3. **Worst-case error is large, and the cause is semantic.** Maximum leave-one-out exposure
+   error is 28.6 points (Travel Agents). O\*NET relatedness means similar activities, skills and
+   context — not similar *automatability*. Where those come apart the proxy is wrong in a way no
+   dispersion measure detects, and widening ranges enough to cover it would make every estimate
+   useless. See §6a.
 4. **A proxy inherits its relatives' provisional inputs.** E3 estimates borrow from verified
    scores that themselves carry provisional replacement-risk factor models.
 5. **Content run 4 covered all 1,016 occupations**, adding 3,670 related-occupation rows for

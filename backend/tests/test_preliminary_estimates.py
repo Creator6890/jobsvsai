@@ -83,6 +83,40 @@ def test_proxy_weights_by_relatedness_tier() -> None:
     assert estimate.ai_exposure == 70  # (90*3 + 10*1) / 4
 
 
+def test_confidence_follows_source_disagreement_not_source_count() -> None:
+    """Two relatives that agree beat ten that do not.
+
+    Counting relatives was the intuitive signal and it is not predictive: leave-one-out over
+    the 507 verified occupations puts its correlation with absolute error at +0.003. The
+    weighted spread of the borrowed scores correlates at +0.221, so that is what drives both
+    the confidence label and the width of the rendered range.
+    """
+    agreeing = [RelativeEvidence(f"a{i}", "A", "Primary-Short", 60.0, 50.0) for i in range(2)]
+    disagreeing = [
+        RelativeEvidence(f"b{i}", "B", "Primary-Short", 20.0 + 12 * i, 20.0 + 10 * i)
+        for i in range(10)
+    ]
+    tight = estimate_from_relatives(identity_id=1, occupation_code="x", relatives=agreeing)
+    loose = estimate_from_relatives(identity_id=1, occupation_code="y", relatives=disagreeing)
+    assert tight is not None and loose is not None
+
+    assert tight.confidence == "moderate", "two agreeing sources are a usable proxy"
+    assert loose.confidence == "low", "ten disagreeing sources are not"
+    tight_width = tight.ai_exposure_high - tight.ai_exposure_low
+    loose_width = loose.ai_exposure_high - loose.ai_exposure_low
+    assert loose_width > tight_width, "wider disagreement must render a wider range"
+
+
+def test_range_never_narrows_as_evidence_worsens() -> None:
+    """Monotonic by construction. A range that tightened on worse evidence would invert the
+    signal it exists to send."""
+    from scoring.preliminary_estimates import E3_HALF_WIDTH  # type: ignore[import-not-found]
+
+    for metric in ("exposure", "replacement"):
+        widths = E3_HALF_WIDTH[metric]
+        assert list(widths) == sorted(widths), metric
+
+
 def test_no_relatives_produces_no_estimate() -> None:
     """An estimate with no source is not a weaker estimate; it is a fabrication."""
     assert estimate_from_relatives(identity_id=1, occupation_code="55-3016.00", relatives=[]) is None
