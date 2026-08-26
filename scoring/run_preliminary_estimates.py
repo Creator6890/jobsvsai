@@ -23,6 +23,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
 try:
+    from .probe_occupation_score import probe as probe_occupation
     from .preliminary_estimates import (
         POLICY_VERSION,
         RelativeEvidence,
@@ -30,6 +31,7 @@ try:
         estimate_from_task_evidence,
     )
 except ImportError:  # invoked as a bare script; see CLAUDE.md on PYTHONPATH
+    from probe_occupation_score import probe as probe_occupation  # type: ignore[no-redef]
     from preliminary_estimates import (  # type: ignore[no-redef]
         POLICY_VERSION,
         RelativeEvidence,
@@ -87,6 +89,25 @@ JOIN canonical_occupation_identities ci ON ci.id = c.identity_id
 def _band(value: float) -> str:
     return ("Very high" if value >= 75 else "High" if value >= 60
             else "Moderate" if value >= 40 else "Low")
+
+
+FULLY_MAPPED = """
+SELECT count(*) FILTER (WHERE t.weighting_eligible) AS eligible,
+       count(DISTINCT m.onet_task_id) FILTER (WHERE t.weighting_eligible) AS mapped
+FROM onet_tasks t
+LEFT JOIN ai_generated_task_mappings m ON m.onet_task_id = t.task_id
+WHERE t.occupation_code = :soc AND t.is_current
+"""
+
+
+async def _fully_mapped(conn, soc: str) -> bool:
+    """Does every weighting-eligible task already carry a mapping?
+
+    A cheap gate in front of the probe, which loads the whole dependency graph and is far too
+    expensive to run speculatively for every unscored occupation.
+    """
+    row = (await conn.execute(text(FULLY_MAPPED), {"soc": soc})).mappings().first()
+    return bool(row and row["eligible"] and row["mapped"] >= row["eligible"])
 
 
 async def _relatives(conn, soc: str) -> list[RelativeEvidence]:
@@ -162,6 +183,7 @@ async def main() -> None:
         estimates = []
         tiers: dict[str, int] = {"E1": 0, "E2": 0, "E3": 0, "E4": 0, "insufficient": 0}
         insufficient: list[str] = []
+        probe_notes: dict[str, dict] = {}
 
         with_tasks = (await conn.execute(
             text(STAGED_WITH_TASK_EVIDENCE), {"triage_run": args.triage_run})).mappings().all()
@@ -175,7 +197,32 @@ async def main() -> None:
 
         without = (await conn.execute(
             text(STAGED_WITHOUT_TASK_EVIDENCE), {"triage_run": args.triage_run})).mappings().all()
+        raw = await conn.get_raw_connection()
+        asyncpg_conn = raw.driver_connection
         for row in without:
+            # An occupation's own engine evidence always outranks a related-occupation proxy.
+            # These occupations were never in a Phase 5 namespace, but a few already carry
+            # complete task mappings, and where they do the engine can answer directly.
+            # Reaching for relatives while the occupation's own mappings sit unused would mean
+            # choosing the weaker evidence because it happened to be easier to reach.
+            own = None
+            if await _fully_mapped(conn, row["occupation_code"]):
+                own = await probe_occupation(asyncpg_conn, row["occupation_code"])
+            if own and own.get("weightedTaskCoverage"):
+                est = estimate_from_task_evidence(
+                    identity_id=row["identity_id"], occupation_code=row["occupation_code"],
+                    ai_exposure=float(own["aiExposure"]),
+                    replacement_risk=float(own["replacementRisk"]),
+                    weighted_task_coverage=float(own["weightedTaskCoverage"]),
+                    confidence=float(own["confidence"]))
+                probe_notes[row["occupation_code"]] = {
+                    "title": own["occupation"],
+                    "launchEligible": own["launchEligible"],
+                    "blockingFindings": own["blockingFindings"],
+                    "maximumAbsoluteScoreImpact": own["maximumAbsoluteScoreImpact"]}
+                estimates.append(est)
+                tiers[est.method] += 1
+                continue
             est = estimate_from_relatives(
                 identity_id=row["identity_id"], occupation_code=row["occupation_code"],
                 relatives=await _relatives(conn, row["occupation_code"]))
@@ -200,6 +247,7 @@ async def main() -> None:
             },
             "rangesShown": sum(1 for e in estimates if e.is_range),
             "calibration": calibration,
+            "scoredFromOwnMappings": probe_notes,
             "externalModelCalls": 0,
             "elapsedSeconds": round(elapsed, 2),
             "persisted": not args.dry_run,
@@ -224,7 +272,8 @@ async def main() -> None:
             "k": args.run_version, "p": POLICY_VERSION, "n": len(estimates),
             "t": json.dumps(tiers), "c": json.dumps(calibration),
             "prov": json.dumps({"triageRunId": args.triage_run,
-                                "insufficientEvidence": insufficient}),
+                                "insufficientEvidence": insufficient,
+                                "scoredFromOwnMappings": probe_notes}),
         })).scalar_one()
 
         for est in estimates:

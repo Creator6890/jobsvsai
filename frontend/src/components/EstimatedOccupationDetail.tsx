@@ -24,13 +24,13 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
 
       <section className="estimate-scores">
         <EstimateScore
-          label="AI Exposure"
+          label="Estimated AI Exposure"
           value={job.aiExposure}
           low={job.aiExposureLow}
           high={job.aiExposureHigh}
         />
         <EstimateScore
-          label="Replacement Risk"
+          label="Estimated Replacement Risk"
           value={job.replacementRisk}
           low={job.replacementRiskLow}
           high={job.replacementRiskHigh}

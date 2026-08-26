@@ -88,6 +88,56 @@ terminated at `provisional_input_s` put those 22 coverage-blocked occupations on
 of the ledger: 58 + 22 = 80. The error was corrected in the expansion report before this work
 began; E1 was never built on it.
 
+## 1b. Zero-LLM scoring salvage
+
+The 138 occupations that never entered Phase 5 were audited for reusable evidence:
+
+| Bucket | n | Meaning |
+|---|---|---|
+| **A — scoreable now, zero LLM** | **1** | every weighting-eligible task already carries a mapping |
+| B — eligible tasks, no mappings | 15 | needs a mapping run |
+| C — no weighting-eligible task | 122 | O\*NET publishes no importance/frequency ratings |
+
+Bucket A contains exactly one occupation: **Software Developers**, 17 of 17 eligible tasks
+mapped. `scoring/probe_occupation_score.py` was written to answer what the engine would say
+about it — read-only, calling the same `calculate()` the pipeline calls, writing nothing. The
+Phase 5 runners are namespace-driven and have no dry-run mode, so an occupation outside every
+namespace cannot be scored by them without first creating a namespace, which is a write to
+append-only methodological history and a decision that should rest on evidence rather than be
+required in order to obtain it.
+
+**Result — Software Developers, from its own mappings, zero model calls:**
+
+| | |
+|---|---|
+| Weighting-eligible tasks | 17 |
+| Mapped | 17 |
+| Scoring-eligible after the ambiguity rule | 14 (3 excluded) |
+| **Weighted task coverage** | **85.98%** (gate 80) ✅ |
+| **Confidence** | **82.84** (gate 75) ✅ |
+| **AI Exposure** | **75.49** |
+| **Replacement Risk** | **71.95** |
+| Provisional sensitivity (max absolute impact) | **1.886** (gate < 3.0) ✅ |
+| **Launch gates** | **passed — zero blocking findings** |
+| Findings | `provisional_models_in_use` (low) — carried by all 507 verified occupations |
+
+The gates were evaluated by the real assessor, `phase6_launch_triage.triage_occupation`, not a
+reimplementation.
+
+**Two gates cannot be evaluated for one occupation in isolation, and the probe says so rather
+than implying a clean sweep.** Review-readiness is a property of a candidate row that does not
+exist, so the probe asserts it; related-SOC discontinuity is a corpus-level comparison against
+sibling occupations. A real scoring run would evaluate both.
+
+**What was done with this, and what was not.** Software Developers now has its own engine
+evidence, so it is **E1**, not E3 — own evidence always outranks a related-occupation proxy,
+and leaving it on borrowed numbers while its own mappings sat unused would be choosing the
+weaker evidence because it was easier to reach. It was **not** promoted to verified. Doing so
+requires creating a Phase 5 scoring namespace, running the scorer, triaging and promoting —
+new pipeline machinery, written at the deployment gate, writing to append-only methodological
+tables. The evidence says it would pass; the architect should be the one to authorise the run
+that makes it so.
+
 ## 2. Evidence hierarchy
 
 Every tier is deterministic and reads only data already imported. **No tier uses the
@@ -96,9 +146,9 @@ number attached to no warrant is indistinguishable, to the reader, from a measur
 
 | Tier | Evidence | n | Rendering |
 |---|---|---|---|
-| **E1** | Complete task evidence (coverage ≥ 80). The validated engine's own score, withheld from the verified cohort by a *publication* gate — provisional-input sensitivity or a flagged anomaly — not by missing evidence. | **58** | point |
+| **E1** | Complete task evidence (coverage ≥ 80). The validated engine's own score, withheld from the verified cohort by a *publication* gate — or, for Software Developers, by never having been scored at all until now. | **59** | point |
 | **E2** | Partial task evidence. The engine's score over coverage below 80. | **293** | point ≥70, range <70 |
-| **E3** | No task evidence. Weighted average of verified O\*NET-related occupations, weighted by relatedness tier (Primary-Short 3, Primary-Long 2, Supplemental 1). | **39** | always a range |
+| **E3** | No task evidence. Weighted average of verified O\*NET-related occupations, weighted by relatedness tier (Primary-Short 3, Primary-Long 2, Supplemental 1). | **38** | always a range |
 | **E4** | Occupation-characteristic archetype | **0** | not built |
 
 **E4 has no members and was deliberately not built.** The tier would apply to an occupation with
@@ -300,9 +350,9 @@ Three honest observations:
 
 | Tier | Count |
 |---|---|
-| E1 | 58 |
+| E1 | 59 |
 | E2 | 293 |
-| E3 | 39 |
+| E3 | 38 |
 | E4 | 0 |
 | **Insufficient evidence** | **15** |
 | | **405** |
@@ -323,7 +373,7 @@ are not published, and no amount of method work changes that.
 | **Data Entry Keyers** | E2 | own task evidence, 64.6% | **59–75** | **55–67** | Low | — |
 | **Cashiers** | E2 | own task evidence, 50.9% | **52–68** | **44–56** | Low | — |
 | **Data Scientists** | E3 | verified relatives | **67–85** | **63–79** | Moderate | 13 |
-| **Software Developer** | E3 | verified relatives | **62–80** | **59–75** | Moderate | 5 |
+| **Software Developers** | **E1** | **own task evidence, 85.98% coverage** | **~75** | **~72** | Higher | — |
 | **Web/Digital Interface Designers** | E3 | verified relatives | **63–81** | **59–75** | Moderate | 9 |
 | **Project Management Specialists** | E3 | verified relatives | **55–81** | **49–69** | Low | 14 |
 
@@ -503,8 +553,8 @@ engine, and the estimate is not an input to it.
 
 | Cohort | n | What unblocks it |
 |---|---|---|
-| E1 | 58 | 57 need the two provisional replacement-risk factor models validated; 1 (Credit Counselors) needs its flagged anomaly investigated |
-| E3 with task evidence | 15 | A production-grade task→capability mapping run |
+| E1 | 59 | 57 need the two provisional replacement-risk factor models validated; 1 (Credit Counselors) needs its flagged anomaly investigated; **1 (Software Developers) passes every evaluable launch gate today and needs only a Phase 5 scoring run to be promoted** |
+| E3, no mappings | 15 | A task→capability mapping run |
 | E2 | 293 | Part of the 311 for which zero mappable tasks remain — a source-data limit |
 | SOC 55 | 15 | Nothing available; O\*NET publishes no ratings or relations |
 
