@@ -67,6 +67,16 @@ class SearchResponse(_Base):
     # one as a verified score.
     estimated_results: list[EstimatedOccupation] = Field(default_factory=list)
 
+    # Every matched slug in a single relevance order, across both classes.
+    #
+    # Splitting the two classes into separate fields keeps an estimate from ever being
+    # rendered as a verified score, but it also throws away the one thing search computed:
+    # which occupation best answers the query. A client that renders `results` then
+    # `estimatedResults` silently re-sorts by score class — "soft eng" ranks Software
+    # Developer first and would still have displayed Etchers and Engravers above it. This
+    # restores the ordering without merging the payloads.
+    result_order: list[str] = Field(default_factory=list)
+
     # What the user typed, as matched. Lets the UI say "Penetration Tester" while the
     # occupation underneath remains Information Security Analysts.
     matched_title: str | None = None

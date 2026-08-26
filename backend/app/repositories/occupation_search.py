@@ -54,6 +54,31 @@ MIN_RELIABLE = 645
 # well under this), while ordinary typos clear it.
 FUZZY_ADMISSIBLE = 0.62
 
+# Within a weak tier, how authoritative the matched term is. The exact tiers already encode
+# this in their floors — canonical 950 outranks alternate 900 — but the weak tiers assign one
+# flat score to every term type, so a scraped alternate title ties an occupation's own name or
+# a curated consumer mapping and the order between them becomes arbitrary.
+#
+# That is not hypothetical. "soft eng" reaches Software Developer through the curated alias
+# "software engineer" and Etchers and Engravers through the alternate title "Soft Metal Hand
+# Engraver", both at 700. Nothing separated them, so the engraver could surface first — the
+# exact substitution this resolver exists to prevent, arriving through the one tier that had
+# no authority ordering.
+#
+# The bonuses are small enough to stay inside a tier (the gap between tiers is 10 or more) and
+# ordered the same way the exact-tier floors are, so one rule governs both.
+TERM_TYPE_AUTHORITY: dict[str, float] = {
+    "canonical": 6.0,
+    "consumer_alias": 4.0,
+    "consumer_parent": 4.0,
+    "abbreviation": 2.0,
+    "alternate": 0.0,
+}
+
+
+def _authority(row: Any) -> float:
+    return TERM_TYPE_AUTHORITY.get(row["term_type"], 0.0)
+
 # An exact hit on a curated alias, canonical title or O*NET alternate title. Strong enough to
 # assert "this is the occupation you meant", including when the answer is that we do not
 # publish it.
@@ -187,7 +212,7 @@ async def _token_prefix(session: AsyncSession, form: str) -> list[TermMatch]:
         _SELECT + """ WHERE term.normalized_term LIKE :pattern
                       ORDER BY length(term.normalized_term), term.priority DESC LIMIT :cap"""
     ), {"pattern": pattern, "cap": MAX_CANDIDATES})).mappings().all()
-    return [_row_to_match(r, float(TOKEN_PREFIX_TIER)) for r in rows]
+    return [_row_to_match(r, TOKEN_PREFIX_TIER + _authority(r)) for r in rows]
 
 
 async def _tokens(session: AsyncSession, form: str) -> list[TermMatch]:
@@ -204,7 +229,7 @@ async def _tokens(session: AsyncSession, form: str) -> list[TermMatch]:
         _SELECT + f" WHERE {clauses} ORDER BY length(term.normalized_term), term.priority DESC"
         " LIMIT :cap"
     ), params)).mappings().all()
-    return [_row_to_match(r, float(TOKEN_TIER)) for r in rows]
+    return [_row_to_match(r, TOKEN_TIER + _authority(r)) for r in rows]
 
 
 async def _fuzzy(session: AsyncSession, form: str) -> list[TermMatch]:
@@ -219,7 +244,7 @@ async def _fuzzy(session: AsyncSession, form: str) -> list[TermMatch]:
                         AND similarity(term.normalized_term, :form) >= :floor
                       ORDER BY similarity(term.normalized_term, :form) DESC LIMIT :cap"""
     ), {"form": form, "floor": FUZZY_ADMISSIBLE, "cap": MAX_CANDIDATES})).mappings().all()
-    return [_row_to_match(r, float(FUZZY_CEILING)) for r in rows]
+    return [_row_to_match(r, FUZZY_CEILING + _authority(r)) for r in rows]
 
 
 def _canonical_evidence(match: TermMatch, tokens: list[str]) -> int:

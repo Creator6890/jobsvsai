@@ -108,6 +108,9 @@ async def occupation_search_resolve(
             query_status=resolution.status,
             results=occupations,
             estimated_results=estimates,
+            # Relevance order across both classes, taken from the resolver rather than
+            # reconstructed, so presentation cannot re-sort by score class.
+            result_order=[m.slug for m in resolution.public if m.slug],
             matched_title=resolution.matched_term,
             canonical_title=resolution.canonical_title,
             publication_status="public",

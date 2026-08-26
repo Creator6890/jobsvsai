@@ -117,6 +117,8 @@ export async function searchOccupations(query: string): Promise<Occupation[]> {
 export type SearchResolution = {
   queryStatus: "public_matches" | "ambiguous" | "occupation_not_available" | "no_reliable_match";
   estimatedResults?: EstimatedOccupation[];
+  /** Every matched slug in one relevance order across both score classes. */
+  resultOrder?: string[];
   results: Occupation[];
   matchedTitle?: string | null;
   canonicalTitle?: string | null;

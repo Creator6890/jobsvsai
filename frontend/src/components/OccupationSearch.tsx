@@ -27,6 +27,8 @@ type SearchResolution = {
    *  classes together on identity relevance — an estimate is never demoted for being an
    *  estimate — and they arrive split only so the UI must label them. */
   estimatedResults?: EstimatedOccupation[];
+  /** Every matched slug in one relevance order across both score classes. */
+  resultOrder?: string[];
 };
 
 /** One row of the suggestion list, from either score class. `estimated` decides the label
@@ -46,6 +48,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
   const [selected, setSelected] = useState<Occupation | null>(null);
   const [matches, setMatches] = useState<Occupation[]>([]);
   const [estimates, setEstimates] = useState<EstimatedOccupation[]>([]);
+  const [resultOrder, setResultOrder] = useState<string[]>([]);
   const [searchState, setSearchState] = useState<SearchState>("idle");
   const [unavailable, setUnavailable] = useState<SearchResolution | null>(null);
   // Keyboard highlight inside the typeahead. -1 means "nothing highlighted", which is not the
@@ -56,9 +59,12 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
   // from "there are no matches".
   const [listDismissed, setListDismissed] = useState(false);
 
-  // Verified first only as a stable tie-break for equal relevance; the API already returned
-  // both classes in relevance order, and neither is filtered out.
-  const suggestions: Suggestion[] = [
+  // One list, in the relevance order search computed. The API splits the two score classes
+  // into separate fields so an estimate can never be rendered as a verified score, but
+  // concatenating them here would silently re-sort the results by class: "soft eng" ranks
+  // Software Developer above Etchers and Engravers, and verified-first would have shown the
+  // engraver anyway. `resultOrder` carries the true order across both.
+  const unordered: Suggestion[] = [
     ...matches.map((job) => ({
       slug: job.slug, title: job.title, category: job.category,
       estimated: false, occupation: job,
@@ -67,6 +73,11 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
       slug: est.slug, title: est.title, category: est.category, estimated: true,
     })),
   ];
+  const suggestions: Suggestion[] = resultOrder.length
+    ? resultOrder
+        .map((slug) => unordered.find((item) => item.slug === slug))
+        .filter((item): item is Suggestion => item !== undefined)
+    : unordered;
 
   const showList = suggestions.length > 0 && !selected && !listDismissed;
 
@@ -87,6 +98,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
         const resolution = await response.json() as SearchResolution;
         setMatches(resolution.results ?? []);
         setEstimates(resolution.estimatedResults ?? []);
+        setResultOrder(resolution.resultOrder ?? []);
         setActiveIndex(-1);
         if (resolution.queryStatus === "occupation_not_available") {
           setUnavailable(resolution);
@@ -122,6 +134,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
         const resolution = await response.json() as SearchResolution;
         setMatches(resolution.results ?? []);
         setEstimates(resolution.estimatedResults ?? []);
+        setResultOrder(resolution.resultOrder ?? []);
         resultCount = (resolution.results?.length ?? 0) + (resolution.estimatedResults?.length ?? 0);
         job = resolution.results?.[0] ?? null;
         // An estimate has no verified result card to show, so submitting a query that only
@@ -174,6 +187,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     setSelected(job);
     setMatches([]);
     setEstimates([]);
+    setResultOrder([]);
     setSearchState("idle");
     setActiveIndex(-1);
     setListDismissed(false);
@@ -188,6 +202,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     if (value.trim().length < 2) {
       setMatches([]);
       setEstimates([]);
+      setResultOrder([]);
       setSearchState("idle");
     }
   }

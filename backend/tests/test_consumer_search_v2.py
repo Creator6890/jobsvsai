@@ -303,6 +303,47 @@ async def test_benchmark_quality_gates_hold(search_ready) -> None:
     assert 100 * substituted / m <= 6, f"false substitution rose to {100 * substituted / m:.1f}%"
 
 
+@pytest.mark.asyncio(loop_scope="session")
+async def test_weak_tier_orders_by_term_authority_not_arbitrarily(search_ready) -> None:
+    """`soft eng` must rank Software Developer above Etchers and Engravers.
+
+    The exact tiers encode term authority in their score floors — canonical 950 beats
+    alternate 900 — but the weak tiers assigned one flat score to every term type, so the
+    curated alias "software engineer" tied the scraped alternate title "Soft Metal Hand
+    Engraver" at 700 and the order between them was arbitrary.
+
+    This surfaced only once the estimate layer made Software Developer showable: the previous
+    protection returned `no_reliable_match` because the right answer was unpublished, which
+    masked the missing authority ordering underneath it.
+    """
+    async with SessionFactory() as s:
+        result = await search.resolve(s, "soft eng", 10)
+        titles = [m.canonical_title for m in result.public]
+        assert titles, "soft eng should now resolve, because Software Developer is showable"
+        assert "Software" in titles[0], f"expected a software occupation first, got {titles[:3]}"
+        if "Etchers and Engravers" in titles:
+            assert titles.index("Etchers and Engravers") > 0, (
+                "Etchers and Engravers must never lead this query")
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_search_response_preserves_relevance_order_across_score_classes(client) -> None:
+    """`resultOrder` must reflect the resolver, not the split into verified/estimated fields.
+
+    Splitting the classes keeps an estimate from ever rendering as a verified score, but a
+    client that concatenates the two fields re-sorts by class. `resultOrder` is what stops
+    presentation quietly overruling relevance.
+    """
+    payload = (await client.get("/api/v1/occupations/search/resolve",
+                                params={"q": "soft eng"})).json()
+    order = payload["resultOrder"]
+    assert order, "resultOrder must be populated for a matched query"
+    slugs = {o["slug"] for o in payload["results"]} | {
+        o["slug"] for o in payload["estimatedResults"]}
+    assert set(order) >= slugs, "every returned occupation must appear in resultOrder"
+    assert order[0].startswith("software"), f"relevance order lost: {order[:3]}"
+
+
 # --- Gate 1: exact-term collisions --------------------------------------------------------
 
 
