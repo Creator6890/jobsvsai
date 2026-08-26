@@ -1,107 +1,225 @@
 import Link from "next/link";
 import type { EstimatedOccupation } from "@/lib/api";
+import { AdSlot } from "./AdSlot";
+import { MetricBar } from "./ScoreCard";
 
-/** The status is rendered *above* the scores, not beneath them.
+/** Estimated occupation detail page.
  *
- *  A disclaimer below a number is read after the number has already been believed. Everything
- *  a reader needs in order to interpret the figures — that they are preliminary, what they
- *  rest on, how confident we are — appears before the first digit. */
+ *  Reuses the exact container, grid, typography, and card hierarchy of verified
+ *  occupation pages while adapting the display for preliminary estimates.
+ */
 export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation }) {
+  const isExposureRange =
+    job.aiExposureLow !== null &&
+    job.aiExposureHigh !== null &&
+    job.aiExposureLow !== job.aiExposureHigh;
+  const isRiskRange =
+    job.replacementRiskLow !== null &&
+    job.replacementRiskHigh !== null &&
+    job.replacementRiskLow !== job.replacementRiskHigh;
+
+  const exposureBand =
+    job.aiExposure >= 75
+      ? "Very high"
+      : job.aiExposure >= 60
+      ? "High"
+      : job.aiExposure >= 40
+      ? "Moderate"
+      : "Low";
+
+  const riskBand =
+    job.replacementRisk >= 75
+      ? "Very high"
+      : job.replacementRisk >= 60
+      ? "High"
+      : job.replacementRisk >= 40
+      ? "Moderate"
+      : "Low";
+
   return (
-    <div className="estimate-detail">
-      <section className="estimate-banner" aria-labelledby="estimate-status">
-        <div className="estimate-banner-head">
-          <span className="estimate-flag" id="estimate-status">
-            Preliminary estimate
-          </span>
-          <span className="estimate-confidence">{job.confidenceLabel}</span>
+    <>
+      <section className="score-section">
+        <div className="container">
+          <div className="card estimate-banner" role="region" aria-label="Preliminary estimate explanation">
+            <div className="estimate-banner-header">
+              <span className="section-kicker">Preliminary estimate · {job.confidenceLabel}</span>
+            </div>
+            <p className="estimate-disclaimer">{job.disclaimer}</p>
+            <div>
+              <Link className="text-link estimate-learn" href="/methodology#preliminary-estimates">
+                Learn how estimates work <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="score-grid">
+            <article className="card score-card">
+              <span className="metric-label">Estimated AI Exposure</span>
+              <div className={`score-number${isExposureRange ? " score-range" : ""}`}>
+                {isExposureRange ? (
+                  <>
+                    {job.aiExposureLow}–{job.aiExposureHigh}
+                    <small>/100</small>
+                  </>
+                ) : (
+                  <>
+                    ~{job.aiExposure}
+                    <small>/100</small>
+                  </>
+                )}
+              </div>
+              <span className="chip">{exposureBand}</span>
+              <hr />
+              <p>How much of this occupation&rsquo;s work can be materially affected by current AI systems.</p>
+            </article>
+
+            <div className="score-card-stack">
+              <article className="card score-card red">
+                <span className="metric-label">Estimated Replacement Risk</span>
+                <div className={`score-number${isRiskRange ? " score-range" : ""}`}>
+                  {isRiskRange ? (
+                    <>
+                      {job.replacementRiskLow}–{job.replacementRiskHigh}
+                      <small>/100</small>
+                    </>
+                  ) : (
+                    <>
+                      ~{job.replacementRisk}
+                      <small>/100</small>
+                    </>
+                  )}
+                </div>
+                <span className="chip">{riskBand}</span>
+                <hr />
+                <p>How likely exposure is to translate into reduced human demand.</p>
+              </article>
+              <p className="score-footnote">
+                Preliminary estimate based on available occupational evidence.{" "}
+                <Link className="text-link" href="/methodology#preliminary-estimates">
+                  How this is measured
+                </Link>
+              </p>
+            </div>
+
+            <article className="card score-card">
+              <span className="metric-label">Evidence quality</span>
+              {job.evidenceCoverage !== null ? (
+                <>
+                  <MetricBar label="Task coverage" value={Math.round(job.evidenceCoverage)} suffix="%" />
+                  <div className="estimate-evidence-meta">
+                    <span className="metric-label">Confidence</span>
+                    <strong>{job.confidenceLabel}</strong>
+                  </div>
+                  <hr />
+                  <p>
+                    Task-level evidence directly covers {Math.round(job.evidenceCoverage)}% of this occupation&rsquo;s weighted work activities.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="estimate-evidence-meta">
+                    <span className="metric-label">Estimation method</span>
+                    <strong>Related-work comparison</strong>
+                  </div>
+                  <div className="estimate-evidence-meta" style={{ marginTop: "10px" }}>
+                    <span className="metric-label">Confidence</span>
+                    <strong>{job.confidenceLabel}</strong>
+                  </div>
+                  <hr />
+                  <p>
+                    Estimated from {job.supportingRelativeCount ?? job.basedOn.length} closely related occupations with validated task-level analysis.
+                  </p>
+                </>
+              )}
+            </article>
+          </div>
         </div>
-        <p className="estimate-disclaimer">{job.disclaimer}</p>
-        <Link className="text-button estimate-learn" href="/methodology#preliminary-estimates">
-          Learn how estimates work <span aria-hidden="true">→</span>
-        </Link>
       </section>
 
-      <section className="estimate-scores">
-        <EstimateScore
-          label="Estimated AI Exposure"
-          value={job.aiExposure}
-          low={job.aiExposureLow}
-          high={job.aiExposureHigh}
-        />
-        <EstimateScore
-          label="Estimated Replacement Risk"
-          value={job.replacementRisk}
-          low={job.replacementRiskLow}
-          high={job.replacementRiskHigh}
-        />
+      {/* Ad 1: after scores, before evidence section */}
+      <div className="container ad-break">
+        <AdSlot slot="jobPrimary" format="horizontal" />
+      </div>
+
+      <section className="content-section">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <div className="section-kicker">Evidence base</div>
+              <h2>What this estimate is based on</h2>
+              <p>{job.estimateMethodDetail}</p>
+            </div>
+          </div>
+
+          <div className="card estimate-evidence-card">
+            {job.evidenceCoverage !== null && (
+              <div className="estimate-coverage-stat">
+                <span className="metric-label">Task Evidence Coverage</span>
+                <div className="estimate-coverage-value">{Math.round(job.evidenceCoverage)}%</div>
+                <p>
+                  Task-level capability evidence covers {Math.round(job.evidenceCoverage)}% of the core work for this occupation.
+                </p>
+              </div>
+            )}
+
+            {job.basedOn.length > 0 && (
+              <div>
+                <h3 className="estimate-subheading">Closest analysed occupations</h3>
+                <p className="estimate-subheading-desc">
+                  These verified occupations share substantial work activities and provide the comparison basis for this estimate:
+                </p>
+                <div className="estimate-related-grid">
+                  {job.basedOn.map((title) => (
+                    <div className="estimate-related-item" key={title}>
+                      <span className="estimate-related-bullet" aria-hidden="true">•</span>
+                      <span>{title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
-      <section className="estimate-evidence">
-        <h2>What this estimate is based on</h2>
-        <p>{job.estimateMethodDetail}</p>
-        {job.evidenceCoverage !== null && (
-          <p className="estimate-evidence-line">
-            Task evidence covers <strong>{Math.round(job.evidenceCoverage)}%</strong> of this
-            occupation&rsquo;s weighted work.
-          </p>
-        )}
-        {job.basedOn.length > 0 && (
-          <>
-            <p className="estimate-evidence-line">
-              Estimated from these fully analysed occupations:
+      {/* Ad 2: before pending guidance section */}
+      <div className="container ad-break">
+        <AdSlot slot="jobSecondary" format="horizontal" />
+      </div>
+
+      <section className="content-section section-tint">
+        <div className="container">
+          <div className="card estimate-pending-card">
+            <div className="section-kicker">Detailed guidance pending</div>
+            <h2>Task analysis &amp; action plan in progress</h2>
+            <p>
+              Detailed task-level breakdowns, automation resistance analysis, and personalized career transition guidance will become available once this occupation completes full validated analysis.
             </p>
-            <ul className="estimate-sources">
-              {job.basedOn.map((title) => (
-                <li key={title}>{title}</li>
-              ))}
-            </ul>
-          </>
-        )}
+          </div>
+        </div>
       </section>
 
-      <section className="estimate-pending">
-        <h2>Not yet available for this occupation</h2>
-        <p>
-          A detailed task breakdown, career transitions and an action plan need validated
-          task-level evidence. They will appear here once this occupation completes full
-          analysis &mdash; we would rather leave them out than generate guidance we cannot
-          stand behind.
-        </p>
+      <section className="source-strip">
+        <div className="container">
+          <div>
+            <strong>Methodology &amp; sources</strong>
+            <p>
+              O*NET occupational data interpreted through the JobsVsAI preliminary estimation framework.
+            </p>
+          </div>
+          <div>
+            <span className="metric-label">Status</span>
+            <strong>Preliminary estimate</strong>
+          </div>
+          <div>
+            <span className="metric-label">Confidence</span>
+            <strong>{job.confidenceLabel}</strong>
+          </div>
+          <Link className="text-link" href="/methodology#preliminary-estimates">
+            Read methodology →
+          </Link>
+        </div>
       </section>
-    </div>
-  );
-}
-
-function EstimateScore({
-  label,
-  value,
-  low,
-  high,
-}: {
-  label: string;
-  value: number;
-  low: number | null;
-  high: number | null;
-}) {
-  // A range is shown whenever the evidence does not support a single number. The "~" on a
-  // point estimate is doing real work: it marks the figure as approximate even where the
-  // range is narrow enough to omit.
-  const isRange = low !== null && high !== null;
-  return (
-    <div className="estimate-score">
-      <span className="metric-label">{label}</span>
-      <strong>
-        {isRange ? (
-          <>
-            {low}&ndash;{high}
-          </>
-        ) : (
-          <>~{value}</>
-        )}
-        <small>/100</small>
-      </strong>
-      <span className="chip estimate-chip">Estimated</span>
-    </div>
+    </>
   );
 }

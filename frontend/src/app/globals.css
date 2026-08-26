@@ -109,24 +109,29 @@
   .autocomplete button.is-active { background: var(--soft); }
   .autocomplete small { color: var(--muted); }
   .autocomplete small.suggestion-estimated { color: var(--violet); font-weight: 650; }
-  .autocomplete small.suggestion-verified { color: var(--muted); }
-  .estimate-detail { display: grid; gap: 22px; }
-  .estimate-banner { border: 1px solid var(--violet); border-radius: var(--radius-md); padding: 18px 20px; background: color-mix(in srgb, var(--violet) 6%, white); display: grid; gap: 10px; }
-  .estimate-banner-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .estimate-flag { font-weight: 800; letter-spacing: .04em; text-transform: uppercase; font-size: .78rem; color: white; background: var(--violet); padding: 5px 11px; border-radius: 999px; }
-  .estimate-confidence { font-weight: 650; color: var(--violet); font-size: .9rem; }
-  .estimate-disclaimer { margin: 0; color: var(--ink); }
-  .estimate-learn { justify-self: start; padding: 0; }
-  .estimate-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
-  .estimate-score { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; display: grid; gap: 6px; }
-  .estimate-score strong { font-size: 2rem; line-height: 1; }
-  .estimate-score small { font-size: .95rem; color: var(--muted); font-weight: 600; }
-  .estimate-chip { justify-self: start; background: color-mix(in srgb, var(--violet) 12%, white); color: var(--violet); }
-  .estimate-hero-chip { background: rgba(255,255,255,.18); }
-  .estimate-evidence, .estimate-pending { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px 20px; }
-  .estimate-evidence h2, .estimate-pending h2 { font-size: 1.05rem; margin: 0 0 8px; }
-  .estimate-evidence-line { margin: 8px 0 0; }
-  .estimate-sources { margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
+  .page-hero-status { margin-top: 14px; }
+  .estimate-status-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .estimate-hero-chip { background: var(--violet-soft); color: var(--violet); font-weight: 850; }
+  .estimate-confidence-pill { font-size: .88rem; font-weight: 700; color: var(--muted); }
+  .estimate-banner { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; background: #faf9fd; margin-bottom: 24px; display: grid; gap: 8px; box-shadow: 0 4px 16px rgba(39,25,81,.03); }
+  .estimate-banner-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .estimate-disclaimer { margin: 0; color: var(--ink); font-size: .92rem; line-height: 1.55; }
+  .estimate-learn { font-size: .86rem; font-weight: 800; min-height: 32px; display: inline-flex; align-items: center; }
+  .score-number.score-range { font-size: clamp(2.2rem, 4.2vw, 3.4rem); letter-spacing: -.05em; line-height: 1.1; margin: 17px 0 13px; white-space: nowrap; }
+  .score-number.score-range small { font-size: .38em; margin-left: 2px; color: var(--muted); letter-spacing: 0; font-weight: 750; }
+  .estimate-evidence-meta { margin-top: 14px; }
+  .estimate-evidence-meta strong { display: block; font-size: 1.05rem; color: var(--ink); margin-top: 2px; }
+  .estimate-evidence-card { padding: var(--pad-card); }
+  .estimate-coverage-stat { display: grid; gap: 6px; }
+  .estimate-coverage-value { font-size: 2.6rem; font-weight: 900; color: var(--violet); line-height: 1; margin: 6px 0; letter-spacing: -.04em; }
+  .estimate-subheading { font-size: 1.1rem; margin: 0 0 6px; font-weight: 800; color: var(--ink); }
+  .estimate-subheading-desc { font-size: .9rem; color: var(--muted); margin: 0 0 20px; line-height: 1.5; }
+  .estimate-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px 24px; }
+  .estimate-related-item { display: flex; align-items: baseline; gap: 8px; font-size: .92rem; font-weight: 650; color: var(--ink); }
+  .estimate-related-bullet { color: var(--violet); font-weight: 900; font-size: 1rem; }
+  .estimate-pending-card { padding: var(--pad-card); max-width: 820px; }
+  .estimate-pending-card h2 { margin: 8px 0 10px; font-size: 1.4rem; }
+  .estimate-pending-card p { font-size: .95rem; color: var(--muted); line-height: 1.55; margin: 0; }
   .popular-searches { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 9px; margin-top: 17px; font-size: .83rem; color: var(--muted); }
   .popular-searches button, .text-button { min-height: 44px; border: 0; background: transparent; color: var(--violet); cursor: pointer; font-weight: 750; }
   .popular-searches button { border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; background: white; }
