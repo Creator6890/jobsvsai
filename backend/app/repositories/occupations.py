@@ -38,14 +38,46 @@ async def get_occupation(session: AsyncSession, slug: str) -> Occupation | None:
     return await _hydrate(session, row) if row else None
 
 
-async def search_occupations(session: AsyncSession, query: str, limit: int = 10) -> list[Occupation]:
-    tokens = [token for token in query.lower().split() if token]
-    search_text = "lower(o.title || ' ' || o.search_aliases)"
-    where = " AND ".join(f"{search_text} LIKE :token_{index}" for index in range(len(tokens))) or "true"
-    params = {f"token_{index}": f"%{token}%" for index, token in enumerate(tokens)} | {"query": query, "limit": limit}
-    sql = BASE_SELECT + f" AND (({where}) OR similarity({search_text}, lower(:query)) > 0.18) ORDER BY similarity({search_text}, lower(:query)) DESC, o.title LIMIT :limit"
-    rows = (await session.execute(text(sql), params)).mappings().all()
-    return [await _hydrate(session, row) for row in rows]
+async def hydrate_by_ids(session: AsyncSession, ids: list[int]) -> list[Occupation]:
+    """Load published occupations by id, preserving the order given.
+
+    Search V2 decides ordering from the term corpus; this only materialises the rows. The
+    publication gate in BASE_SELECT still applies, so an id that is not publishable is
+    dropped here rather than trusted from the caller.
+    """
+    if not ids:
+        return []
+    rows = (await session.execute(
+        text(BASE_SELECT + " AND o.id = ANY(:ids)"), {"ids": ids}
+    )).mappings().all()
+    by_id = {row["id"]: row for row in rows}
+    return [await _hydrate(session, by_id[i]) for i in ids if i in by_id]
+
+
+async def search_occupations(
+    session: AsyncSession, query: str, limit: int = 10
+) -> list[Occupation]:
+    """Published occupations matching a consumer query.
+
+    Ranking moved to `occupation_search.resolve` (consumer-search-v2). The old clause ordered
+    by `similarity(o.title || ' ' || o.search_aliases, query)`, which ranked an occupation
+    lower the more alternate titles it carried, because trigram similarity divides by the
+    union of trigrams and that blob reaches 18,368 characters.
+
+    This wrapper keeps the list-of-occupations shape for existing clients. It returns an empty
+    list when the query resolves to an unpublished occupation — the caller cannot tell that
+    from "no match", which is exactly why `/search/resolve` exists.
+    """
+    from app.repositories import occupation_search
+
+    resolution = await occupation_search.resolve(session, query, limit)
+    # `ambiguous` also carries published occupations — the old list shape simply cannot say
+    # "these are alternatives rather than a ranking", which is what /search/resolve is for.
+    if resolution.status not in ("public_matches", "ambiguous"):
+        return []
+    return await hydrate_by_ids(
+        session, [m.occupation_id for m in resolution.public if m.occupation_id]
+    )
 
 
 async def _hydrate(session: AsyncSession, row: object) -> Occupation:

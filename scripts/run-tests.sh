@@ -52,6 +52,7 @@ docker compose run --rm \
   -e TEST_DATABASE=true \
   -v "$PWD/backend/tests:/app/tests:ro" \
   -v "$PWD/scripts:/app/scripts:ro" \
+  -v "$PWD/migrations:/app/migrations:ro" \
   -v "$PWD/deploy:/app/deploy:ro" \
   -v "$PWD/docker-compose.yml:/app/docker-compose.yml:ro" \
   -v "$PWD/.env.example:/app/.env.example:ro" \

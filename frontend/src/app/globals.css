@@ -105,7 +105,8 @@
   .search-icon::after { content: ""; width: 7px; height: 2px; background: #767281; position: absolute; right: -5px; bottom: -2px; rotate: 45deg; }
   .autocomplete { list-style: none; position: absolute; top: 83px; left: 0; right: 0; z-index: 5; background: white; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 7px; box-shadow: var(--shadow); }
   .autocomplete button { width: 100%; min-height: var(--control); border: 0; border-radius: var(--radius-xs); background: white; padding: 8px 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; }
-  .autocomplete button:hover { background: var(--soft); }
+  .autocomplete button:hover,
+  .autocomplete button.is-active { background: var(--soft); }
   .autocomplete small { color: var(--muted); }
   .popular-searches { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 9px; margin-top: 17px; font-size: .83rem; color: var(--muted); }
   .popular-searches button, .text-button { min-height: 44px; border: 0; background: transparent; color: var(--violet); cursor: pointer; font-weight: 750; }
@@ -831,3 +832,13 @@
 }
 
 
+
+/* Search: occupation recognised but not published. Deliberately plain — it must not look
+   like a result card, because there is no score behind it. */
+.search-unavailable { margin-top: 0.75rem; text-align: left; }
+.search-unavailable strong { display: block; font-size: 1.05rem; }
+.search-unavailable p { margin: 0.25rem 0 0; opacity: 0.85; }
+.search-unavailable-related-label { margin-top: 0.6rem !important; font-weight: 600; }
+.search-unavailable-related { margin: 0.35rem 0 0; padding-left: 1.1rem; }
+.search-unavailable-related li { margin: 0.15rem 0; }
+.search-unavailable-related a { text-decoration: underline; }
