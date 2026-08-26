@@ -132,7 +132,7 @@ for file in "${pending[@]}"; do
   echo "==> Applying $file"
   # shellcheck disable=SC2086
   if ! docker compose $COMPOSE_FILES exec -T postgres \
-        psql -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 "${wrap[@]}" -q < "$path"; then
+        psql -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 ${wrap[@]+"${wrap[@]}"} -q < "$path"; then
     echo "!! $file failed. Database left as the migration itself determined." >&2
     echo "   Not recorded as applied; fix the migration and re-run." >&2
     exit 1

@@ -1,0 +1,5601 @@
+{
+ "fixture_version": "consumer-search-benchmark-v1",
+ "description": "187 plain-language consumer job searches. `intended` is the occupation a person means, resolved exact-title-first: banding on any substring match wrongly counted 'carpenter' as publicly answerable because 'Cabinetmakers and Bench Carpenters' contains 'Carpenters'. `band` follows the intended occupation's authoritative publication status, so a query for an unpublished occupation is graded on whether search says so honestly. Where the curated alias catalogue maps a term to a published occupation, the expected answer is that published mapping: the catalogue is the editorial record of which interpretations are acceptable. Queries whose exact-title match is an ', All Other' residual bucket are banded to the published specific sibling instead \u2014 nobody searches for a residual category.",
+ "generated_from": "authoritative occupation_publications status, 2026-08-25",
+ "queries": [
+  {
+   "query": "accountant",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-2011.00",
+    "title": "Accountants and Auditors",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Accountants and Auditors",
+    "Accountant"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-2011.00",
+     "title": "Accountants and Auditors"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "lawyer",
+   "sector": "professional",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "23-1011.00",
+    "title": "Lawyers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Lawyers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "23-1011.00",
+     "title": "Lawyers",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "solicitor",
+   "sector": "professional",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "23-1011.00",
+    "title": "Lawyers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Lawyers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "23-1011.00",
+     "title": "Lawyers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "hr manager",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-3121.00",
+    "title": "Human Resources Managers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Human Resources Manager"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-3121.00",
+     "title": "Human Resources Managers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "recruiter",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1071.00",
+    "title": "Human Resources Specialists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Human Resources Specialists",
+    "Recruit"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1071.00",
+     "title": "Human Resources Specialists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "management consultant",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1111.00",
+    "title": "Management Analysts",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Management Analysts"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1111.00",
+     "title": "Management Analysts"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "business analyst",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1111.00",
+    "title": "Management Analysts",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Management Analysts",
+    "Business Intelligence Analysts",
+    "Operations Research"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1111.00",
+     "title": "Management Analysts"
+    },
+    {
+     "soc": "15-2031.00",
+     "title": "Operations Research Analysts"
+    },
+    {
+     "soc": "15-2051.01",
+     "title": "Business Intelligence Analysts"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "financial analyst",
+   "sector": "professional",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "13-2051.00",
+    "title": "Financial and Investment Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Financial and Investment Analysts",
+    "Financial Analyst"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "13-2051.00",
+     "title": "Financial and Investment Analysts",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "auditor",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-2011.00",
+    "title": "Accountants and Auditors",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Accountants and Auditors",
+    "Auditor"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-2011.00",
+     "title": "Accountants and Auditors"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "47-4011.01",
+     "title": "Energy Auditors",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "bookkeeper",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-3031.00",
+    "title": "Bookkeeping, Accounting, and Auditing Clerks",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Bookkeeping, Accounting, and Auditing Clerks"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "43-3031.00",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "office manager",
+   "sector": "office",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-1011.00",
+    "title": "First-Line Supervisors of Office and Administrative Support Workers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "First-Line Supervisors of Office",
+    "Administrative Services Manager"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-1011.00",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "11-3012.00",
+     "title": "Administrative Services Managers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "receptionist",
+   "sector": "office",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-4171.00",
+    "title": "Receptionists and Information Clerks",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Receptionists and Information Clerks"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-4171.00",
+     "title": "Receptionists and Information Clerks"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "secretary",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-6014.00",
+    "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Secretaries and Administrative Assistants",
+    "Executive Secretaries"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-6013.00",
+     "title": "Medical Secretaries and Administrative Assistants"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "43-6011.00",
+     "title": "Executive Secretaries and Executive Administrative Assistants",
+     "status": "staged"
+    },
+    {
+     "soc": "43-6012.00",
+     "title": "Legal Secretaries and Administrative Assistants",
+     "status": "staged"
+    },
+    {
+     "soc": "43-6014.00",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "administrative assistant",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-6014.00",
+    "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Secretaries and Administrative Assistants",
+    "Executive Secretaries"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-6013.00",
+     "title": "Medical Secretaries and Administrative Assistants"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "43-6011.00",
+     "title": "Executive Secretaries and Executive Administrative Assistants",
+     "status": "staged"
+    },
+    {
+     "soc": "43-6012.00",
+     "title": "Legal Secretaries and Administrative Assistants",
+     "status": "staged"
+    },
+    {
+     "soc": "43-6014.00",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "data entry operator",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-9021.00",
+    "title": "Data Entry Keyers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Entry Keyers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "43-9021.00",
+     "title": "Data Entry Keyers",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "data entry clerk",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-9021.00",
+    "title": "Data Entry Keyers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Entry Keyers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "43-9021.00",
+     "title": "Data Entry Keyers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "clerk",
+   "sector": "office",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-4071.00",
+    "title": "File Clerks",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Clerks"
+   ],
+   "public_candidates": [
+    {
+     "soc": "23-1012.00",
+     "title": "Judicial Law Clerks"
+    },
+    {
+     "soc": "43-4011.00",
+     "title": "Brokerage Clerks"
+    },
+    {
+     "soc": "43-4031.00",
+     "title": "Court, Municipal, and License Clerks"
+    },
+    {
+     "soc": "43-4071.00",
+     "title": "File Clerks"
+    },
+    {
+     "soc": "43-4171.00",
+     "title": "Receptionists and Information Clerks"
+    },
+    {
+     "soc": "43-4181.00",
+     "title": "Reservation and Transportation Ticket Agents and Travel Clerks"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "41-2021.00",
+     "title": "Counter and Rental Clerks",
+     "status": "staged"
+    },
+    {
+     "soc": "43-3021.00",
+     "title": "Billing and Posting Clerks",
+     "status": "staged"
+    },
+    {
+     "soc": "43-3031.00",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "payroll clerk",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-3051.00",
+    "title": "Payroll and Timekeeping Clerks",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Payroll and Timekeeping Clerks"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "43-3051.00",
+     "title": "Payroll and Timekeeping Clerks",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "customer support",
+   "sector": "office",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-4051.00",
+    "title": "Customer Service Representatives",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Customer Service Representatives"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-4051.00",
+     "title": "Customer Service Representatives"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "customer service representative",
+   "sector": "office",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-4051.00",
+    "title": "Customer Service Representatives",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Customer Service Representatives"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-4051.00",
+     "title": "Customer Service Representatives"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "call center agent",
+   "sector": "office",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-4051.00",
+    "title": "Customer Service Representatives",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Customer Service Representatives",
+    "Telemarketers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-9041.00",
+     "title": "Telemarketers"
+    },
+    {
+     "soc": "43-4051.00",
+     "title": "Customer Service Representatives"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "project manager",
+   "sector": "professional",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "13-1082.00",
+    "title": "Project Management Specialists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Project Management Specialists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "13-1082.00",
+     "title": "Project Management Specialists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "product manager",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1082.00",
+    "title": "Project Management Specialists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Project Management Specialists",
+    "Marketing Managers",
+    "General and Operations Managers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-1021.00",
+     "title": "General and Operations Managers"
+    },
+    {
+     "soc": "11-2021.00",
+     "title": "Marketing Managers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "13-1082.00",
+     "title": "Project Management Specialists",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "operations manager",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-1021.00",
+    "title": "General and Operations Managers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "General and Operations Managers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-1021.00",
+     "title": "General and Operations Managers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "executive assistant",
+   "sector": "office",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-6011.00",
+    "title": "Executive Secretaries and Executive Administrative Assistants",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Executive Secretaries"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "43-6011.00",
+     "title": "Executive Secretaries and Executive Administrative Assistants",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "insurance agent",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "41-3021.00",
+    "title": "Insurance Sales Agents",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Insurance Sales Agents"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-3021.00",
+     "title": "Insurance Sales Agents"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "real estate agent",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "41-9022.00",
+    "title": "Real Estate Sales Agents",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Real Estate Sales Agents"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-9022.00",
+     "title": "Real Estate Sales Agents"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "financial advisor",
+   "sector": "professional",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "13-2052.00",
+    "title": "Personal Financial Advisors",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Personal Financial Advisors"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "13-2052.00",
+     "title": "Personal Financial Advisors",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "economist",
+   "sector": "professional",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "19-3011.00",
+    "title": "Economists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Economists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "19-3011.01",
+     "title": "Environmental Economists"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "19-3011.00",
+     "title": "Economists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "statistician",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-2041.00",
+    "title": "Statisticians",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Statisticians"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-2041.00",
+     "title": "Statisticians"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-2041.01",
+     "title": "Biostatisticians",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "software engineer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "swe",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "software developer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "programmer",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1251.00",
+    "title": "Computer Programmers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Computer Programmers",
+    "Software Developers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1251.00",
+     "title": "Computer Programmers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "coder",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1251.00",
+    "title": "Computer Programmers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Computer Programmers",
+    "Software Developers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1251.00",
+     "title": "Computer Programmers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "frontend developer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1254.00",
+    "title": "Web Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Web Developers",
+    "Software Developers",
+    "Web and Digital Interface"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1255.00",
+     "title": "Web and Digital Interface Designers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1254.00",
+     "title": "Web Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "backend developer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "full stack developer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers",
+    "Web Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1254.00",
+     "title": "Web Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "web developer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1254.00",
+    "title": "Web Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Web Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1254.00",
+     "title": "Web Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "mobile app developer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "data scientist",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-2051.00",
+    "title": "Data Scientists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Scientists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-2051.00",
+     "title": "Data Scientists",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "data analyst",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-2051.00",
+    "title": "Data Scientists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Scientists",
+    "Business Intelligence Analysts",
+    "Management Analysts",
+    "Statisticians"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1111.00",
+     "title": "Management Analysts"
+    },
+    {
+     "soc": "15-2041.00",
+     "title": "Statisticians"
+    },
+    {
+     "soc": "15-2051.01",
+     "title": "Business Intelligence Analysts"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-2041.01",
+     "title": "Biostatisticians",
+     "status": "staged"
+    },
+    {
+     "soc": "15-2051.00",
+     "title": "Data Scientists",
+     "status": "staged"
+    }
+   ],
+   "critical": true,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "ml engineer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-2051.00",
+    "title": "Data Scientists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Scientists",
+    "Software Developers",
+    "Computer and Information Research Scientists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1221.00",
+     "title": "Computer and Information Research Scientists",
+     "status": "staged"
+    },
+    {
+     "soc": "15-2051.00",
+     "title": "Data Scientists",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "machine learning engineer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-2051.00",
+    "title": "Data Scientists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Scientists",
+    "Software Developers",
+    "Computer and Information Research Scientists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1221.00",
+     "title": "Computer and Information Research Scientists",
+     "status": "staged"
+    },
+    {
+     "soc": "15-2051.00",
+     "title": "Data Scientists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "ai engineer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-2051.00",
+    "title": "Data Scientists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Data Scientists",
+    "Software Developers",
+    "Computer and Information Research Scientists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1221.00",
+     "title": "Computer and Information Research Scientists",
+     "status": "staged"
+    },
+    {
+     "soc": "15-2051.00",
+     "title": "Data Scientists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "devops engineer",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1252.00",
+    "title": "Software Developers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Developers",
+    "Computer Network Architects",
+    "Network and Computer Systems Administrators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1244.00",
+     "title": "Network and Computer Systems Administrators"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1241.00",
+     "title": "Computer Network Architects",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "cloud engineer",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1241.00",
+    "title": "Computer Network Architects",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Computer Network Architects",
+    "Network and Computer Systems Administrators",
+    "Software Developers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1244.00",
+     "title": "Network and Computer Systems Administrators"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1241.00",
+     "title": "Computer Network Architects",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "sysadmin",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1244.00",
+    "title": "Network and Computer Systems Administrators",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Network and Computer Systems Administrators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1244.00",
+     "title": "Network and Computer Systems Administrators"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "system administrator",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1244.00",
+    "title": "Network and Computer Systems Administrators",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Network and Computer Systems Administrators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1244.00",
+     "title": "Network and Computer Systems Administrators"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "database administrator",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1242.00",
+    "title": "Database Administrators",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Database Administrators"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1242.00",
+     "title": "Database Administrators",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "it support",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1232.00",
+    "title": "Computer User Support Specialists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Computer User Support Specialists",
+    "Computer Support"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1232.00",
+     "title": "Computer User Support Specialists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "help desk",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1232.00",
+    "title": "Computer User Support Specialists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Computer User Support Specialists",
+    "Computer Support"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1232.00",
+     "title": "Computer User Support Specialists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "network engineer",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1241.00",
+    "title": "Computer Network Architects",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Computer Network Architects",
+    "Network and Computer Systems Administrators",
+    "Computer Network Support"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1244.00",
+     "title": "Network and Computer Systems Administrators"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1231.00",
+     "title": "Computer Network Support Specialists",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1241.00",
+     "title": "Computer Network Architects",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "cybersecurity analyst",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1212.00",
+    "title": "Information Security Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Information Security Analysts"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1212.00",
+     "title": "Information Security Analysts",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "security analyst",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1212.00",
+    "title": "Information Security Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Information Security Analysts"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1212.00",
+     "title": "Information Security Analysts",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "pen tester",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1212.00",
+    "title": "Information Security Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Information Security Analysts",
+    "Penetration Tester"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1212.00",
+     "title": "Information Security Analysts",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1299.04",
+     "title": "Penetration Testers",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "penetration tester",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1212.00",
+    "title": "Information Security Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Information Security Analysts",
+    "Penetration Tester"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1212.00",
+     "title": "Information Security Analysts",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1299.04",
+     "title": "Penetration Testers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "ethical hacker",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1212.00",
+    "title": "Information Security Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Information Security Analysts",
+    "Penetration Tester"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1212.00",
+     "title": "Information Security Analysts",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1299.04",
+     "title": "Penetration Testers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "soc analyst",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1212.00",
+    "title": "Information Security Analysts",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Information Security Analysts"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1212.00",
+     "title": "Information Security Analysts",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "qa engineer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1253.00",
+    "title": "Software Quality Assurance Analysts and Testers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Software Quality Assurance",
+    "Software Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1253.00",
+     "title": "Software Quality Assurance Analysts and Testers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "game developer",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1255.01",
+    "title": "Video Game Designers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Video Game Designers",
+    "Software Developers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-1255.01",
+     "title": "Video Game Designers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1252.00",
+     "title": "Software Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "ux designer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1255.00",
+    "title": "Web and Digital Interface Designers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Web and Digital Interface Designers",
+    "Web Developers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1255.00",
+     "title": "Web and Digital Interface Designers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1254.00",
+     "title": "Web Developers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "ui designer",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "15-1255.00",
+    "title": "Web and Digital Interface Designers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Web and Digital Interface Designers",
+    "Web Developers",
+    "Graphic Designers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "15-1255.00",
+     "title": "Web and Digital Interface Designers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1254.00",
+     "title": "Web Developers",
+     "status": "staged"
+    },
+    {
+     "soc": "27-1024.00",
+     "title": "Graphic Designers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "product designer",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-1255.00",
+    "title": "Web and Digital Interface Designers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Web and Digital Interface Designers",
+    "Commercial and Industrial Designers",
+    "Graphic Designers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-1021.00",
+     "title": "Commercial and Industrial Designers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1255.00",
+     "title": "Web and Digital Interface Designers",
+     "status": "staged"
+    },
+    {
+     "soc": "27-1024.00",
+     "title": "Graphic Designers",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "it manager",
+   "sector": "technology",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "11-3021.00",
+    "title": "Computer and Information Systems Managers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Computer and Information Systems Managers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "11-3021.00",
+     "title": "Computer and Information Systems Managers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "business intelligence analyst",
+   "sector": "technology",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "15-2051.01",
+    "title": "Business Intelligence Analysts",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Business Intelligence Analysts"
+   ],
+   "public_candidates": [
+    {
+     "soc": "15-2051.01",
+     "title": "Business Intelligence Analysts"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "doctor",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1299.01",
+    "title": "Naturopathic Physicians",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Physicians",
+    "Family Medicine Physicians",
+    "General Internal Medicine"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1215.00",
+     "title": "Family Medicine Physicians"
+    },
+    {
+     "soc": "29-1216.00",
+     "title": "General Internal Medicine Physicians"
+    },
+    {
+     "soc": "29-1222.00",
+     "title": "Physicians, Pathologists"
+    },
+    {
+     "soc": "29-1229.04",
+     "title": "Physical Medicine and Rehabilitation Physicians"
+    },
+    {
+     "soc": "29-1229.05",
+     "title": "Preventive Medicine Physicians"
+    },
+    {
+     "soc": "29-1299.01",
+     "title": "Naturopathic Physicians"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "29-1214.00",
+     "title": "Emergency Medicine Physicians",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1229.00",
+     "title": "Physicians, All Other",
+     "status": "review_required"
+    },
+    {
+     "soc": "29-1229.06",
+     "title": "Sports Medicine Physicians",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "physician",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1299.01",
+    "title": "Naturopathic Physicians",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Physicians",
+    "Family Medicine Physicians"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1215.00",
+     "title": "Family Medicine Physicians"
+    },
+    {
+     "soc": "29-1216.00",
+     "title": "General Internal Medicine Physicians"
+    },
+    {
+     "soc": "29-1222.00",
+     "title": "Physicians, Pathologists"
+    },
+    {
+     "soc": "29-1229.04",
+     "title": "Physical Medicine and Rehabilitation Physicians"
+    },
+    {
+     "soc": "29-1229.05",
+     "title": "Preventive Medicine Physicians"
+    },
+    {
+     "soc": "29-1299.01",
+     "title": "Naturopathic Physicians"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "29-1214.00",
+     "title": "Emergency Medicine Physicians",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1229.00",
+     "title": "Physicians, All Other",
+     "status": "review_required"
+    },
+    {
+     "soc": "29-1229.06",
+     "title": "Sports Medicine Physicians",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "surgeon",
+   "sector": "healthcare",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "29-1249.00",
+    "title": "Surgeons, All Other",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Surgeons"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "29-1022.00",
+     "title": "Oral and Maxillofacial Surgeons",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1242.00",
+     "title": "Orthopedic Surgeons, Except Pediatric",
+     "status": "review_required"
+    },
+    {
+     "soc": "29-1243.00",
+     "title": "Pediatric Surgeons",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "nurse",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1141.00",
+    "title": "Registered Nurses",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Registered Nurses",
+    "Nurse"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1141.00",
+     "title": "Registered Nurses"
+    },
+    {
+     "soc": "29-1141.01",
+     "title": "Acute Care Nurses"
+    },
+    {
+     "soc": "29-1141.03",
+     "title": "Critical Care Nurses"
+    },
+    {
+     "soc": "29-1141.04",
+     "title": "Clinical Nurse Specialists"
+    },
+    {
+     "soc": "29-1171.00",
+     "title": "Nurse Practitioners"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "29-1141.02",
+     "title": "Advanced Practice Psychiatric Nurses",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1151.00",
+     "title": "Nurse Anesthetists",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1161.00",
+     "title": "Nurse Midwives",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "registered nurse",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1141.00",
+    "title": "Registered Nurses",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Registered Nurses"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1141.00",
+     "title": "Registered Nurses"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "dentist",
+   "sector": "healthcare",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "29-1021.00",
+    "title": "Dentists, General",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Dentists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "29-1021.00",
+     "title": "Dentists, General",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1029.00",
+     "title": "Dentists, All Other Specialists",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "pharmacist",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1051.00",
+    "title": "Pharmacists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Pharmacists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1051.00",
+     "title": "Pharmacists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "physiotherapist",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1123.00",
+    "title": "Physical Therapists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Physical Therapists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1123.00",
+     "title": "Physical Therapists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "physical therapist",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1123.00",
+    "title": "Physical Therapists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Physical Therapists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1123.00",
+     "title": "Physical Therapists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "radiologist",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1224.00",
+    "title": "Radiologists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Radiologists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1224.00",
+     "title": "Radiologists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "paramedic",
+   "sector": "healthcare",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "29-2043.00",
+    "title": "Paramedics",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Paramedics",
+    "Emergency Medical Technicians"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "29-2042.00",
+     "title": "Emergency Medical Technicians",
+     "status": "staged"
+    },
+    {
+     "soc": "29-2043.00",
+     "title": "Paramedics",
+     "status": "staged"
+    },
+    {
+     "soc": "53-3011.00",
+     "title": "Ambulance Drivers and Attendants, Except Emergency Medical Technicians",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "psychologist",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "19-3039.02",
+    "title": "Neuropsychologists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Psychologists",
+    "Clinical and Counseling Psychologists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "19-3032.00",
+     "title": "Industrial-Organizational Psychologists"
+    },
+    {
+     "soc": "19-3033.00",
+     "title": "Clinical and Counseling Psychologists"
+    },
+    {
+     "soc": "19-3034.00",
+     "title": "School Psychologists"
+    },
+    {
+     "soc": "19-3039.02",
+     "title": "Neuropsychologists"
+    },
+    {
+     "soc": "19-3039.03",
+     "title": "Clinical Neuropsychologists"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "19-3039.00",
+     "title": "Psychologists, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "therapist",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1129.01",
+    "title": "Art Therapists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Therapists",
+    "Counselors"
+   ],
+   "public_candidates": [
+    {
+     "soc": "21-1012.00",
+     "title": "Educational, Guidance, and Career Counselors and Advisors"
+    },
+    {
+     "soc": "21-1013.00",
+     "title": "Marriage and Family Therapists"
+    },
+    {
+     "soc": "21-1014.00",
+     "title": "Mental Health Counselors"
+    },
+    {
+     "soc": "21-1015.00",
+     "title": "Rehabilitation Counselors"
+    },
+    {
+     "soc": "29-1122.00",
+     "title": "Occupational Therapists"
+    },
+    {
+     "soc": "29-1122.01",
+     "title": "Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "13-2071.00",
+     "title": "Credit Counselors",
+     "status": "staged"
+    },
+    {
+     "soc": "21-1011.00",
+     "title": "Substance Abuse and Behavioral Disorder Counselors",
+     "status": "staged"
+    },
+    {
+     "soc": "21-1019.00",
+     "title": "Counselors, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "veterinarian",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1131.00",
+    "title": "Veterinarians",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Veterinarians"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1131.00",
+     "title": "Veterinarians"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "lab technician",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-2012.00",
+    "title": "Medical and Clinical Laboratory Technicians",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Medical and Clinical Laboratory Technician",
+    "Laboratory"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-2011.00",
+     "title": "Medical and Clinical Laboratory Technologists"
+    },
+    {
+     "soc": "29-2012.00",
+     "title": "Medical and Clinical Laboratory Technicians"
+    },
+    {
+     "soc": "51-9081.00",
+     "title": "Dental Laboratory Technicians"
+    },
+    {
+     "soc": "51-9083.00",
+     "title": "Ophthalmic Laboratory Technicians"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "31-9096.00",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "medical assistant",
+   "sector": "healthcare",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "31-9092.00",
+    "title": "Medical Assistants",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Medical Assistants"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "31-9092.00",
+     "title": "Medical Assistants",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "dental hygienist",
+   "sector": "healthcare",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "29-1292.00",
+    "title": "Dental Hygienists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Dental Hygienists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "29-1292.00",
+     "title": "Dental Hygienists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "optometrist",
+   "sector": "healthcare",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "29-1041.00",
+    "title": "Optometrists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Optometrists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "29-1041.00",
+     "title": "Optometrists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "dietitian",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "29-1031.00",
+    "title": "Dietitians and Nutritionists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Dietitians and Nutritionists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "29-1031.00",
+     "title": "Dietitians and Nutritionists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "care worker",
+   "sector": "healthcare",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "31-1122.00",
+    "title": "Personal Care Aides",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Personal Care Aides",
+    "Home Health",
+    "Nursing Assistants"
+   ],
+   "public_candidates": [
+    {
+     "soc": "31-1121.00",
+     "title": "Home Health Aides"
+    },
+    {
+     "soc": "31-1122.00",
+     "title": "Personal Care Aides"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "31-1131.00",
+     "title": "Nursing Assistants",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "teacher",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-1063.00",
+    "title": "Economics Teachers, Postsecondary",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Teachers",
+    "Elementary School Teachers",
+    "Secondary School Teachers",
+    "Kindergarten Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1031.00",
+     "title": "Architecture Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1041.00",
+     "title": "Agricultural Sciences Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1042.00",
+     "title": "Biological Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1043.00",
+     "title": "Forestry and Conservation Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1051.00",
+     "title": "Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-1011.00",
+     "title": "Business Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1021.00",
+     "title": "Computer Science Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1032.00",
+     "title": "Engineering Teachers, Postsecondary",
+     "status": "staged"
+    }
+   ],
+   "critical": true,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "school teacher",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-2021.00",
+    "title": "Elementary School Teachers, Except Special Education",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Elementary School Teachers",
+    "Secondary School Teachers",
+    "Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1031.00",
+     "title": "Architecture Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1041.00",
+     "title": "Agricultural Sciences Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1042.00",
+     "title": "Biological Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1043.00",
+     "title": "Forestry and Conservation Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1051.00",
+     "title": "Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-1011.00",
+     "title": "Business Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1021.00",
+     "title": "Computer Science Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1032.00",
+     "title": "Engineering Teachers, Postsecondary",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "primary school teacher",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-2021.00",
+    "title": "Elementary School Teachers, Except Special Education",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Elementary School Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-2021.00",
+     "title": "Elementary School Teachers, Except Special Education"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "high school teacher",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-2031.00",
+    "title": "Secondary School Teachers, Except Special and Career/Technical Education",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Secondary School Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-2031.00",
+     "title": "Secondary School Teachers, Except Special and Career/Technical Education"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "maths teacher",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-1022.00",
+    "title": "Mathematical Science Teachers, Postsecondary",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Mathematical Science Teachers",
+    "Secondary School Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-2031.00",
+     "title": "Secondary School Teachers, Except Special and Career/Technical Education"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "professor",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-1063.00",
+    "title": "Economics Teachers, Postsecondary",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Teachers, Postsecondary",
+    "Postsecondary"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-9033.00",
+     "title": "Education Administrators, Postsecondary"
+    },
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1031.00",
+     "title": "Architecture Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1041.00",
+     "title": "Agricultural Sciences Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1042.00",
+     "title": "Biological Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1043.00",
+     "title": "Forestry and Conservation Science Teachers, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-1011.00",
+     "title": "Business Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1021.00",
+     "title": "Computer Science Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1032.00",
+     "title": "Engineering Teachers, Postsecondary",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "lecturer",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-1063.00",
+    "title": "Economics Teachers, Postsecondary",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Teachers, Postsecondary",
+    "Postsecondary"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-9033.00",
+     "title": "Education Administrators, Postsecondary"
+    },
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1031.00",
+     "title": "Architecture Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1041.00",
+     "title": "Agricultural Sciences Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1042.00",
+     "title": "Biological Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1043.00",
+     "title": "Forestry and Conservation Science Teachers, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-1011.00",
+     "title": "Business Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1021.00",
+     "title": "Computer Science Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1032.00",
+     "title": "Engineering Teachers, Postsecondary",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "tutor",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-3041.00",
+    "title": "Tutors",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Tutors",
+    "Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1031.00",
+     "title": "Architecture Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1041.00",
+     "title": "Agricultural Sciences Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1042.00",
+     "title": "Biological Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1043.00",
+     "title": "Forestry and Conservation Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1051.00",
+     "title": "Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-1011.00",
+     "title": "Business Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1021.00",
+     "title": "Computer Science Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1032.00",
+     "title": "Engineering Teachers, Postsecondary",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "headteacher",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-9033.00",
+    "title": "Education Administrators, Postsecondary",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Education Administrators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-9032.00",
+     "title": "Education Administrators, Kindergarten through Secondary"
+    },
+    {
+     "soc": "11-9033.00",
+     "title": "Education Administrators, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "11-9039.00",
+     "title": "Education Administrators, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "principal",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-9033.00",
+    "title": "Education Administrators, Postsecondary",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Education Administrators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-9032.00",
+     "title": "Education Administrators, Kindergarten through Secondary"
+    },
+    {
+     "soc": "11-9033.00",
+     "title": "Education Administrators, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "11-9039.00",
+     "title": "Education Administrators, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "librarian",
+   "sector": "education",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "25-4022.00",
+    "title": "Librarians and Media Collections Specialists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Librarians"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "25-4022.00",
+     "title": "Librarians and Media Collections Specialists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "teaching assistant",
+   "sector": "education",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "25-9043.00",
+    "title": "Teaching Assistants, Special Education",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Teaching Assistants"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-9043.00",
+     "title": "Teaching Assistants, Special Education"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-9042.00",
+     "title": "Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",
+     "status": "review_required"
+    },
+    {
+     "soc": "25-9044.00",
+     "title": "Teaching Assistants, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-9049.00",
+     "title": "Teaching Assistants, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "driving instructor",
+   "sector": "education",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "25-3021.00",
+    "title": "Self-Enrichment Teachers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Self-Enrichment Teachers",
+    "Driver"
+   ],
+   "public_candidates": [
+    {
+     "soc": "47-2072.00",
+     "title": "Pile Driver Operators"
+    },
+    {
+     "soc": "53-3031.00",
+     "title": "Driver/Sales Workers"
+    },
+    {
+     "soc": "53-3032.00",
+     "title": "Heavy and Tractor-Trailer Truck Drivers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-3021.00",
+     "title": "Self-Enrichment Teachers",
+     "status": "staged"
+    },
+    {
+     "soc": "53-3011.00",
+     "title": "Ambulance Drivers and Attendants, Except Emergency Medical Technicians",
+     "status": "review_required"
+    },
+    {
+     "soc": "53-3033.00",
+     "title": "Light Truck Drivers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "martial arts instructor",
+   "sector": "education",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "25-3021.00",
+    "title": "Self-Enrichment Teachers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Self-Enrichment Teachers",
+    "Coaches and Scouts",
+    "Exercise Trainers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-9031.00",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "status": "staged"
+    },
+    {
+     "soc": "25-3021.00",
+     "title": "Self-Enrichment Teachers",
+     "status": "staged"
+    },
+    {
+     "soc": "27-2022.00",
+     "title": "Coaches and Scouts",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "music teacher",
+   "sector": "education",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "25-3021.00",
+    "title": "Self-Enrichment Teachers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Self-Enrichment Teachers",
+    "Music",
+    "Teachers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "25-1022.00",
+     "title": "Mathematical Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1031.00",
+     "title": "Architecture Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1041.00",
+     "title": "Agricultural Sciences Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1042.00",
+     "title": "Biological Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1043.00",
+     "title": "Forestry and Conservation Science Teachers, Postsecondary"
+    },
+    {
+     "soc": "25-1051.00",
+     "title": "Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "25-1011.00",
+     "title": "Business Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1021.00",
+     "title": "Computer Science Teachers, Postsecondary",
+     "status": "staged"
+    },
+    {
+     "soc": "25-1032.00",
+     "title": "Engineering Teachers, Postsecondary",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "salesman",
+   "sector": "sales",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "41-2031.00",
+    "title": "Retail Salespersons",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Retail Salespersons",
+    "Sales Representatives"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-4011.07",
+     "title": "Solar Sales Representatives and Assessors"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "41-2031.00",
+     "title": "Retail Salespersons",
+     "status": "staged"
+    },
+    {
+     "soc": "41-3091.00",
+     "title": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
+     "status": "review_required"
+    },
+    {
+     "soc": "41-4011.00",
+     "title": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "sales rep",
+   "sector": "sales",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "41-4011.00",
+    "title": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Sales Representatives"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-4011.07",
+     "title": "Solar Sales Representatives and Assessors"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "41-3091.00",
+     "title": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
+     "status": "review_required"
+    },
+    {
+     "soc": "41-4011.00",
+     "title": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",
+     "status": "review_required"
+    },
+    {
+     "soc": "41-4012.00",
+     "title": "Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "shop assistant",
+   "sector": "retail",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "41-2031.00",
+    "title": "Retail Salespersons",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Retail Salespersons"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "41-2031.00",
+     "title": "Retail Salespersons",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "shopkeeper",
+   "sector": "retail",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "41-2031.00",
+    "title": "Retail Salespersons",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Retail Salespersons",
+    "First-Line Supervisors of Retail"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "41-2031.00",
+     "title": "Retail Salespersons",
+     "status": "staged"
+    },
+    {
+     "soc": "41-1011.00",
+     "title": "First-Line Supervisors of Retail Sales Workers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "cashier",
+   "sector": "retail",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "41-2011.00",
+    "title": "Cashiers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Cashiers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "41-2011.00",
+     "title": "Cashiers",
+     "status": "staged"
+    },
+    {
+     "soc": "41-2012.00",
+     "title": "Gambling Change Persons and Booth Cashiers",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "store manager",
+   "sector": "retail",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "41-1011.00",
+    "title": "First-Line Supervisors of Retail Sales Workers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "First-Line Supervisors of Retail"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "41-1011.00",
+     "title": "First-Line Supervisors of Retail Sales Workers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "merchandiser",
+   "sector": "retail",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "27-1026.00",
+    "title": "Merchandise Displayers and Window Trimmers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Merchandise Displayers",
+    "Retail Salespersons"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "41-2031.00",
+     "title": "Retail Salespersons",
+     "status": "staged"
+    },
+    {
+     "soc": "27-1026.00",
+     "title": "Merchandise Displayers and Window Trimmers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "telemarketer",
+   "sector": "sales",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "41-9041.00",
+    "title": "Telemarketers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Telemarketers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-9041.00",
+     "title": "Telemarketers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "estate agent",
+   "sector": "sales",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "41-9022.00",
+    "title": "Real Estate Sales Agents",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Real Estate Sales Agents"
+   ],
+   "public_candidates": [
+    {
+     "soc": "41-9022.00",
+     "title": "Real Estate Sales Agents"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "buyer",
+   "sector": "sales",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "13-1021.00",
+    "title": "Buyers and Purchasing Agents, Farm Products",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Buyers and Purchasing Agents",
+    "Purchasing Agents"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1023.00",
+     "title": "Purchasing Agents, Except Wholesale, Retail, and Farm Products"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "13-1021.00",
+     "title": "Buyers and Purchasing Agents, Farm Products",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "marketing manager",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-2021.00",
+    "title": "Marketing Managers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Marketing Managers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-2021.00",
+     "title": "Marketing Managers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "digital marketer",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-2021.00",
+    "title": "Marketing Managers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Marketing Managers",
+    "Search Marketing Strategists",
+    "Advertising and Promotions"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-2021.00",
+     "title": "Marketing Managers"
+    },
+    {
+     "soc": "11-2011.00",
+     "title": "Advertising and Promotions Managers"
+    },
+    {
+     "soc": "13-1161.01",
+     "title": "Search Marketing Strategists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "seo specialist",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1161.01",
+    "title": "Search Marketing Strategists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Search Marketing Strategists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1161.01",
+     "title": "Search Marketing Strategists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "social media manager",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1161.01",
+    "title": "Search Marketing Strategists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Search Marketing Strategists",
+    "Public Relations Specialists",
+    "Marketing Managers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-2021.00",
+     "title": "Marketing Managers"
+    },
+    {
+     "soc": "13-1161.01",
+     "title": "Search Marketing Strategists"
+    },
+    {
+     "soc": "27-3031.00",
+     "title": "Public Relations Specialists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "graphic designer",
+   "sector": "creative",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "27-1024.00",
+    "title": "Graphic Designers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Graphic Designers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "27-1024.00",
+     "title": "Graphic Designers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "copywriter",
+   "sector": "creative",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "27-3043.00",
+    "title": "Writers and Authors",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Writers and Authors",
+    "Copy Writers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "27-3043.00",
+     "title": "Writers and Authors",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "journalist",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "27-3023.00",
+    "title": "News Analysts, Reporters, and Journalists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "News Analysts, Reporters",
+    "Reporters"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-3023.00",
+     "title": "News Analysts, Reporters, and Journalists"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "27-3092.00",
+     "title": "Court Reporters and Simultaneous Captioners",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "photographer",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "27-4021.00",
+    "title": "Photographers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Photographers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-4021.00",
+     "title": "Photographers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "video editor",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "27-4032.00",
+    "title": "Film and Video Editors",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Film and Video Editors"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-4032.00",
+     "title": "Film and Video Editors"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "animator",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "27-1014.00",
+    "title": "Special Effects Artists and Animators",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Special Effects Artists and Animators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-1014.00",
+     "title": "Special Effects Artists and Animators"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "architect",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "17-1011.00",
+    "title": "Architects, Except Landscape and Naval",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Architects"
+   ],
+   "public_candidates": [
+    {
+     "soc": "17-1011.00",
+     "title": "Architects, Except Landscape and Naval"
+    },
+    {
+     "soc": "17-1012.00",
+     "title": "Landscape Architects"
+    },
+    {
+     "soc": "17-2121.00",
+     "title": "Marine Engineers and Naval Architects"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1241.00",
+     "title": "Computer Network Architects",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1243.00",
+     "title": "Database Architects",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1299.08",
+     "title": "Computer Systems Engineers/Architects",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "interior designer",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "27-1025.00",
+    "title": "Interior Designers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Interior Designers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-1025.00",
+     "title": "Interior Designers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "musician",
+   "sector": "creative",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "27-2042.00",
+    "title": "Musicians and Singers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Musicians and Singers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "27-2042.00",
+     "title": "Musicians and Singers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "actor",
+   "sector": "creative",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "27-2011.00",
+    "title": "Actors",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Actors"
+   ],
+   "public_candidates": [
+    {
+     "soc": "17-2112.01",
+     "title": "Human Factors Engineers and Ergonomists"
+    },
+    {
+     "soc": "23-2093.00",
+     "title": "Title Examiners, Abstractors, and Searchers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "13-1074.00",
+     "title": "Farm Labor Contractors",
+     "status": "staged"
+    },
+    {
+     "soc": "27-2011.00",
+     "title": "Actors",
+     "status": "staged"
+    },
+    {
+     "soc": "29-1011.00",
+     "title": "Chiropractors",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "translator",
+   "sector": "creative",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "27-3091.00",
+    "title": "Interpreters and Translators",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Interpreters and Translators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-3091.00",
+     "title": "Interpreters and Translators"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "electrician",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "47-2111.00",
+    "title": "Electricians",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Electricians"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "47-2111.00",
+     "title": "Electricians",
+     "status": "staged"
+    },
+    {
+     "soc": "47-3013.00",
+     "title": "Helpers--Electricians",
+     "status": "staged"
+    }
+   ],
+   "critical": true
+  },
+  {
+   "query": "plumber",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "47-2152.00",
+    "title": "Plumbers, Pipefitters, and Steamfitters",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Plumbers, Pipefitters"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "47-2152.00",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "status": "staged"
+    },
+    {
+     "soc": "47-3015.00",
+     "title": "Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "carpenter",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "47-2031.00",
+    "title": "Carpenters",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Carpenters"
+   ],
+   "public_candidates": [
+    {
+     "soc": "51-7011.00",
+     "title": "Cabinetmakers and Bench Carpenters"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "47-2031.00",
+     "title": "Carpenters",
+     "status": "staged"
+    },
+    {
+     "soc": "47-3012.00",
+     "title": "Helpers--Carpenters",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "welder",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "51-4121.00",
+    "title": "Welders, Cutters, Solderers, and Brazers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Welders, Cutters"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "51-4121.00",
+     "title": "Welders, Cutters, Solderers, and Brazers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "mechanic",
+   "sector": "trades",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "49-3023.00",
+    "title": "Automotive Service Technicians and Mechanics",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Automotive Service Technicians and Mechanics",
+    "Mechanics"
+   ],
+   "public_candidates": [
+    {
+     "soc": "49-1011.00",
+     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers"
+    },
+    {
+     "soc": "49-3011.00",
+     "title": "Aircraft Mechanics and Service Technicians"
+    },
+    {
+     "soc": "49-3042.00",
+     "title": "Mobile Heavy Equipment Mechanics, Except Engines"
+    },
+    {
+     "soc": "49-3051.00",
+     "title": "Motorboat Mechanics and Service Technicians"
+    },
+    {
+     "soc": "49-9021.00",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"
+    },
+    {
+     "soc": "49-9041.00",
+     "title": "Industrial Machinery Mechanics"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "49-3023.00",
+     "title": "Automotive Service Technicians and Mechanics",
+     "status": "staged"
+    },
+    {
+     "soc": "49-3031.00",
+     "title": "Bus and Truck Mechanics and Diesel Engine Specialists",
+     "status": "staged"
+    },
+    {
+     "soc": "49-3041.00",
+     "title": "Farm Equipment Mechanics and Service Technicians",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "car mechanic",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "49-3023.00",
+    "title": "Automotive Service Technicians and Mechanics",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Automotive Service Technicians and Mechanics"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "49-3023.00",
+     "title": "Automotive Service Technicians and Mechanics",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "painter",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "47-2141.00",
+    "title": "Painters, Construction and Maintenance",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Painters, Construction and Maintenance",
+    "Painters"
+   ],
+   "public_candidates": [
+    {
+     "soc": "27-1013.00",
+     "title": "Fine Artists, Including Painters, Sculptors, and Illustrators"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "47-2141.00",
+     "title": "Painters, Construction and Maintenance",
+     "status": "staged"
+    },
+    {
+     "soc": "47-3014.00",
+     "title": "Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "builder",
+   "sector": "construction",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "47-2061.00",
+    "title": "Construction Laborers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Construction Laborers",
+    "Carpenters",
+    "Construction Managers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-9021.00",
+     "title": "Construction Managers"
+    },
+    {
+     "soc": "51-7011.00",
+     "title": "Cabinetmakers and Bench Carpenters"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "47-2031.00",
+     "title": "Carpenters",
+     "status": "staged"
+    },
+    {
+     "soc": "47-2061.00",
+     "title": "Construction Laborers",
+     "status": "staged"
+    },
+    {
+     "soc": "47-3012.00",
+     "title": "Helpers--Carpenters",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "bricklayer",
+   "sector": "construction",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "47-2021.00",
+    "title": "Brickmasons and Blockmasons",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Brickmasons and Blockmasons"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "47-2021.00",
+     "title": "Brickmasons and Blockmasons",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "roofer",
+   "sector": "construction",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "47-2181.00",
+    "title": "Roofers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Roofers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "47-2181.00",
+     "title": "Roofers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "47-3016.00",
+     "title": "Helpers--Roofers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "hvac technician",
+   "sector": "trades",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "49-9021.00",
+    "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Heating, Air Conditioning, and Refrigeration"
+   ],
+   "public_candidates": [
+    {
+     "soc": "49-9021.00",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "locksmith",
+   "sector": "trades",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "49-9094.00",
+    "title": "Locksmiths and Safe Repairers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Locksmiths and Safe Repairers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "49-9094.00",
+     "title": "Locksmiths and Safe Repairers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "machinist",
+   "sector": "manufacturing",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "51-4041.00",
+    "title": "Machinists",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Machinists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "51-4041.00",
+     "title": "Machinists"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "cnc operator",
+   "sector": "manufacturing",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "51-9161.00",
+    "title": "Computer Numerically Controlled Tool Operators",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Computer Numerically Controlled",
+    "Machinists"
+   ],
+   "public_candidates": [
+    {
+     "soc": "51-4041.00",
+     "title": "Machinists"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "51-9161.00",
+     "title": "Computer Numerically Controlled Tool Operators",
+     "status": "staged"
+    },
+    {
+     "soc": "51-9162.00",
+     "title": "Computer Numerically Controlled Tool Programmers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "driver",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-3032.00",
+    "title": "Heavy and Tractor-Trailer Truck Drivers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Drivers",
+    "Heavy and Tractor-Trailer Truck Drivers",
+    "Light Truck Drivers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "53-3032.00",
+     "title": "Heavy and Tractor-Trailer Truck Drivers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "53-3011.00",
+     "title": "Ambulance Drivers and Attendants, Except Emergency Medical Technicians",
+     "status": "review_required"
+    },
+    {
+     "soc": "53-3033.00",
+     "title": "Light Truck Drivers",
+     "status": "staged"
+    },
+    {
+     "soc": "53-3051.00",
+     "title": "Bus Drivers, School",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "truck driver",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-3032.00",
+    "title": "Heavy and Tractor-Trailer Truck Drivers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Heavy and Tractor-Trailer Truck Drivers",
+    "Light Truck Drivers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "53-3032.00",
+     "title": "Heavy and Tractor-Trailer Truck Drivers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "53-3033.00",
+     "title": "Light Truck Drivers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "delivery driver",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-3033.00",
+    "title": "Light Truck Drivers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Light Truck Drivers",
+    "Driver/Sales Workers",
+    "Couriers and Messengers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-5021.00",
+     "title": "Couriers and Messengers"
+    },
+    {
+     "soc": "53-3031.00",
+     "title": "Driver/Sales Workers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "53-3033.00",
+     "title": "Light Truck Drivers",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "curated consumer alias maps this term to a published occupation; that mapping is an editorial decision that the interpretation is acceptable, so the expected answer is the published one rather than 'unavailable'"
+  },
+  {
+   "query": "taxi driver",
+   "sector": "transport",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "53-3054.00",
+    "title": "Taxi Drivers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Passenger Vehicle Drivers",
+    "Taxi Drivers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "53-3054.00",
+     "title": "Taxi Drivers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "bus driver",
+   "sector": "transport",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "53-3051.00",
+    "title": "Bus Drivers, School",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Bus Drivers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "53-3051.00",
+     "title": "Bus Drivers, School",
+     "status": "staged"
+    },
+    {
+     "soc": "53-3052.00",
+     "title": "Bus Drivers, Transit and Intercity",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "forklift operator",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-7051.00",
+    "title": "Industrial Truck and Tractor Operators",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Industrial Truck and Tractor Operators"
+   ],
+   "public_candidates": [
+    {
+     "soc": "53-7051.00",
+     "title": "Industrial Truck and Tractor Operators"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "warehouse worker",
+   "sector": "transport",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "53-7062.00",
+    "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Laborers and Freight, Stock, and Material Movers",
+    "Stockers and Order Fillers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "53-7062.00",
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+     "status": "staged"
+    },
+    {
+     "soc": "53-7065.00",
+     "title": "Stockers and Order Fillers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "pilot",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-2011.00",
+    "title": "Airline Pilots, Copilots, and Flight Engineers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Airline Pilots",
+    "Commercial Pilots"
+   ],
+   "public_candidates": [
+    {
+     "soc": "53-2011.00",
+     "title": "Airline Pilots, Copilots, and Flight Engineers"
+    },
+    {
+     "soc": "53-2012.00",
+     "title": "Commercial Pilots"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "train driver",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-4011.00",
+    "title": "Locomotive Engineers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Locomotive Engineers",
+    "Rail"
+   ],
+   "public_candidates": [
+    {
+     "soc": "33-3052.00",
+     "title": "Transit and Railroad Police"
+    },
+    {
+     "soc": "47-4061.00",
+     "title": "Rail-Track Laying and Maintenance Equipment Operators"
+    },
+    {
+     "soc": "53-3032.00",
+     "title": "Heavy and Tractor-Trailer Truck Drivers"
+    },
+    {
+     "soc": "53-4011.00",
+     "title": "Locomotive Engineers"
+    },
+    {
+     "soc": "53-4013.00",
+     "title": "Rail Yard Engineers, Dinkey Operators, and Hostlers"
+    },
+    {
+     "soc": "53-4031.00",
+     "title": "Railroad Conductors and Yardmasters"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "49-3043.00",
+     "title": "Rail Car Repairers",
+     "status": "staged"
+    },
+    {
+     "soc": "53-4022.00",
+     "title": "Railroad Brake, Signal, and Switch Operators and Locomotive Firers",
+     "status": "staged"
+    },
+    {
+     "soc": "53-4099.00",
+     "title": "Rail Transportation Workers, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "courier",
+   "sector": "transport",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "43-5021.00",
+    "title": "Couriers and Messengers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Couriers and Messengers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "43-5021.00",
+     "title": "Couriers and Messengers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "chef",
+   "sector": "hospitality",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "35-1011.00",
+    "title": "Chefs and Head Cooks",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Chefs and Head Cooks"
+   ],
+   "public_candidates": [
+    {
+     "soc": "35-1011.00",
+     "title": "Chefs and Head Cooks"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "cook",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "35-2011.00",
+    "title": "Cooks, Fast Food",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Cooks"
+   ],
+   "public_candidates": [
+    {
+     "soc": "35-1011.00",
+     "title": "Chefs and Head Cooks"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "35-2011.00",
+     "title": "Cooks, Fast Food",
+     "status": "staged"
+    },
+    {
+     "soc": "35-2012.00",
+     "title": "Cooks, Institution and Cafeteria",
+     "status": "staged"
+    },
+    {
+     "soc": "35-2013.00",
+     "title": "Cooks, Private Household",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "waiter",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "35-3031.00",
+    "title": "Waiters and Waitresses",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Waiters and Waitresses"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "35-3031.00",
+     "title": "Waiters and Waitresses",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "bartender",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "35-3011.00",
+    "title": "Bartenders",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Bartenders"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "35-3011.00",
+     "title": "Bartenders",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "barista",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "35-3023.01",
+    "title": "Baristas",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Baristas",
+    "Food and Beverage Serving"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "35-3023.01",
+     "title": "Baristas",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "hotel receptionist",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "43-4081.00",
+    "title": "Hotel, Motel, and Resort Desk Clerks",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Hotel, Motel, and Resort Desk Clerks"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "43-4081.00",
+     "title": "Hotel, Motel, and Resort Desk Clerks",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "housekeeper",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "37-2012.00",
+    "title": "Maids and Housekeeping Cleaners",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Maids and Housekeeping Cleaners"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "37-2011.00",
+     "title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+     "status": "review_required"
+    },
+    {
+     "soc": "37-2012.00",
+     "title": "Maids and Housekeeping Cleaners",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "baker",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "51-3011.00",
+    "title": "Bakers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Bakers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "51-3011.00",
+     "title": "Bakers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "butcher",
+   "sector": "hospitality",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "51-3021.00",
+    "title": "Butchers and Meat Cutters",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Butchers and Meat Cutters"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "51-3021.00",
+     "title": "Butchers and Meat Cutters",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "event planner",
+   "sector": "hospitality",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "13-1121.00",
+    "title": "Meeting, Convention, and Event Planners",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Meeting, Convention, and Event Planners"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1121.00",
+     "title": "Meeting, Convention, and Event Planners"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "police officer",
+   "sector": "public safety",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "33-3051.00",
+    "title": "Police and Sheriff's Patrol Officers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Police and Sheriff's Patrol Officers",
+    "Police"
+   ],
+   "public_candidates": [
+    {
+     "soc": "33-3051.00",
+     "title": "Police and Sheriff's Patrol Officers"
+    },
+    {
+     "soc": "33-3052.00",
+     "title": "Transit and Railroad Police"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "33-1012.00",
+     "title": "First-Line Supervisors of Police and Detectives",
+     "status": "staged"
+    },
+    {
+     "soc": "33-3021.02",
+     "title": "Police Identification and Records Officers",
+     "status": "staged"
+    },
+    {
+     "soc": "43-5032.00",
+     "title": "Dispatchers, Except Police, Fire, and Ambulance",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "firefighter",
+   "sector": "public safety",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "33-2011.00",
+    "title": "Firefighters",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Firefighters"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "33-2011.00",
+     "title": "Firefighters",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "security guard",
+   "sector": "public safety",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "33-9032.00",
+    "title": "Security Guards",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Security Guards"
+   ],
+   "public_candidates": [
+    {
+     "soc": "33-9032.00",
+     "title": "Security Guards"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "soldier",
+   "sector": "public safety",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "55-1019.00",
+    "title": "Military Officer Special and Tactical Operations Leaders, All Other",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Military",
+    "Infantry"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "55-1016.00",
+     "title": "Infantry Officers",
+     "status": "staged"
+    },
+    {
+     "soc": "55-1019.00",
+     "title": "Military Officer Special and Tactical Operations Leaders, All Other",
+     "status": "review_required"
+    },
+    {
+     "soc": "55-3016.00",
+     "title": "Infantry",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "prison officer",
+   "sector": "public safety",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "33-3012.00",
+    "title": "Correctional Officers and Jailers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Correctional Officers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "33-1011.00",
+     "title": "First-Line Supervisors of Correctional Officers",
+     "status": "staged"
+    },
+    {
+     "soc": "33-3012.00",
+     "title": "Correctional Officers and Jailers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "social worker",
+   "sector": "personal services",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "21-1022.00",
+    "title": "Healthcare Social Workers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Social Workers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "21-1021.00",
+     "title": "Child, Family, and School Social Workers"
+    },
+    {
+     "soc": "21-1022.00",
+     "title": "Healthcare Social Workers"
+    },
+    {
+     "soc": "21-1023.00",
+     "title": "Mental Health and Substance Abuse Social Workers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "21-1029.00",
+     "title": "Social Workers, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "hairdresser",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "39-5012.00",
+    "title": "Hairdressers, Hairstylists, and Cosmetologists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Hairdressers, Hairstylists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-5012.00",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "barber",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "39-5011.00",
+    "title": "Barbers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Barbers",
+    "Hairdressers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-5011.00",
+     "title": "Barbers",
+     "status": "staged"
+    },
+    {
+     "soc": "39-5012.00",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "beautician",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "39-5094.00",
+    "title": "Skincare Specialists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Skincare Specialists",
+    "Cosmetolog"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-5012.00",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "status": "staged"
+    },
+    {
+     "soc": "39-5094.00",
+     "title": "Skincare Specialists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "massage therapist",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "31-9011.00",
+    "title": "Massage Therapists",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Massage Therapists"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "31-9011.00",
+     "title": "Massage Therapists",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "fitness trainer",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "39-9031.00",
+    "title": "Exercise Trainers and Group Fitness Instructors",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Exercise Trainers and Group Fitness Instructors"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-9031.00",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "personal trainer",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "39-9031.00",
+    "title": "Exercise Trainers and Group Fitness Instructors",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Exercise Trainers and Group Fitness Instructors"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-9031.00",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "childminder",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "39-9011.00",
+    "title": "Childcare Workers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Childcare Workers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "39-9011.00",
+     "title": "Childcare Workers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "cleaner",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "37-2011.00",
+    "title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Janitors and Cleaners",
+    "Maids and Housekeeping"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "37-2011.00",
+     "title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+     "status": "review_required"
+    },
+    {
+     "soc": "37-2012.00",
+     "title": "Maids and Housekeeping Cleaners",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "funeral director",
+   "sector": "personal services",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "11-9171.00",
+    "title": "Funeral Home Managers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Funeral Home Managers",
+    "Morticians"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "11-9171.00",
+     "title": "Funeral Home Managers",
+     "status": "staged"
+    },
+    {
+     "soc": "39-4031.00",
+     "title": "Morticians, Undertakers, and Funeral Arrangers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "farmer",
+   "sector": "agriculture",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "11-9013.00",
+    "title": "Farmers, Ranchers, and Other Agricultural Managers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Farmers, Ranchers",
+    "Farmworkers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "11-9013.00",
+     "title": "Farmers, Ranchers, and Other Agricultural Managers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "45-2092.00",
+     "title": "Farmworkers and Laborers, Crop, Nursery, and Greenhouse",
+     "status": "staged"
+    },
+    {
+     "soc": "45-2093.00",
+     "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "farm worker",
+   "sector": "agriculture",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "45-2093.00",
+    "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Farmworkers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "45-2092.00",
+     "title": "Farmworkers and Laborers, Crop, Nursery, and Greenhouse",
+     "status": "staged"
+    },
+    {
+     "soc": "45-2093.00",
+     "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "gardener",
+   "sector": "agriculture",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "37-3011.00",
+    "title": "Landscaping and Groundskeeping Workers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Landscaping and Groundskeeping Workers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "37-3011.00",
+     "title": "Landscaping and Groundskeeping Workers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "fisherman",
+   "sector": "agriculture",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "45-3031.00",
+    "title": "Fishing and Hunting Workers",
+    "status": "staged"
+   },
+   "expected_titles": [
+    "Fishing and Hunting Workers"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "45-3031.00",
+     "title": "Fishing and Hunting Workers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "factory worker",
+   "sector": "manufacturing",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "51-9199.00",
+    "title": "Production Workers, All Other",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Production Workers",
+    "Assemblers and Fabricators",
+    "Helpers--Production"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "51-9199.00",
+     "title": "Production Workers, All Other",
+     "status": "review_required"
+    },
+    {
+     "soc": "51-2099.00",
+     "title": "Assemblers and Fabricators, All Other",
+     "status": "review_required"
+    },
+    {
+     "soc": "51-9198.00",
+     "title": "Helpers--Production Workers",
+     "status": "staged"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "production operator",
+   "sector": "manufacturing",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "51-9196.00",
+    "title": "Paper Goods Machine Setters, Operators, and Tenders",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Production Workers",
+    "Machine Setters"
+   ],
+   "public_candidates": [
+    {
+     "soc": "51-4023.00",
+     "title": "Rolling Machine Setters, Operators, and Tenders, Metal and Plastic"
+    },
+    {
+     "soc": "51-4035.00",
+     "title": "Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic"
+    },
+    {
+     "soc": "51-4072.00",
+     "title": "Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic"
+    },
+    {
+     "soc": "51-4122.00",
+     "title": "Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders"
+    },
+    {
+     "soc": "51-4193.00",
+     "title": "Plating Machine Setters, Operators, and Tenders, Metal and Plastic"
+    },
+    {
+     "soc": "51-6062.00",
+     "title": "Textile Cutting Machine Setters, Operators, and Tenders"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "51-9199.00",
+     "title": "Production Workers, All Other",
+     "status": "review_required"
+    },
+    {
+     "soc": "51-4021.00",
+     "title": "Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",
+     "status": "staged"
+    },
+    {
+     "soc": "51-4022.00",
+     "title": "Forging Machine Setters, Operators, and Tenders, Metal and Plastic",
+     "status": "staged"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "quality inspector",
+   "sector": "manufacturing",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "51-9061.00",
+    "title": "Inspectors, Testers, Sorters, Samplers, and Weighers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Quality Control Inspectors",
+    "Inspectors, Testers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "51-9061.00",
+     "title": "Inspectors, Testers, Sorters, Samplers, and Weighers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "assembler",
+   "sector": "manufacturing",
+   "band": "non_public_detection",
+   "expected_status": "occupation_not_available",
+   "intended": {
+    "soc": "51-2099.00",
+    "title": "Assemblers and Fabricators, All Other",
+    "status": "review_required"
+   },
+   "expected_titles": [
+    "Assemblers and Fabricators"
+   ],
+   "public_candidates": [],
+   "non_public_candidates": [
+    {
+     "soc": "51-2099.00",
+     "title": "Assemblers and Fabricators, All Other",
+     "status": "review_required"
+    }
+   ],
+   "critical": false
+  },
+  {
+   "query": "engineer",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "53-5031.00",
+    "title": "Ship Engineers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Engineers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "13-1081.01",
+     "title": "Logistics Engineers"
+    },
+    {
+     "soc": "17-2199.10",
+     "title": "Wind Energy Engineers"
+    },
+    {
+     "soc": "17-2011.00",
+     "title": "Aerospace Engineers"
+    },
+    {
+     "soc": "17-2051.00",
+     "title": "Civil Engineers"
+    },
+    {
+     "soc": "17-2051.01",
+     "title": "Transportation Engineers"
+    },
+    {
+     "soc": "17-2051.02",
+     "title": "Water/Wastewater Engineers"
+    }
+   ],
+   "non_public_candidates": [
+    {
+     "soc": "15-1299.05",
+     "title": "Information Security Engineers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1299.07",
+     "title": "Blockchain Engineers",
+     "status": "staged"
+    },
+    {
+     "soc": "15-1299.08",
+     "title": "Computer Systems Engineers/Architects",
+     "status": "review_required"
+    }
+   ],
+   "critical": false,
+   "banding_note": "', All Other' is a residual SOC bucket, not a job anyone types; a published specific sibling is the intended answer"
+  },
+  {
+   "query": "civil engineer",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "17-2051.00",
+    "title": "Civil Engineers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Civil Engineers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "17-2051.00",
+     "title": "Civil Engineers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "mechanical engineer",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "17-2141.00",
+    "title": "Mechanical Engineers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Mechanical Engineers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "17-2141.00",
+     "title": "Mechanical Engineers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  },
+  {
+   "query": "electrical engineer",
+   "sector": "professional",
+   "band": "public_answerable",
+   "expected_status": "public_matches",
+   "intended": {
+    "soc": "17-2071.00",
+    "title": "Electrical Engineers",
+    "status": "public"
+   },
+   "expected_titles": [
+    "Electrical Engineers"
+   ],
+   "public_candidates": [
+    {
+     "soc": "17-2071.00",
+     "title": "Electrical Engineers"
+    }
+   ],
+   "non_public_candidates": [],
+   "critical": false
+  }
+ ]
+}

@@ -110,6 +110,30 @@ export async function searchOccupations(query: string): Promise<Occupation[]> {
   return request<Occupation[]>(`/occupations/search?q=${encodeURIComponent(query.trim())}`);
 }
 
+/** Search resolution: public matches, a named-but-unpublished occupation, or nothing.
+ *
+ *  A staged occupation may be named so the UI can say we do not analyse it yet. It never
+ *  carries a score or a slug — there is no approved number to show and no page to link to. */
+export type SearchResolution = {
+  queryStatus: "public_matches" | "ambiguous" | "occupation_not_available" | "no_reliable_match";
+  results: Occupation[];
+  matchedTitle?: string | null;
+  canonicalTitle?: string | null;
+  publicationStatus?: string | null;
+  isDisambiguation?: boolean;
+  relatedPublicResults?: { slug: string; title: string }[];
+  /** For `ambiguous`. May include an interpretation we cannot analyse: it is listed as
+   *  unavailable rather than dropped, because dropping it would silently resolve the
+   *  ambiguity in favour of whatever happens to be published. */
+  choices?: { title: string; available: boolean; slug?: string | null }[];
+};
+
+export function resolveOccupationSearch(query: string) {
+  return request<SearchResolution>(
+    `/occupations/search/resolve?q=${encodeURIComponent(query.trim())}`,
+  );
+}
+
 export async function getCareerRecommendations(payload: Record<string, unknown>): Promise<CareerFinderResponse> {
   return request<CareerFinderResponse>("/careers/recommendations", {
     method: "POST",
