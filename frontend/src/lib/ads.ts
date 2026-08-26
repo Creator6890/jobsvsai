@@ -14,9 +14,20 @@
 // ---------------------------------------------------------------------------
 
 /** AdSense publisher/client ID, e.g. "ca-pub-1234567890123456".
- *  Official publisher ID for JobsVsAI account. */
+ *  Official publisher ID for JobsVsAI account.
+ *
+ *  `||`, not `??`, and the distinction is load-bearing. `NEXT_PUBLIC_*` values are baked at
+ *  build time from compose build args, and compose interpolates a key present-but-empty in
+ *  `.env` as `""` rather than leaving it undefined. `??` only falls back on null/undefined, so
+ *  an empty line silently produced an empty client ID — which removed the site-verification
+ *  meta tag and the loader entirely while every other check still passed.
+ *
+ *  That is exactly what happened during the Search V2 release: production had
+ *  `NEXT_PUBLIC_ADSENSE_CLIENT_ID=` with no value, the rebuild baked `""`, and the AdSense
+ *  connection went dark in the middle of Google's review. Nothing failed loudly; the tag was
+ *  simply absent. An empty string is not a configured value, so it falls back too. */
 export const adsenseClientId: string =
-  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "ca-pub-7855774194309157";
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-7855774194309157";
 
 // ---------------------------------------------------------------------------
 // Global switches
