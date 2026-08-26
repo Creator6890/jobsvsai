@@ -108,6 +108,25 @@
   .autocomplete button:hover,
   .autocomplete button.is-active { background: var(--soft); }
   .autocomplete small { color: var(--muted); }
+  .autocomplete small.suggestion-estimated { color: var(--violet); font-weight: 650; }
+  .autocomplete small.suggestion-verified { color: var(--muted); }
+  .estimate-detail { display: grid; gap: 22px; }
+  .estimate-banner { border: 1px solid var(--violet); border-radius: var(--radius-md); padding: 18px 20px; background: color-mix(in srgb, var(--violet) 6%, white); display: grid; gap: 10px; }
+  .estimate-banner-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .estimate-flag { font-weight: 800; letter-spacing: .04em; text-transform: uppercase; font-size: .78rem; color: white; background: var(--violet); padding: 5px 11px; border-radius: 999px; }
+  .estimate-confidence { font-weight: 650; color: var(--violet); font-size: .9rem; }
+  .estimate-disclaimer { margin: 0; color: var(--ink); }
+  .estimate-learn { justify-self: start; padding: 0; }
+  .estimate-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .estimate-score { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; display: grid; gap: 6px; }
+  .estimate-score strong { font-size: 2rem; line-height: 1; }
+  .estimate-score small { font-size: .95rem; color: var(--muted); font-weight: 600; }
+  .estimate-chip { justify-self: start; background: color-mix(in srgb, var(--violet) 12%, white); color: var(--violet); }
+  .estimate-hero-chip { background: rgba(255,255,255,.18); }
+  .estimate-evidence, .estimate-pending { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px 20px; }
+  .estimate-evidence h2, .estimate-pending h2 { font-size: 1.05rem; margin: 0 0 8px; }
+  .estimate-evidence-line { margin: 8px 0 0; }
+  .estimate-sources { margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
   .popular-searches { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 9px; margin-top: 17px; font-size: .83rem; color: var(--muted); }
   .popular-searches button, .text-button { min-height: 44px; border: 0; background: transparent; color: var(--violet); cursor: pointer; font-weight: 750; }
   .popular-searches button { border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; background: white; }

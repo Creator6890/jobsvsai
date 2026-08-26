@@ -73,10 +73,25 @@ class TermMatch:
     score: float
     activation_status: str
     slug: str | None = None
+    # 'verified' | 'estimated' | None. An occupation is showable when it has *some* published
+    # analysis; which class of analysis it is affects how the result is labelled, never
+    # whether it is found. Relevance is a claim about what the user meant, and what we have
+    # finished validating is not evidence about that.
+    score_status: str | None = None
 
     @property
     def is_public(self) -> bool:
-        return self.activation_status == "public"
+        """Has a published analysis of either class.
+
+        Named for what it gates rather than for `activation_status`: every use of it in the
+        resolver asks "may we show this", and after the estimate layer that is true of
+        verified and estimated occupations alike.
+        """
+        return self.score_status is not None
+
+    @property
+    def is_verified(self) -> bool:
+        return self.score_status == "verified"
 
 
 @dataclass
@@ -107,12 +122,19 @@ _SELECT = """
          term.term         AS matched_term,
          term.term_type    AS term_type,
          term.priority     AS priority,
-         COALESCE(pub.activation_status, 'unpublished') AS activation_status
+         COALESCE(pub.activation_status, 'unpublished') AS activation_status,
+         CASE WHEN pub.activation_status = 'public' THEN 'verified'
+              WHEN est.identity_id IS NOT NULL THEN 'estimated'
+              ELSE NULL END AS score_status
   FROM occupation_search_terms term
   JOIN canonical_occupation_identities identity ON identity.id = term.identity_id
   LEFT JOIN occupations occ ON occ.id = identity.jobs_vs_ai_occupation_id
   LEFT JOIN onet_occupations onet ON onet.onet_soc_code = identity.current_source_code
   LEFT JOIN occupation_publications pub ON pub.identity_id = identity.id
+  -- Joined live, like activation_status and for the same reason: an estimate can be
+  -- published or withdrawn between requests, and a stale view would route a user to a page
+  -- that no longer carries an analysis.
+  LEFT JOIN current_published_occupation_estimates est ON est.identity_id = identity.id
 """
 
 
@@ -127,6 +149,7 @@ def _row_to_match(row: Any, score: float) -> TermMatch:
         score=score,
         activation_status=row["activation_status"],
         slug=row["slug"],
+        score_status=row["score_status"],
     )
 
 
@@ -259,7 +282,8 @@ async def resolve(session: AsyncSession, query: str, limit: int = 10) -> SearchR
     ranked = _dedupe(matches, forms[0])
     provenance = [
         {"soc": m.soc_code, "title": m.canonical_title, "matched_term": m.matched_term,
-         "term_type": m.term_type, "score": m.score, "status": m.activation_status}
+         "term_type": m.term_type, "score": m.score, "status": m.activation_status,
+         "score_status": m.score_status}
         for m in ranked[:12]
     ]
     if not ranked or ranked[0].score < MIN_RELIABLE:
@@ -334,7 +358,7 @@ async def resolve(session: AsyncSession, query: str, limit: int = 10) -> SearchR
             query=query, status="public_matches", public=public, non_public=non_public,
             matched_term=best_public.matched_term if best_public else None,
             canonical_title=best_public.canonical_title if best_public else None,
-            publication_status="public",
+            publication_status=best_public.activation_status if best_public else "public",
             is_disambiguation=bool(
                 best_public and best_public.term_type == "consumer_parent" and len(public) > 1
             ),
@@ -375,7 +399,8 @@ async def resolve(session: AsyncSession, query: str, limit: int = 10) -> SearchR
         return SearchResolution(
             query=query, status="public_matches", public=public,
             matched_term=public[0].matched_term,
-            canonical_title=public[0].canonical_title, publication_status="public",
+            canonical_title=public[0].canonical_title,
+            publication_status=public[0].activation_status,
             provenance=provenance,
         )
 

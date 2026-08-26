@@ -75,8 +75,14 @@ async def search_occupations(
     # "these are alternatives rather than a ranking", which is what /search/resolve is for.
     if resolution.status not in ("public_matches", "ambiguous"):
         return []
+    # Verified only, and deliberately. This endpoint's shape is `list[Occupation]`, which
+    # carries a verified score's task exposure and factor breakdown — fields an estimate does
+    # not have. There is no way to place an estimate in this list without either inventing
+    # those values or making the list mean two different things. Callers that want estimates
+    # use /search/resolve, which returns them in their own field.
     return await hydrate_by_ids(
-        session, [m.occupation_id for m in resolution.public if m.occupation_id]
+        session,
+        [m.occupation_id for m in resolution.public if m.is_verified and m.occupation_id],
     )
 
 

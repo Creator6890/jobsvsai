@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_session
 # Aliased: the legacy endpoint function below is also called `occupation_search`, and a
 # bare import would be shadowed by it at module scope.
+from app.repositories import occupation_estimates as estimate_repo
+from app.schemas.estimate import EstimatedOccupation
 from app.repositories import occupation_search as search_repo
 from app.repositories.occupations import (
     get_occupation,
@@ -41,6 +43,24 @@ async def occupation_search(
     return await search_occupations(session, q, limit)
 
 
+@router.get("/{slug}/estimate", response_model=EstimatedOccupation,
+            response_model_by_alias=True)
+async def occupation_estimate(
+    slug: str,
+    session: AsyncSession = Depends(get_session),
+) -> EstimatedOccupation:
+    """The preliminary estimate for an occupation that has no verified score.
+
+    A separate route from `/occupations/{slug}` rather than a fallback inside it. The verified
+    route promises a verified score; making it silently return something else when it cannot
+    find one is how an estimate ends up rendered by a client that never asked for estimates.
+    """
+    estimate = await estimate_repo.get_by_slug(session, slug)
+    if estimate is None:
+        raise HTTPException(status_code=404, detail="No preliminary estimate for that occupation")
+    return estimate
+
+
 @router.get("/search/resolve", response_model=SearchResponse,
             response_model_by_alias=True)
 async def occupation_search_resolve(
@@ -60,14 +80,24 @@ async def occupation_search_resolve(
     # `ambiguous` carries published occupations too — several occupations share the matched
     # term with equally strong evidence, so the UI offers a choice instead of a ranking.
     if resolution.status in ("public_matches", "ambiguous"):
+        # The two score classes are hydrated from their own stores into their own fields.
+        # Search ranked them together on relevance alone — an estimate is not demoted for
+        # being an estimate — and the split happens only here, at the point of presentation,
+        # so a client cannot render one as the other by forgetting to check a flag.
+        verified = [m for m in resolution.public if m.is_verified]
+        estimated = [m for m in resolution.public if not m.is_verified]
         occupations = await hydrate_by_ids(
-            session, [m.occupation_id for m in resolution.public if m.occupation_id]
+            session, [m.occupation_id for m in verified if m.occupation_id]
+        )
+        estimates = await estimate_repo.hydrate_by_slugs(
+            session, [m.slug for m in estimated if m.slug]
         )
         # An ambiguous query may legitimately include an interpretation we cannot show. It is
         # listed as unavailable rather than dropped, because dropping it would silently
         # resolve the ambiguity in favour of whatever happens to be published.
         choices = [
-            AmbiguousChoice(title=m.canonical_title, available=True, slug=m.slug)
+            AmbiguousChoice(title=m.canonical_title, available=True, slug=m.slug,
+                            score_status=m.score_status)
             for m in resolution.public
         ] + [
             AmbiguousChoice(title=m.canonical_title, available=False)
@@ -77,6 +107,7 @@ async def occupation_search_resolve(
         return SearchResponse(
             query_status=resolution.status,
             results=occupations,
+            estimated_results=estimates,
             matched_title=resolution.matched_term,
             canonical_title=resolution.canonical_title,
             publication_status="public",

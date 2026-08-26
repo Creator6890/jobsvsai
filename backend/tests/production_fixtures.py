@@ -315,10 +315,22 @@ async def ensure_related_occupations(identities: dict[str, int]) -> int | None:
         return None
 
     async with SessionFactory() as session, session.begin():
+        # Reuse an earlier fixture run only if it is still the newest run *for this source
+        # occupation*. The reader resolves relations from `max(content_run_id)` per
+        # occupation, so a later real content run covering this identity silently shadows an
+        # older fixture row — the link would exist in the table and be invisible to the API.
+        # Checking mere existence was enough while content runs only ever covered the launch
+        # cohort; it stopped being enough once a run covered the whole corpus.
         existing = (await session.execute(text("""
-          SELECT content_run_id FROM public_occupation_related_occupations
-          WHERE identity_id = :source AND related_identity_id = :target
-          ORDER BY content_run_id DESC LIMIT 1
+          SELECT related.content_run_id
+          FROM public_occupation_related_occupations related
+          JOIN LATERAL (
+            SELECT max(newer.content_run_id) AS newest
+            FROM public_occupation_related_occupations newer
+            WHERE newer.identity_id = related.identity_id
+          ) latest ON latest.newest = related.content_run_id
+          WHERE related.identity_id = :source AND related.related_identity_id = :target
+          LIMIT 1
         """), {"source": identities[source_slug], "target": identities[target_slug]})).scalar()
         if existing is not None:
             return existing

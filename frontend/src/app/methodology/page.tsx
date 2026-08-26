@@ -135,6 +135,31 @@ export default function MethodologyPage() {
           </div>
         </section>
 
+        <section className="content-section" id="preliminary-estimates">
+          <div className="container two-column">
+            <div>
+              <div className="section-kicker">Two score classes</div>
+              <h2>Verified analyses and preliminary estimates</h2>
+              <p>A <strong>verified</strong> JobsVsAI analysis has cleared every gate above: at least 80% weighted task coverage, a confidence threshold, mapping completeness, and a review of the factors carrying provisional models. 507 occupations currently qualify.</p>
+              <p>A <strong>preliminary estimate</strong> has not. It exists because returning nothing for an occupation we know something real about serves nobody &mdash; but it is never presented as a verified score, never enters our rankings, and is labelled before any number appears.</p>
+              <p><strong>How estimates are made.</strong> Every estimate is deterministic and uses only data already imported. Nothing is inferred from an occupation&rsquo;s title.</p>
+              <ul className="method-list">
+                <li><strong>Complete task evidence.</strong> The same calculation used for verified occupations, over full task coverage. Withheld from the verified cohort by a review gate rather than by missing evidence.</li>
+                <li><strong>Partial task evidence.</strong> The same calculation over the task evidence available so far, which covers only part of the work.</li>
+                <li><strong>Related-occupation estimate.</strong> No task evidence exists, so the figure is drawn from fully analysed occupations that O*NET itself identifies as closely related, weighted by how close that relationship is. These are always shown as a range.</li>
+              </ul>
+              <p><strong>How accurate are they?</strong> We test the related-occupation method by taking each of the 507 verified occupations, hiding its own evidence, and estimating it from its relatives alone. Half the estimates land within 3.6 points of the verified AI Exposure score and 2.8 points of Replacement Risk; nine in ten land within 10.2 and 7.7 points respectively. Roughly 78% land in the same risk band. That is useful, and it is not the same as measured.</p>
+              <p><strong>Limits.</strong> An estimate carries no task-level breakdown, no career transitions and no action plan, because those need validated task evidence and we will not generate guidance we cannot support. An estimate becomes a verified analysis when the underlying evidence clears the gates &mdash; usually when its tasks are mapped, or when a provisional factor model is validated. Nothing about the estimate is carried over; the verified score is calculated from scratch.</p>
+            </div>
+            <ol className="method-steps">
+              <li><b>01</b><div><strong>Never from a title</strong><p>An occupation&rsquo;s name is not evidence. Every estimate traces to imported task data or to named, fully analysed related occupations.</p></div></li>
+              <li><b>02</b><div><strong>Labelled before the number</strong><p>The preliminary status and its confidence appear above the scores, not in a footnote beneath them.</p></div></li>
+              <li><b>03</b><div><strong>Ranges where precision is not earned</strong><p>Where the evidence supports a span rather than a point, we show the span.</p></div></li>
+              <li><b>04</b><div><strong>Excluded from rankings</strong><p>Our highest and lowest replacement-risk lists contain verified occupations only, so an estimate can never distort them.</p></div></li>
+            </ol>
+          </div>
+        </section>
+
         <section className="content-section section-tint">
           <div className="container two-column">
             <div>

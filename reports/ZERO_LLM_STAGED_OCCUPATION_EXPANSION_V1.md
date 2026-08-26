@@ -42,8 +42,8 @@ No row was written to any table.
 |---|---|---|
 | **A — zero-LLM promotable now** | **0** | nothing in staging already passes the gate |
 | **B — zero-LLM minor remediation** | **0** | no occupation is blocked by a deterministic or metadata issue |
-| **C — requires new model/mapping work** | **95** | could plausibly qualify once new evidence or validated models exist |
-| **D — do not publish** | **310** | source-data limited; no amount of model work rescues them |
+| **C — requires new model/mapping work** | **73** | could plausibly qualify once new evidence or validated models exist |
+| **D — do not publish** | **332** | source-data limited; no amount of model work rescues them |
 | | **405** | |
 
 ### How the 405 divide before bucketing
@@ -60,7 +60,8 @@ No row was written to any table.
 | `weighted_coverage_below_launch_minimum` | 141 | D |
 | `confidence` + `not_review_ready` + `weighted_coverage` | 96 | D |
 | `provisional_input_sensitivity` | 57 | C |
-| `confidence` + `not_review_ready` + `provisional_input_sensitivity` | 22 | C |
+
+| `confidence` + `not_review_ready` + `provisional_input_sensitivity` + `weighted_coverage` | 22 | D |
 | `provisional_input_sensitivity` + `weighted_coverage` | 22 | D |
 | `not_review_ready` + `weighted_coverage` | 9 | D |
 | `confidence` + `weighted_coverage` | 2 | D |
@@ -292,12 +293,19 @@ unpublished occupation title reaches GA4.
 
 ## 14. Deferred occupations
 
-**Bucket C — 95 occupations, requiring new model work**
+**Correction (2026-08-26).** An earlier revision of this report recorded C = 95 and D = 310,
+splitting out 22 occupations as blocked by confidence, review-readiness and sensitivity but
+*not* coverage. That was a transcription error: the signature string was truncated at 72
+characters in the console and its trailing `+ weighted_coverage_below_launch_minimum` was lost.
+Those 22 are coverage-blocked and belong in D. The corrected counts are **C = 73, D = 332**,
+verified by direct cross-tab: 293 staged occupations carry the coverage blocker and 58 do not,
+with no mismatches in either direction.
+
+**Bucket C — 73 occupations, requiring new model work**
 
 | Sub-cohort | Count | What unblocks it |
 |---|---|---|
 | Sensitivity-only | 57 | Validate the two provisional replacement-risk factor models (adoption pressure, labour-market resilience) |
-| Confidence + review-readiness + sensitivity | 22 | Stronger evidence *and* the validated factor models |
 | Never assessed, weighting-eligible tasks present | 15 | A production-grade task→capability mapping run |
 | Credit Counselors (13-2071.00) | 1 | Investigate `high_replacement_despite_severe_constraints`: coverage 87.7, confidence 82.8, exposure 71.4, replacement risk 70.2 — the risk score crosses the 70.0 threshold while environmental constraints are severe |
 
@@ -305,7 +313,7 @@ unpublished occupation title reaches GA4.
 
 | Sub-cohort | Count | Why no model work helps |
 |---|---|---|
-| Coverage-blocked | 271 | Part of the 311 for which zero mappable tasks remain; the shortfall is ambiguous O\*NET task text |
+| Coverage-blocked | 293 | Part of the 311 for which zero mappable tasks remain; the shortfall is ambiguous O\*NET task text |
 | Never assessed, no weighting-eligible task | 39 | O\*NET publishes no importance/frequency ratings — nothing to weight |
 
 ## 15. Recommended future model-work cohort, by value per unit of work

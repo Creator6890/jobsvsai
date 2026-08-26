@@ -116,6 +116,7 @@ export async function searchOccupations(query: string): Promise<Occupation[]> {
  *  carries a score or a slug — there is no approved number to show and no page to link to. */
 export type SearchResolution = {
   queryStatus: "public_matches" | "ambiguous" | "occupation_not_available" | "no_reliable_match";
+  estimatedResults?: EstimatedOccupation[];
   results: Occupation[];
   matchedTitle?: string | null;
   canonicalTitle?: string | null;
@@ -127,6 +128,42 @@ export type SearchResolution = {
    *  ambiguity in favour of whatever happens to be published. */
   choices?: { title: string; available: boolean; slug?: string | null }[];
 };
+
+
+/** A preliminary estimate. Deliberately a different type from `Occupation`: it carries no
+ *  task exposure, no capability proximity and no factor breakdown, because none of those
+ *  exist for an estimate. Keeping the types apart means a component cannot render one as the
+ *  other by forgetting to check a flag. */
+export type EstimatedOccupation = {
+  scoreStatus: "estimated";
+  slug: string;
+  title: string;
+  category: string;
+  summary: string;
+  aiExposure: number;
+  replacementRisk: number;
+  aiExposureLow: number | null;
+  aiExposureHigh: number | null;
+  replacementRiskLow: number | null;
+  replacementRiskHigh: number | null;
+  estimateMethod: string;
+  estimateMethodDetail: string;
+  estimateConfidence: "higher" | "moderate" | "low";
+  confidenceLabel: string;
+  evidenceCoverage: number | null;
+  supportingRelativeCount: number | null;
+  basedOn: string[];
+  disclaimer: string;
+};
+
+export async function getOccupationEstimate(slug: string): Promise<EstimatedOccupation | null> {
+  try {
+    return await request<EstimatedOccupation>(`/occupations/${encodeURIComponent(slug)}/estimate`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
 
 export function resolveOccupationSearch(query: string) {
   return request<SearchResolution>(

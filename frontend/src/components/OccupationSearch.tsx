@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, KeyboardEvent, useEffect, useState } from "react";
 import type { Occupation } from "@/types/occupation";
+import type { EstimatedOccupation } from "@/lib/api";
 import { trackEvent } from "@/lib/analytics";
 
 type SearchState = "idle" | "searching" | "not-found" | "unavailable" | "ambiguous" | "error";
@@ -20,14 +22,30 @@ type SearchResolution = {
   /** For `ambiguous`. May include an interpretation we cannot analyse: it is listed as
    *  unavailable rather than dropped, because dropping it would silently resolve the
    *  ambiguity in favour of whatever happens to be published. */
-  choices?: { title: string; available: boolean; slug?: string | null }[];
+  choices?: { title: string; available: boolean; slug?: string | null; scoreStatus?: string | null }[];
+  /** Preliminary estimates matching the same query, in relevance order. Search ranks the two
+   *  classes together on identity relevance — an estimate is never demoted for being an
+   *  estimate — and they arrive split only so the UI must label them. */
+  estimatedResults?: EstimatedOccupation[];
+};
+
+/** One row of the suggestion list, from either score class. `estimated` decides the label
+ *  and nothing else: position in the list comes from relevance alone. */
+type Suggestion = {
+  slug: string;
+  title: string;
+  category: string;
+  estimated: boolean;
+  occupation?: Occupation;
 };
 
 export function OccupationSearch({ popularOccupations }: { popularOccupations: Occupation[] }) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [phase, setPhase] = useState<"search" | "loading" | "result">("search");
   const [selected, setSelected] = useState<Occupation | null>(null);
   const [matches, setMatches] = useState<Occupation[]>([]);
+  const [estimates, setEstimates] = useState<EstimatedOccupation[]>([]);
   const [searchState, setSearchState] = useState<SearchState>("idle");
   const [unavailable, setUnavailable] = useState<SearchResolution | null>(null);
   // Keyboard highlight inside the typeahead. -1 means "nothing highlighted", which is not the
@@ -38,7 +56,19 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
   // from "there are no matches".
   const [listDismissed, setListDismissed] = useState(false);
 
-  const showList = matches.length > 0 && !selected && !listDismissed;
+  // Verified first only as a stable tie-break for equal relevance; the API already returned
+  // both classes in relevance order, and neither is filtered out.
+  const suggestions: Suggestion[] = [
+    ...matches.map((job) => ({
+      slug: job.slug, title: job.title, category: job.category,
+      estimated: false, occupation: job,
+    })),
+    ...estimates.map((est) => ({
+      slug: est.slug, title: est.title, category: est.category, estimated: true,
+    })),
+  ];
+
+  const showList = suggestions.length > 0 && !selected && !listDismissed;
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -56,6 +86,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
         if (!response.ok) throw new Error("Search unavailable");
         const resolution = await response.json() as SearchResolution;
         setMatches(resolution.results ?? []);
+        setEstimates(resolution.estimatedResults ?? []);
         setActiveIndex(-1);
         if (resolution.queryStatus === "occupation_not_available") {
           setUnavailable(resolution);
@@ -90,8 +121,17 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
         if (!response.ok) throw new Error("Search unavailable");
         const resolution = await response.json() as SearchResolution;
         setMatches(resolution.results ?? []);
-        resultCount = resolution.results?.length ?? 0;
+        setEstimates(resolution.estimatedResults ?? []);
+        resultCount = (resolution.results?.length ?? 0) + (resolution.estimatedResults?.length ?? 0);
         job = resolution.results?.[0] ?? null;
+        // An estimate has no verified result card to show, so submitting a query that only
+        // matched estimates navigates to the occupation's own page, where the preliminary
+        // status is rendered before any number.
+        if (!job && resolution.estimatedResults?.length) {
+          trackEvent("occupation_search_used", { query_result_count: resultCount });
+          router.push(`/jobs/${resolution.estimatedResults[0].slug}`);
+          return;
+        }
         if (resolution.queryStatus === "occupation_not_available") {
           setUnavailable(resolution);
           setSearchState("unavailable");
@@ -120,10 +160,20 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     window.setTimeout(() => setPhase("result"), 700);
   }
 
+  function pick(suggestion: Suggestion) {
+    if (suggestion.occupation) {
+      choose(suggestion.occupation);
+      return;
+    }
+    // Estimated occupations have no verified result card; their page carries the status.
+    router.push(`/jobs/${suggestion.slug}`);
+  }
+
   function choose(job: Occupation) {
     setQuery(job.title);
     setSelected(job);
     setMatches([]);
+    setEstimates([]);
     setSearchState("idle");
     setActiveIndex(-1);
     setListDismissed(false);
@@ -137,6 +187,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     setListDismissed(false);
     if (value.trim().length < 2) {
       setMatches([]);
+      setEstimates([]);
       setSearchState("idle");
     }
   }
@@ -157,10 +208,10 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     }
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveIndex((index) => (index + 1) % matches.length);
+      setActiveIndex((index) => (index + 1) % suggestions.length);
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((index) => (index <= 0 ? matches.length - 1 : index - 1));
+      setActiveIndex((index) => (index <= 0 ? suggestions.length - 1 : index - 1));
     } else if (event.key === "Escape") {
       // Closes the list, keeps the query. Erasing what someone typed because they wanted the
       // overlay out of the way would be a hostile reading of Escape.
@@ -174,7 +225,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
     } else if (event.key === "Enter" && activeIndex >= 0) {
       // Intercepted only while a row is highlighted, so plain type-and-Enter still submits.
       event.preventDefault();
-      choose(matches[activeIndex]);
+      pick(suggestions[activeIndex]);
     }
   }
 
@@ -228,7 +279,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
       </form>
       {showList && (
         <ul className="autocomplete" id="occupation-suggestions" role="listbox" aria-label="Matching occupations">
-          {matches.map((job, index) => (
+          {suggestions.map((job, index) => (
             <li key={job.slug} role="presentation">
               <button
                 type="button"
@@ -240,9 +291,12 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
                 // keeps focus in the input and moves aria-activedescendant instead.
                 tabIndex={-1}
                 onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => choose(job)}
+                onClick={() => pick(job)}
               >
-                <span>{job.title}</span><small>{job.category}</small>
+                <span>{job.title}</span>
+                <small className={job.estimated ? "suggestion-estimated" : "suggestion-verified"}>
+                  {job.estimated ? "Preliminary estimate" : "Verified analysis"}
+                </small>
               </button>
             </li>
           ))}

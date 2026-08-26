@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.estimate import EstimatedOccupation
 from app.schemas.occupation import Occupation
 
 
@@ -44,6 +45,9 @@ class AmbiguousChoice(_Base):
     title: str
     available: bool
     slug: str | None = None
+    # 'verified' | 'estimated' | None. An available choice says which kind of analysis backs
+    # it, so a chooser never presents the two as interchangeable.
+    score_status: str | None = None
 
 
 class SearchResponse(_Base):
@@ -56,6 +60,12 @@ class SearchResponse(_Base):
 
     query_status: str
     results: list[Occupation] = Field(default_factory=list)
+
+    # Preliminary estimates matching the same query, in relevance order. A separate field
+    # rather than a flag on `results`: the two carry genuinely different data, and a client
+    # that has not been updated for estimates simply does not see them rather than rendering
+    # one as a verified score.
+    estimated_results: list[EstimatedOccupation] = Field(default_factory=list)
 
     # What the user typed, as matched. Lets the UI say "Penetration Tester" while the
     # occupation underneath remains Information Security Analysts.
