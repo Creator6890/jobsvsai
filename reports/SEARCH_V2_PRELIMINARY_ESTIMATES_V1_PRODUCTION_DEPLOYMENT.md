@@ -1,6 +1,6 @@
 # Search V2 + Preliminary Estimates V1 — production deployment
 
-**Date:** 2026-08-26 · **Status:** deployed, verified, healthy · **Two regressions found and fixed in flight**
+**Date:** 2026-08-26 · **Status:** deployed, verified, healthy · **Three faults found and fixed in flight**
 
 ## 1. What shipped
 
@@ -8,7 +8,7 @@
 |---|---|
 | Application code deployed | **`7b2c7a1`** — Search V2 + Preliminary Estimates V1 |
 | Migration 036 applied from | `fee6887` (adds one index; no application code differs) |
-| AdSense hardening | `<final commit>` — see §12 |
+| AdSense hardening | `77d4e4a` — see §11.3 |
 | Release directories | `/opt/jobsvsai/releases/7b2c7a1`, `/opt/jobsvsai/releases/fee6887` (both retained) |
 
 Two commits were approved and superseded before this deployment: `a1d79cf` was halted at the
@@ -162,8 +162,9 @@ from preliminary, and to carry the evidence hierarchy, calibration figures, conf
 policy, limitations and the upgrade path. It does **not** claim estimates passed validation.
 
 **SEO.** One canonical page per occupation, no alias duplicates, no directory page. **The
-sitemap lists 507 verified pages, not 897** — see §13, this is an open decision, not an
-intentional policy.
+sitemap lists 507 verified pages, not 897.** Architect decision after this deployment: keep it
+at the 507 verified pages for now and do not submit the 390 preliminary pages. This is an
+explicit temporary SEO policy; a separate SEO audit will decide indexation for E1/E2/E3.
 
 **Privacy.** `occupation_search_used` carries `query_result_count` and, on selection,
 `selected_occupation_slug` (a published slug). No raw query text, no alternate-title text, no
@@ -252,6 +253,7 @@ string is not a configured value.**
 | `npm run build` | succeeds |
 | Pre-deploy production healthcheck | **24 passed, 0 failed** |
 | Post-deploy production healthcheck | **24 passed, 0 failed** |
+| Hardened healthcheck (post-release, see below) | **41 passed, 0 failed** |
 | Browser QA | PASS — five page classes, desktop and 360 px, no overflow |
 
 ## 13. Open items
@@ -267,6 +269,27 @@ string is not a configured value.**
    AI News is disabled and no provider key exists in the production environment at all.
 3. **Software Developers remains E1 preliminary**, not verified, per the deployment brief. It
    passes every evaluable launch gate; promoting it needs a dedicated scoring-expansion run.
+
+## 13a. Post-release health hardening
+
+All three faults in §11 passed every liveness check while they were live. The health check now
+covers them, taking it from 24 checks to **41**:
+
+| Added | Guards |
+|---|---|
+| Three semantic smoke queries, asserted on canonical **slugs** | `soft eng` → `software-developer`, `pen tester` → `cybersecurity-analyst`, `data analyst` → `data-scientists`, each also naming the documented wrong answer. Not the 187-query benchmark — that stays in the suite, not in something cron runs. |
+| Related-career index presence | Migration 036's index cannot be dropped unnoticed |
+| Hydration budget | `/occupations?limit=500` under a deliberately generous 6s (the regression was 8.3s; normal is ~1.8s), plus `/compare` → 200 |
+| AdSense, as **two** facts | `ADSENSE CONNECTION: LIVE` reported separately from `MANUAL AD SERVING: OFF`, so "ads are off, as intended" can never mask "the publisher tag is gone" |
+| Two-class invariants | verified, estimated, E1/E2/E3, overlap and insufficient tracked **separately**; verified stays 507 and is never replaced by the 897 total |
+| Product policy | 0 estimated occupations reachable through `public_occupation_predicate`, which covers rankings, Career Fit and Compare in one structural assertion |
+
+Cohort expectations are overridable (`EXPECT_VERIFIED`, `EXPECT_ESTIMATES`, `EXPECT_E1`…),
+following `deploy.sh`'s existing idiom — a health check that cannot be updated without editing
+it gets commented out the first time it is inconvenient.
+
+Every new check was verified to *fail* when its invariant is broken, not merely to pass:
+wrong estimate counts, a wrong publisher ID, and reverting `||` to `??` each produce a FAIL.
 
 ## 14. Rollback
 

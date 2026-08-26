@@ -46,6 +46,11 @@ print('guard: accepted ->', target.describe())
 # docker-compose.yml and the two .env TEMPLATES are mounted for the env-drift tests,
 # which compare what the application reads against what an operator is given. The real
 # .env is deliberately NOT mounted: it holds secrets and no test needs it.
+# frontend/src/lib is mounted because the backend suite asserts on the AdSense
+# client-id fallback. That guard belongs here rather than in `npm test`: the fault it
+# catches is a deployment one — an empty env var silently removing the verification
+# tag — not a component one. Unmounted, the guard skips, and a guard that always skips
+# protects nothing.
 docker compose run --rm \
   -e DATABASE_URL="$TEST_DATABASE_URL" \
   -e ENVIRONMENT=test \
@@ -54,6 +59,7 @@ docker compose run --rm \
   -v "$PWD/scripts:/app/scripts:ro" \
   -v "$PWD/migrations:/app/migrations:ro" \
   -v "$PWD/deploy:/app/deploy:ro" \
+  -v "$PWD/frontend/src/lib:/app/frontend/src/lib:ro" \
   -v "$PWD/docker-compose.yml:/app/docker-compose.yml:ro" \
   -v "$PWD/.env.example:/app/.env.example:ro" \
   -v "$PWD/.env.production.example:/app/.env.production.example:ro" \
