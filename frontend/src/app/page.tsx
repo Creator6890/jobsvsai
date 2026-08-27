@@ -16,10 +16,14 @@ export const metadata: Metadata = {
   },
   description:
     "Find out how AI could affect your job. Explore AI Exposure, Replacement Risk, vulnerable tasks, human advantages and safer career paths across hundreds of occupations.",
+  alternates: {
+    canonical: "https://jobsvsai.com",
+  },
   openGraph: {
     title: "Will AI Take Your Job? AI Job Risk & Career Analysis | JobsVsAI",
     description:
       "The intelligence layer for navigating your career through AI. Task-level evidence, verified AI Exposure and Replacement Risk scores.",
+    url: "https://jobsvsai.com",
   },
 };
 

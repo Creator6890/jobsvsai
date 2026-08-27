@@ -15,6 +15,11 @@ export const metadata: Metadata = {
     index: false,
     follow: true,
   },
+  openGraph: {
+    title: "AI News: Workplace Developments & Job Impact | JobsVsAI",
+    description: "AI developments and capability shifts assessed for their real-world occupational impact.",
+    url: "https://jobsvsai.com/news",
+  },
 };
 
 const FILTERS = [

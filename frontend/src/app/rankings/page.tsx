@@ -10,10 +10,14 @@ export const metadata: Metadata = {
   title: "AI Job Risk Rankings: Jobs Most and Least at Risk From AI",
   description:
     "Compare occupations by AI Exposure and Replacement Risk across verified careers. Discover jobs most exposed to automation and careers built for long-term human resilience.",
+  alternates: {
+    canonical: "https://jobsvsai.com/rankings",
+  },
   openGraph: {
     title: "AI Job Risk Rankings: Jobs Most and Least at Risk From AI | JobsVsAI",
     description:
       "Task-level AI Exposure and Replacement Risk rankings across 507 verified occupations. Evidence-led analysis from JobsVsAI.",
+    url: "https://jobsvsai.com/rankings",
   },
 };
 

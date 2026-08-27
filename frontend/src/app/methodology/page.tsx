@@ -7,10 +7,14 @@ export const metadata: Metadata = {
   },
   description:
     "How JobsVsAI separates AI exposure from occupational replacement risk, and what the scores can and cannot tell you.",
+  alternates: {
+    canonical: "https://jobsvsai.com/methodology",
+  },
   openGraph: {
     title: "How JobsVsAI Calculates AI Exposure & Replacement Risk",
     description:
       "A transparent, task-level methodology separating software capability from structural job replacement.",
+    url: "https://jobsvsai.com/methodology",
   },
 };
 

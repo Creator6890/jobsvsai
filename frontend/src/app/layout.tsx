@@ -34,8 +34,40 @@ export const metadata: Metadata = {
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "JobsVsAI",
+    url: "https://jobsvsai.com",
+    logo: "https://jobsvsai.com/logo.png",
+    description: "Evidence-based career intelligence and AI occupational risk research.",
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "JobsVsAI",
+    url: "https://jobsvsai.com",
+    description: "The intelligence layer for navigating your career through AI.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://jobsvsai.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </head>
       <body>
         {children}
         {/* Absent in development and in any environment that does not set the ID, so local

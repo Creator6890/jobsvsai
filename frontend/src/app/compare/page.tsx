@@ -10,10 +10,14 @@ export const metadata: Metadata = {
   title: "Compare Careers by AI Risk, Exposure & Resilience",
   description:
     "Compare two careers side by side across AI Exposure, Replacement Risk, human dependency, physical constraints, and long-term resilience.",
+  alternates: {
+    canonical: "https://jobsvsai.com/compare",
+  },
   openGraph: {
     title: "Compare Careers by AI Risk, Exposure & Resilience | JobsVsAI",
     description:
       "Transparent side-by-side AI career comparisons. Compare AI Exposure and Replacement Risk across verified occupations.",
+    url: "https://jobsvsai.com/compare",
   },
 };
 

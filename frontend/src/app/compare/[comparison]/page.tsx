@@ -18,9 +18,13 @@ export async function generateMetadata({ params }: PageProps<"/compare/[comparis
   return {
     title: `${a.title} vs ${b.title}: Which Career Is Safer From AI?`,
     description: `Compare ${a.title} (AI Exposure ${a.aiExposure}/100, Replacement Risk ${a.replacementRisk}/100) and ${b.title} (AI Exposure ${b.aiExposure}/100, Replacement Risk ${b.replacementRisk}/100). See task automation and human advantages side by side.`,
+    alternates: {
+      canonical: `https://jobsvsai.com/compare/${comparison}`,
+    },
     openGraph: {
       title: `${a.title} vs ${b.title} AI Career Comparison | JobsVsAI`,
       description: `Side-by-side AI career risk analysis: ${a.title} vs ${b.title}. Compare task exposure, human dependency, and structural resilience.`,
+      url: `https://jobsvsai.com/compare/${comparison}`,
     },
   };
 }

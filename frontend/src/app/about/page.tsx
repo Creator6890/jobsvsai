@@ -7,10 +7,14 @@ export const metadata: Metadata = {
   },
   description:
     "Learn how JobsVsAI provides evidence-based career intelligence for the AI era. Task-level analysis, verified scoring standards, and calm career navigation.",
+  alternates: {
+    canonical: "https://jobsvsai.com/about",
+  },
   openGraph: {
     title: "About JobsVsAI — Evidence-Based AI Career Risk Research",
     description:
       "The intelligence layer for navigating your career through AI. Task-level evidence, transparent methodology, and actionable outcomes.",
+    url: "https://jobsvsai.com/about",
   },
 };
 
