@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import type { RankingOccupation } from "@/lib/api";
 import { trackEvent } from "@/lib/analytics";
 import { RankingsViewTracker } from "./analytics/AnalyticsTrackers";
+import { getScoreSemantics } from "@/lib/scoreSemantics";
 
 export function RankingsExplorer({
   occupations,
@@ -46,30 +47,42 @@ export function RankingsExplorer({
             <b>AI Exposure</b>
             <span></span>
           </div>
-          {highestRisk.map((job, index) => (
-            <div className="ranking-row" key={`high-${job.slug}`}>
-              <strong className="rank-number">{index + 1}</strong>
-              <div>
-                <b>{job.title}</b>
-                <span className="mobile-category">{job.category}</span>
+          {highestRisk.map((job, index) => {
+            const riskSem = getScoreSemantics("replacement_risk", job.replacementRisk);
+            const expSem = getScoreSemantics("ai_exposure", job.aiExposure);
+            return (
+              <div className="ranking-row" key={`high-${job.slug}`}>
+                <strong className="rank-number">{index + 1}</strong>
+                <div>
+                  <b>{job.title}</b>
+                  <span className="mobile-category">{job.category}</span>
+                </div>
+                <span>{job.category}</span>
+                <b>
+                  <span className={riskSem.badgeClass} title={riskSem.label}>
+                    {job.replacementRisk}
+                  </span>
+                </b>
+                <b>
+                  <span className={expSem.badgeClass} title={expSem.label}>
+                    {job.aiExposure}
+                  </span>
+                </b>
+                <Link
+                  className="button secondary"
+                  href={`/jobs/${job.slug}`}
+                  onClick={() =>
+                    trackEvent("rankings_job_opened", {
+                      occupation_slug: job.slug,
+                      sort_by: "Highest replacement risk",
+                    })
+                  }
+                >
+                  View <span aria-hidden="true">→</span>
+                </Link>
               </div>
-              <span>{job.category}</span>
-              <b>{job.replacementRisk}</b>
-              <b>{job.aiExposure}</b>
-              <Link
-                className="button secondary"
-                href={`/jobs/${job.slug}`}
-                onClick={() =>
-                  trackEvent("rankings_job_opened", {
-                    occupation_slug: job.slug,
-                    sort_by: "Highest replacement risk",
-                  })
-                }
-              >
-                View <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          ))}
+            );
+          })}
           {highestRisk.length === 0 && (
             <div className="empty-state">No occupations are published yet.</div>
           )}
@@ -101,30 +114,42 @@ export function RankingsExplorer({
             <b>AI Exposure</b>
             <span></span>
           </div>
-          {lowestRisk.map((job, index) => (
-            <div className="ranking-row" key={`low-${job.slug}`}>
-              <strong className="rank-number">{index + 1}</strong>
-              <div>
-                <b>{job.title}</b>
-                <span className="mobile-category">{job.category}</span>
+          {lowestRisk.map((job, index) => {
+            const riskSem = getScoreSemantics("replacement_risk", job.replacementRisk);
+            const expSem = getScoreSemantics("ai_exposure", job.aiExposure);
+            return (
+              <div className="ranking-row" key={`low-${job.slug}`}>
+                <strong className="rank-number">{index + 1}</strong>
+                <div>
+                  <b>{job.title}</b>
+                  <span className="mobile-category">{job.category}</span>
+                </div>
+                <span>{job.category}</span>
+                <b>
+                  <span className={riskSem.badgeClass} title={riskSem.label}>
+                    {job.replacementRisk}
+                  </span>
+                </b>
+                <b>
+                  <span className={expSem.badgeClass} title={expSem.label}>
+                    {job.aiExposure}
+                  </span>
+                </b>
+                <Link
+                  className="button secondary"
+                  href={`/jobs/${job.slug}`}
+                  onClick={() =>
+                    trackEvent("rankings_job_opened", {
+                      occupation_slug: job.slug,
+                      sort_by: "Lowest replacement risk",
+                    })
+                  }
+                >
+                  View <span aria-hidden="true">→</span>
+                </Link>
               </div>
-              <span>{job.category}</span>
-              <b>{job.replacementRisk}</b>
-              <b>{job.aiExposure}</b>
-              <Link
-                className="button secondary"
-                href={`/jobs/${job.slug}`}
-                onClick={() =>
-                  trackEvent("rankings_job_opened", {
-                    occupation_slug: job.slug,
-                    sort_by: "Lowest replacement risk",
-                  })
-                }
-              >
-                View <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          ))}
+            );
+          })}
           {lowestRisk.length === 0 && (
             <div className="empty-state">No occupations are published yet.</div>
           )}

@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getOccupations } from "@/lib/api";
 import type { Occupation } from "@/types/occupation";
+import { getScoreSemantics } from "@/lib/scoreSemantics";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +39,8 @@ export default async function Home() {
               <Link className="text-link desktop-only" href="/rankings">Explore all rankings →</Link>
             </div>
             <div className="ranking-grid">
-              <RankingPreview title="Most exposed jobs" jobs={exposed} score="aiExposure" tone="risk" />
-              <RankingPreview title="Most AI-resistant jobs" jobs={resilient} score="replacementRisk" tone="safe" />
+              <RankingPreview title="Most exposed jobs" jobs={exposed} score="aiExposure" />
+              <RankingPreview title="Most AI-resistant jobs" jobs={resilient} score="replacementRisk" />
             </div>
             <Link className="button secondary mobile-ranking-link" href="/rankings">Explore all rankings →</Link>
           </div>
@@ -68,19 +69,36 @@ export default async function Home() {
   );
 }
 
-function RankingPreview({ title, jobs, score, tone }: { title: string; jobs: Occupation[]; score: "aiExposure" | "replacementRisk"; tone: "risk" | "safe" }) {
+function RankingPreview({
+  title,
+  jobs,
+  score,
+}: {
+  title: string;
+  jobs: Occupation[];
+  score: "aiExposure" | "replacementRisk";
+  tone?: "risk" | "safe";
+}) {
   return (
     <article className="card ranking-preview">
-      <div className="card-heading"><h3>{title}</h3><span className="muted small">Score /100</span></div>
+      <div className="card-heading">
+        <h3>{title}</h3>
+        <span className="muted small">Score /100</span>
+      </div>
       {jobs.length === 0 && <p className="empty-state compact">No occupations are published yet.</p>}
       <ol className="ranking-list">
-        {jobs.map((job, index) => (
-          <li key={job.slug}>
-            <span className="rank-number">{index + 1}</span>
-            <Link href={`/jobs/${job.slug}`}>{job.title}</Link>
-            <span className={`score-badge ${tone}`}>{job[score]}</span>
-          </li>
-        ))}
+        {jobs.map((job, index) => {
+          const sem = getScoreSemantics(score, job[score]);
+          return (
+            <li key={job.slug}>
+              <span className="rank-number">{index + 1}</span>
+              <Link href={`/jobs/${job.slug}`}>{job.title}</Link>
+              <span className={sem.badgeClass} title={sem.label}>
+                {job[score]}
+              </span>
+            </li>
+          );
+        })}
       </ol>
     </article>
   );
