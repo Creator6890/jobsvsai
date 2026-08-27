@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { PageHero, PageShell } from "@/components/PageShell";
 
 export const metadata: Metadata = {
-  title: "About JobsVsAI — Evidence-Based AI Career Risk Research",
+  title: {
+    absolute: "About JobsVsAI — Evidence-Based AI Career Risk Research",
+  },
   description:
     "Learn how JobsVsAI provides evidence-based career intelligence for the AI era. Task-level analysis, verified scoring standards, and calm career navigation.",
   openGraph: {

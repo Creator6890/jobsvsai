@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { PageHero, PageShell } from "@/components/PageShell";
 
 export const metadata: Metadata = {
-  title: "How JobsVsAI Calculates AI Exposure & Replacement Risk",
+  title: {
+    absolute: "How JobsVsAI Calculates AI Exposure & Replacement Risk",
+  },
   description:
     "How JobsVsAI separates AI exposure from occupational replacement risk, and what the scores can and cannot tell you.",
   openGraph: {

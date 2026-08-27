@@ -11,7 +11,9 @@ import { getScoreSemantics } from "@/lib/scoreSemantics";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Will AI Take Your Job? AI Job Risk & Career Analysis | JobsVsAI",
+  title: {
+    absolute: "Will AI Take Your Job? AI Job Risk & Career Analysis | JobsVsAI",
+  },
   description:
     "Find out how AI could affect your job. Explore AI Exposure, Replacement Risk, vulnerable tasks, human advantages and safer career paths across hundreds of occupations.",
   openGraph: {
@@ -102,7 +104,7 @@ export default async function Home() {
               <div className="proof-metric-divider" aria-hidden="true" />
               <div className="proof-metric">
                 <strong>{totalTasks.toLocaleString()}</strong>
-                <span>Assessed tasks (verified)</span>
+                <span>Occupation tasks assessed</span>
               </div>
               <div className="proof-metric-divider" aria-hidden="true" />
               <div className="proof-metric">
@@ -236,15 +238,13 @@ export default async function Home() {
                   <p className="muted" style={{ fontSize: "0.85rem", marginTop: "6px" }}>
                     {field.count} verified {field.count === 1 ? "occupation" : "occupations"}
                   </p>
-                  <Link
-                    className="text-link"
-                    href={`/rankings`}
-                    style={{ marginTop: "12px", display: "inline-block", fontSize: "0.85rem" }}
-                  >
-                    View in rankings →
-                  </Link>
                 </article>
               ))}
+            </div>
+            <div style={{ marginTop: "24px", textAlign: "center" }}>
+              <Link className="button secondary" href="/rankings">
+                Explore AI job risk rankings →
+              </Link>
             </div>
           </div>
         </section>

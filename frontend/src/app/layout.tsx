@@ -6,7 +6,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: { default: "JobsVsAI — Career intelligence for the AI era", template: "%s — JobsVsAI" },
+  title: {
+    default: "Will AI Take Your Job? AI Job Risk & Career Analysis | JobsVsAI",
+    template: "%s | JobsVsAI",
+  },
   description: "Understand your job's AI exposure, replacement risk, and the most resilient career moves available to you.",
   openGraph: {
     title: "JobsVsAI — Will AI take your job?",

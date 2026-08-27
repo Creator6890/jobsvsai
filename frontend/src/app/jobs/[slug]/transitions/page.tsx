@@ -14,10 +14,10 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const job = await getOccupation(slug);
-  if (!job) return { title: "Occupation not found" };
+  if (!job) return { title: "Occupation Not Found" };
 
   return {
-    title: `Career Alternatives & Transitions for ${job.title} — JobsVsAI`,
+    title: `Career Alternatives & Transitions for ${job.title}`,
     description: `Explore transferable career alternatives for ${job.title} with lower AI replacement risk and compatible work characteristics.`,
     alternates: {
       canonical: `https://jobsvsai.com/jobs/${job.slug}/transitions`,

@@ -7,7 +7,7 @@ import { getRankings } from "@/lib/api";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "AI Job Risk Rankings: Jobs Most and Least at Risk From AI | JobsVsAI",
+  title: "AI Job Risk Rankings: Jobs Most and Least at Risk From AI",
   description:
     "Compare occupations by AI Exposure and Replacement Risk across verified careers. Discover jobs most exposed to automation and careers built for long-term human resilience.",
   openGraph: {

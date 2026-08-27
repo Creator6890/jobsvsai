@@ -7,7 +7,7 @@ import { getOccupations } from "@/lib/api";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Compare Careers by AI Risk, Exposure & Resilience | JobsVsAI",
+  title: "Compare Careers by AI Risk, Exposure & Resilience",
   description:
     "Compare two careers side by side across AI Exposure, Replacement Risk, human dependency, physical constraints, and long-term resilience.",
   openGraph: {

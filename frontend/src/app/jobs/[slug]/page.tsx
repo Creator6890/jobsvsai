@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps<"/jobs/[slug]">): P
   const job = await getOccupation(slug);
   if (job) {
     return {
-      title: `Will AI Replace ${job.title}? AI Risk & Task Analysis | JobsVsAI`,
+      title: `Will AI Replace ${job.title}? AI Risk & Task Analysis`,
       description: `${job.title} has an AI Exposure score of ${job.aiExposure}/100 and Replacement Risk of ${job.replacementRisk}/100. See vulnerable tasks, human advantages, evidence and safer career alternatives.`,
       openGraph: {
         title: `Will AI Replace ${job.title}? AI Risk & Task Analysis | JobsVsAI`,
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/jobs/[slug]">): P
     };
   }
   const estimate = await getOccupationEstimate(slug);
-  if (!estimate) return { title: "Occupation not found | JobsVsAI" };
+  if (!estimate) return { title: "Occupation Not Found" };
 
   const riskRange =
     estimate.replacementRiskLow !== null && estimate.replacementRiskHigh !== null
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps<"/jobs/[slug]">): P
       : `${estimate.replacementRisk}`;
 
   return {
-    title: `Will AI Replace ${estimate.title}? Preliminary AI Risk Estimate | JobsVsAI`,
+    title: `Will AI Replace ${estimate.title}? Preliminary AI Risk Estimate`,
     description: `JobsVsAI estimates ${estimate.title} at approximately ${riskRange}/100 Replacement Risk (${estimate.confidenceLabel} confidence). See preliminary evidence and comparable careers.`,
     openGraph: {
       title: `Will AI Replace ${estimate.title}? Preliminary AI Risk Estimate | JobsVsAI`,

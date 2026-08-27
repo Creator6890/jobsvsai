@@ -13,10 +13,10 @@ export async function generateMetadata({ params }: PageProps<"/compare/[comparis
   const [aSlug, bSlug] = splitComparison(comparison);
   const [a, b] = await Promise.all([getOccupation(aSlug), getOccupation(bSlug)]);
   if (!a || !b) {
-    return { title: "Career Comparison | JobsVsAI" };
+    return { title: "Career Comparison" };
   }
   return {
-    title: `${a.title} vs ${b.title}: Which Career Is Safer From AI? | JobsVsAI`,
+    title: `${a.title} vs ${b.title}: Which Career Is Safer From AI?`,
     description: `Compare ${a.title} (AI Exposure ${a.aiExposure}/100, Replacement Risk ${a.replacementRisk}/100) and ${b.title} (AI Exposure ${b.aiExposure}/100, Replacement Risk ${b.replacementRisk}/100). See task automation and human advantages side by side.`,
     openGraph: {
       title: `${a.title} vs ${b.title} AI Career Comparison | JobsVsAI`,

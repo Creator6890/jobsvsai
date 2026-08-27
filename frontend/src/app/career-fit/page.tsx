@@ -6,7 +6,7 @@ import { getOccupations } from "@/lib/api";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "AI-Safe Career Finder: Find Careers That Fit Your Strengths | JobsVsAI",
+  title: "AI-Safe Career Finder: Find Careers That Fit Your Strengths",
   description:
     "Career safety alone is not enough. JobsVsAI combines your work strengths, preferences, and style with career fit and verified AI resilience metrics.",
   alternates: {
