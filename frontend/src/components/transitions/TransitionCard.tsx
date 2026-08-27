@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Occupation } from "@/types/occupation";
 import type { CareerTransition } from "@/lib/transitions/types";
 import { trackEvent, getAnalyticsRiskBand } from "@/lib/analytics";
+import { getScoreSemantics } from "@/lib/scoreSemantics";
 
 function difficultyTone(difficulty: string): string {
   switch (difficulty) {
@@ -28,6 +29,8 @@ export function TransitionCard({
   const dest = transition.occupation;
   const exposureDelta = transition.exposureDelta;
   const riskPres = transition.riskPresentation;
+  const destRiskSem = getScoreSemantics("replacement_risk", dest.replacementRisk);
+  const destExpSem = getScoreSemantics("ai_exposure", dest.aiExposure);
 
   const handleOpenDestination = () => {
     trackEvent("transition_destination_opened", {
@@ -79,7 +82,7 @@ export function TransitionCard({
           <div className="metric-compare-val">
             <span className="metric-from">{source.replacementRisk}</span>
             <span className="metric-arrow">→</span>
-            <span className="metric-to">{dest.replacementRisk}</span>
+            <span className={`metric-to ${destRiskSem.textClass}`}>{dest.replacementRisk}</span>
             <span className={`delta-chip ${riskPres.chipTone}`}>
               {riskPres.deltaLabel}
             </span>
@@ -91,7 +94,7 @@ export function TransitionCard({
           <div className="metric-compare-val">
             <span className="metric-from">{source.aiExposure}</span>
             <span className="metric-arrow">→</span>
-            <span className="metric-to">{dest.aiExposure}</span>
+            <span className={`metric-to ${destExpSem.textClass}`}>{dest.aiExposure}</span>
             {exposureDelta > 0 && (
               <span className="delta-sub lower">
                 ({exposureDelta} pts lower)

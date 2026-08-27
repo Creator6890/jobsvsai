@@ -14,7 +14,7 @@
     --ink: #111114; --muted: #676776; --line: #e7e5ed; --soft: #f7f6fa;
     --violet: #6d28d9; --violet-2: #7c3aed; --violet-3: #a855f7; --violet-soft: #f3e8ff;
     --green: #16834a; --green-soft: #e9f8ef; --red: #d9354c; --red-soft: #fff0f2;
-    --amber: #a35a00;
+    --amber: #a35a00; --amber-soft: #fef7ed;
     /* Radius scale. Every rounded corner maps onto one of these five steps; the file
        previously carried eleven ad-hoc values between 8px and 28px. */
     --radius-xs: 10px; --radius-sm: 12px; --radius-md: 16px; --radius: 22px; --radius-lg: 26px;
@@ -168,8 +168,11 @@
   .ranking-list li { min-height: 56px; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; border-top: 1px solid var(--line); }
   .ranking-list a { min-height: var(--control-sm); display: flex; align-items: center; font-weight: 780; }
   .rank-number { color: #9a96a2; font-weight: 850; }
-  .score-badge.risk { background: var(--red-soft); color: var(--red); }
-  .score-badge.safe { background: var(--green-soft); color: var(--green); }
+  .score-badge.risk, .chip.risk { background: var(--red-soft); color: var(--red); }
+  .score-badge.moderate, .chip.moderate { background: var(--amber-soft); color: var(--amber); }
+  .score-badge.safe, .chip.safe { background: var(--green-soft); color: var(--green); }
+  .score-badge.neutral, .chip.neutral { background: var(--violet-soft); color: var(--violet); }
+  .score-badge.accent, .chip.accent { background: var(--violet-soft); color: var(--violet); }
   .mobile-ranking-link { display: none; margin-top: 18px; }
   .site-footer { padding: 48px 0; border-top: 1px solid var(--line); }
   .footer-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 40px; }
@@ -243,8 +246,10 @@
 .score-card-stack .score-card { flex: 1; }
 .score-footnote { font-size: .78rem; line-height: 1.5; color: var(--muted); margin: 0; }
 .score-footnote .text-link { font-size: inherit; white-space: nowrap; }
-.score-card.red .score-number { color: var(--red); }
-.score-card.green .score-number { color: var(--green); }
+.score-card.red .score-number, .score-card.risk .score-number { color: var(--red); }
+.score-card.moderate .score-number { color: var(--amber); }
+.score-card.green .score-number, .score-card.safe .score-number { color: var(--green); }
+.score-card.violet .score-number, .score-card.neutral .score-number { color: var(--violet); }
 .score-card hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0 15px; }
 .score-card p { font-size: .9rem; }
 .score-number { font-size: clamp(3.5rem, 7vw, 5.3rem); font-weight: 950; letter-spacing: -.08em; line-height: 1; margin: 17px 0 13px; }
@@ -253,8 +258,21 @@
 .metric-bar { margin-top: 18px; }
 .metric-bar > div:first-child { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: .85rem; }
 .metric-bar > div:first-child span { color: var(--muted); }
+.metric-bar-qualifier { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+.metric-bar-qualifier.safe { color: var(--green); }
+.metric-bar-qualifier.moderate { color: var(--amber); }
+.metric-bar-qualifier.risk { color: var(--red); }
 .bar-track { height: 8px; border-radius: 999px; background: #e9e6ef; overflow: hidden; }
 .bar-track > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--violet), var(--violet-3)); }
+.bar-track > span.safe { background: var(--green); }
+.bar-track > span.moderate { background: var(--amber); }
+.bar-track > span.risk { background: var(--red); }
+.bar-track > span.neutral { background: linear-gradient(90deg, var(--violet), var(--violet-3)); }
+.bar-track > span.accent { background: linear-gradient(90deg, var(--violet), var(--violet-3)); }
+
+.text-semantic-safe { color: var(--green); }
+.text-semantic-moderate { color: var(--amber); }
+.text-semantic-risk { color: var(--red); }
 .content-section { padding: var(--section-y) 0; }
 .section-head { margin-bottom: var(--gap-lg); display: flex; justify-content: space-between; align-items: flex-end; gap: var(--gap-lg); }
 .section-head h2 { margin: 9px 0 11px; }
@@ -378,7 +396,11 @@
 .comparison-head .vs-badge { align-self: center; }
 .comparison-head h2 { margin-top: 12px; font-size: 2rem; }
 .comparison-head .score-number small { display: block; margin: 5px 0 0; }
+.comparison-head .score-number.score-safe { color: var(--green); }
+.comparison-head .score-number.score-moderate { color: var(--amber); }
+.comparison-head .score-number.score-risk { color: var(--red); }
 .comparison-row { min-height: 56px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; align-items: center; gap: 20px; border-top: 1px solid var(--line); }
+.comparison-row .score-badge { font-size: .84rem; font-weight: 800; min-height: 26px; padding: 2px 9px; }
 .comparison-row > :not(:first-child) { text-align: center; }
 .comparison-labels { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; }
 .comparison-card .notice { margin-top: 24px; }

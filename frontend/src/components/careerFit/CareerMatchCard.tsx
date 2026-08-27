@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DIMENSIONS } from "@/lib/careerFit";
 import type { CareerMatch } from "@/lib/careerFit";
 import { trackEvent } from "@/lib/analytics";
+import { getScoreSemantics } from "@/lib/scoreSemantics";
 
 type CareerMatchCardProps = {
   match: CareerMatch;
@@ -10,6 +11,8 @@ type CareerMatchCardProps = {
 
 export function CareerMatchCard({ match, rank }: CareerMatchCardProps) {
   const { occupation, careerFit, keyStrengths, whyFit, considerations } = match;
+  const expSem = getScoreSemantics("ai_exposure", occupation.aiExposure);
+  const riskSem = getScoreSemantics("replacement_risk", occupation.replacementRisk);
 
   const handleClick = () => {
     trackEvent("career_fit_job_opened", {
@@ -54,26 +57,14 @@ export function CareerMatchCard({ match, rank }: CareerMatchCardProps) {
       <div className="career-fit-risk-grid">
         <div className="career-fit-risk-item">
           <span className="metric-label">AI EXPOSURE</span>
-          <span
-            className={`score-badge ${
-              occupation.aiExposure >= 70 ? "risk" : "neutral"
-            }`}
-          >
-            {occupation.aiExposure}/100
+          <span className={expSem.badgeClass} title={expSem.label}>
+            {occupation.aiExposure}/100 · {expSem.band}
           </span>
         </div>
         <div className="career-fit-risk-item">
           <span className="metric-label">REPLACEMENT RISK</span>
-          <span
-            className={`score-badge ${
-              occupation.replacementRisk >= 60
-                ? "risk"
-                : occupation.replacementRisk <= 40
-                ? "safe"
-                : "neutral"
-            }`}
-          >
-            {occupation.replacementRisk}/100
+          <span className={riskSem.badgeClass} title={riskSem.label}>
+            {occupation.replacementRisk}/100 · {riskSem.band}
           </span>
         </div>
       </div>

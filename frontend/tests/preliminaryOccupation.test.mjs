@@ -54,9 +54,9 @@ test("EstimatedOccupationDetail reuses verified containers, grids, and card sizi
   assert.match(estSource, /<div className="container">/);
   assert.match(estSource, /<div className="score-grid">/);
 
-  // Uses .card .score-card for metrics
-  assert.match(estSource, /<article className="card score-card">/);
-  assert.match(estSource, /<article className="card score-card red">/);
+  // Uses .card .score-card for metrics with semantic tone
+  assert.match(estSource, /<article className=\{`card score-card \$\{exposureSemantics\.tone\}`\}>/);
+  assert.match(estSource, /<article className=\{`card score-card \$\{riskSemantics\.tone\}`\}>/);
 
   // Soft preliminary banner inside container
   assert.match(estSource, /<div className="card estimate-banner"/);

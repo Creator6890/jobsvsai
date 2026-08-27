@@ -6,6 +6,7 @@ import { FormEvent, KeyboardEvent, useEffect, useState } from "react";
 import type { Occupation } from "@/types/occupation";
 import type { EstimatedOccupation } from "@/lib/api";
 import { trackEvent } from "@/lib/analytics";
+import { getScoreSemantics } from "@/lib/scoreSemantics";
 
 type SearchState = "idle" | "searching" | "not-found" | "unavailable" | "ambiguous" | "error";
 
@@ -248,7 +249,7 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
   if (phase === "result" && selected) return (
     <article className="search-result-card">
       <div className="result-heading"><div><span className="chip">{selected.category}</span><h2>{selected.title}</h2></div><button className="text-button" onClick={reset}>Search again</button></div>
-      <div className="result-score-grid"><MiniScore label="AI Exposure" value={selected.aiExposure} /><MiniScore label="Replacement Risk" value={selected.replacementRisk} /><div className="result-verdict"><span className="metric-label">What it means</span><strong>{selected.verdict}</strong><p>{selected.summary}</p></div></div>
+      <div className="result-score-grid"><MiniScore label="AI Exposure" value={selected.aiExposure} metric="ai_exposure" /><MiniScore label="Replacement Risk" value={selected.replacementRisk} metric="replacement_risk" /><div className="result-verdict"><span className="metric-label">What it means</span><strong>{selected.verdict}</strong><p>{selected.summary}</p></div></div>
       <Link
         className="button result-link"
         href={`/jobs/${selected.slug}`}
@@ -369,6 +370,16 @@ export function OccupationSearch({ popularOccupations }: { popularOccupations: O
   );
 }
 
-function MiniScore({ label, value }: { label: string; value: number }) {
-  return <div className="mini-score"><span className="metric-label">{label}</span><strong>{value}<small>/100</small></strong><span className="chip">{value >= 75 ? "Very high" : value >= 60 ? "High" : value >= 40 ? "Moderate" : "Low"}</span></div>;
+function MiniScore({ label, value, metric }: { label: string; value: number; metric?: string }) {
+  const sem = getScoreSemantics(metric ?? label, value);
+  return (
+    <div className="mini-score">
+      <span className="metric-label">{label}</span>
+      <strong className={sem.textClass}>
+        {value}
+        <small>/100</small>
+      </strong>
+      <span className={sem.chipClass}>{sem.label}</span>
+    </div>
+  );
 }

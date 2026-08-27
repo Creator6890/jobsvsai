@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { EstimatedOccupation } from "@/lib/api";
 import { AdSlot } from "./AdSlot";
 import { MetricBar } from "./ScoreCard";
+import { getScoreSemantics } from "@/lib/scoreSemantics";
 
 /** Estimated occupation detail page.
  *
@@ -18,23 +19,8 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
     job.replacementRiskHigh !== null &&
     job.replacementRiskLow !== job.replacementRiskHigh;
 
-  const exposureBand =
-    job.aiExposure >= 75
-      ? "Very high"
-      : job.aiExposure >= 60
-      ? "High"
-      : job.aiExposure >= 40
-      ? "Moderate"
-      : "Low";
-
-  const riskBand =
-    job.replacementRisk >= 75
-      ? "Very high"
-      : job.replacementRisk >= 60
-      ? "High"
-      : job.replacementRisk >= 40
-      ? "Moderate"
-      : "Low";
+  const exposureSemantics = getScoreSemantics("ai_exposure", job.aiExposure, { isEstimated: true });
+  const riskSemantics = getScoreSemantics("replacement_risk", job.replacementRisk, { isEstimated: true });
 
   return (
     <>
@@ -53,7 +39,7 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
           </div>
 
           <div className="score-grid">
-            <article className="card score-card">
+            <article className={`card score-card ${exposureSemantics.tone}`}>
               <span className="metric-label">Estimated AI Exposure</span>
               <div className={`score-number${isExposureRange ? " score-range" : ""}`}>
                 {isExposureRange ? (
@@ -68,13 +54,13 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
                   </>
                 )}
               </div>
-              <span className="chip">{exposureBand}</span>
+              <span className={exposureSemantics.chipClass}>{exposureSemantics.label}</span>
               <hr />
               <p>How much of this occupation&rsquo;s work can be materially affected by current AI systems.</p>
             </article>
 
             <div className="score-card-stack">
-              <article className="card score-card red">
+              <article className={`card score-card ${riskSemantics.tone}`}>
                 <span className="metric-label">Estimated Replacement Risk</span>
                 <div className={`score-number${isRiskRange ? " score-range" : ""}`}>
                   {isRiskRange ? (
@@ -89,7 +75,7 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
                     </>
                   )}
                 </div>
-                <span className="chip">{riskBand}</span>
+                <span className={riskSemantics.chipClass}>{riskSemantics.label}</span>
                 <hr />
                 <p>How likely exposure is to translate into reduced human demand.</p>
               </article>
@@ -105,7 +91,7 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
               <span className="metric-label">Evidence quality</span>
               {job.evidenceCoverage !== null ? (
                 <>
-                  <MetricBar label="Task coverage" value={Math.round(job.evidenceCoverage)} suffix="%" />
+                  <MetricBar label="Task coverage" value={Math.round(job.evidenceCoverage)} suffix="%" metric="task_coverage" />
                   <div className="estimate-evidence-meta">
                     <span className="metric-label">Confidence</span>
                     <strong>{job.confidenceLabel}</strong>
