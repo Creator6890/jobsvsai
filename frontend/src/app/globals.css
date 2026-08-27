@@ -173,6 +173,18 @@
   .score-badge.safe, .chip.safe { background: var(--green-soft); color: var(--green); }
   .score-badge.neutral, .chip.neutral { background: var(--violet-soft); color: var(--violet); }
   .score-badge.accent, .chip.accent { background: var(--violet-soft); color: var(--violet); }
+  .hero-actions-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .proof-strip-card { display: flex; align-items: center; justify-content: space-around; gap: 16px; flex-wrap: wrap; background: white; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px 24px; margin-top: 32px; box-shadow: 0 4px 16px rgba(0,0,0,.03); }
+  .proof-metric { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .proof-metric strong { font-size: 1.6rem; color: var(--violet); letter-spacing: -.03em; line-height: 1.1; }
+  .proof-metric span { font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
+  .proof-metric-divider { width: 1px; height: 36px; background: var(--line); }
+  .metric-callout { margin-top: 16px; padding: 10px 14px; background: var(--soft); border-radius: var(--radius-xs); font-size: .84rem; color: var(--muted); font-weight: 750; }
+  .faq-stack { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: "+"; font-size: 1.3rem; font-weight: 400; color: var(--muted); }
+  .faq-item[open] summary::after { content: "−"; }
   .mobile-ranking-link { display: none; margin-top: 18px; }
   .site-footer { padding: 48px 0; border-top: 1px solid var(--line); }
   .footer-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 40px; }
@@ -521,6 +533,9 @@
   .ranking-row .button { width: 44px; min-height: 44px; padding: 0; font-size: 0; }
   .ranking-row .button span { font-size: 1rem; }
   .mobile-category { display: block; }
+  .proof-strip-card { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 16px; }
+  .proof-metric-divider { display: none; }
+  .proof-metric strong { font-size: 1.35rem; }
   .form-grid, .option-grid { grid-template-columns: 1fr; }
   .form-grid .full-field { grid-column: auto; }
   .finder-card fieldset { min-height: 390px; }

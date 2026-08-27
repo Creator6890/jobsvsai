@@ -24,6 +24,21 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
 
   return (
     <>
+      {/* Breadcrumbs */}
+      <div className="container" style={{ paddingTop: "16px" }}>
+        <nav className="breadcrumbs" aria-label="Breadcrumbs" style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
+          <Link href="/" className="text-link" style={{ minHeight: "auto", color: "var(--muted)" }}>
+            Home
+          </Link>
+          <span style={{ margin: "0 8px" }} aria-hidden="true">/</span>
+          <span>{job.category}</span>
+          <span style={{ margin: "0 8px" }} aria-hidden="true">/</span>
+          <span aria-current="page" style={{ color: "var(--ink)", fontWeight: 700 }}>
+            {job.title}
+          </span>
+        </nav>
+      </div>
+
       <section className="score-section">
         <div className="container">
           <div className="card estimate-banner" role="region" aria-label="Preliminary estimate explanation">

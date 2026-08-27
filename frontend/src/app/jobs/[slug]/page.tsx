@@ -12,19 +12,29 @@ export async function generateMetadata({ params }: PageProps<"/jobs/[slug]">): P
   const job = await getOccupation(slug);
   if (job) {
     return {
-      title: `${job.title}: AI exposure & replacement risk`,
-      description: `${job.title} has ${job.aiExposure}/100 AI exposure and ${job.replacementRisk}/100 replacement risk. See tasks, drivers, and safer career moves.`,
-      openGraph: { title: `${job.title} AI career risk analysis`, description: job.verdict },
+      title: `Will AI Replace ${job.title}? AI Risk & Task Analysis | JobsVsAI`,
+      description: `${job.title} has an AI Exposure score of ${job.aiExposure}/100 and Replacement Risk of ${job.replacementRisk}/100. See vulnerable tasks, human advantages, evidence and safer career alternatives.`,
+      openGraph: {
+        title: `Will AI Replace ${job.title}? AI Risk & Task Analysis | JobsVsAI`,
+        description: `${job.title} AI career analysis: ${job.aiExposure}/100 Exposure, ${job.replacementRisk}/100 Replacement Risk. Task-level evidence and human advantages.`,
+      },
     };
   }
   const estimate = await getOccupationEstimate(slug);
-  if (!estimate) return { title: "Occupation not found" };
-  // The description says "preliminary estimate" in the search snippet too. A page that is
-  // honest on screen and silent in the SERP is only half honest.
+  if (!estimate) return { title: "Occupation not found | JobsVsAI" };
+
+  const riskRange =
+    estimate.replacementRiskLow !== null && estimate.replacementRiskHigh !== null
+      ? `${estimate.replacementRiskLow}–${estimate.replacementRiskHigh}`
+      : `${estimate.replacementRisk}`;
+
   return {
-    title: `${estimate.title}: preliminary AI exposure estimate`,
-    description: `Preliminary estimate for ${estimate.title}. ${estimate.disclaimer}`,
-    openGraph: { title: `${estimate.title} — preliminary AI risk estimate`, description: estimate.disclaimer },
+    title: `Will AI Replace ${estimate.title}? Preliminary AI Risk Estimate | JobsVsAI`,
+    description: `JobsVsAI estimates ${estimate.title} at approximately ${riskRange}/100 Replacement Risk (${estimate.confidenceLabel} confidence). See preliminary evidence and comparable careers.`,
+    openGraph: {
+      title: `Will AI Replace ${estimate.title}? Preliminary AI Risk Estimate | JobsVsAI`,
+      description: `Preliminary estimate for ${estimate.title}: approximately ${riskRange}/100 Replacement Risk. ${estimate.disclaimer}`,
+    },
   };
 }
 
@@ -35,26 +45,25 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
     return (
       <PageShell>
         <PageHero
-          eyebrow={`${job.category} · Updated ${new Date(job.updatedAt).toLocaleDateString("en", { month: "short", year: "numeric" })}`}
+          eyebrow={`${job.category} · Verified Analysis`}
           title={job.title}
           copy={job.summary}
         >
           <span className="chip hero-chip">{job.modelVersion}</span>
         </PageHero>
-        <main><OccupationDetail job={job} /></main>
+        <main id="main-content">
+          <OccupationDetail job={job} />
+        </main>
       </PageShell>
     );
   }
 
-  // No verified score. An occupation may still carry a published preliminary estimate; the
-  // estimate route is asked separately rather than folded into the verified one, so nothing
-  // can return an estimate to a caller that asked for a verified score.
   const estimate = await getOccupationEstimate(slug);
   if (!estimate) notFound();
   return (
     <PageShell>
       <PageHero
-        eyebrow={estimate.category}
+        eyebrow={`${estimate.category} · Preliminary Estimate`}
         title={estimate.title}
         status={
           <div className="estimate-status-row">
@@ -64,7 +73,9 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
         }
         copy={estimate.summary}
       />
-      <main><EstimatedOccupationDetail job={estimate} /></main>
+      <main id="main-content">
+        <EstimatedOccupationDetail job={estimate} />
+      </main>
     </PageShell>
   );
 }

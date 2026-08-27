@@ -8,9 +8,13 @@ import { getNewsArticles, type NewsImpactLevel } from "@/lib/api";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "AI news and what it means for jobs",
-  description: "Latest AI developments, each assessed for how significant it is for work.",
-  alternates: { canonical: "/news" },
+  title: "AI News: Workplace Developments & Job Impact | JobsVsAI",
+  description: "AI developments and capability shifts assessed for their real-world occupational impact.",
+  alternates: { canonical: "https://jobsvsai.com/news" },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 const FILTERS = [
