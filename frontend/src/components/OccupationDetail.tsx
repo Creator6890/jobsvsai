@@ -132,7 +132,7 @@ export function OccupationDetail({ job }: { job: Occupation }) {
               <p>How five foundational dimensions shape this occupation&apos;s vulnerability and resilience.</p>
             </div>
           </div>
-          <div className="factor-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "18px" }}>
+          <div className="factor-grid">
             {content.keyDrivers.map((driver, idx) => (
               <article className="card factor-card" key={idx} style={{ padding: "22px" }}>
                 <span className="section-kicker" style={{ fontSize: "0.75rem" }}>Factor 0{idx + 1}</span>

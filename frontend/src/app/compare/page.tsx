@@ -19,11 +19,11 @@ export const metadata: Metadata = {
 
 const CURATED_COMPARISONS = [
   { a: "accountant", b: "advertising-sales-agents", label: "Accountant vs Advertising Sales Agents" },
-  { a: "software-developer", b: "data-scientists", label: "Software Developer vs Data Scientists" },
-  { a: "registered-nurse", b: "medical-assistant", label: "Registered Nurse vs Medical Assistant" },
-  { a: "graphic-designer", b: "web-developers", label: "Graphic Designer vs Web Developers" },
-  { a: "financial-analyst", b: "accountant", label: "Financial Analyst vs Accountant" },
-  { a: "customer-service-representatives", b: "sales-representatives-wholesale-and-manufacturing", label: "Customer Service vs Sales Representatives" },
+  { a: "civil-engineers", b: "mechanical-engineers", label: "Civil Engineers vs Mechanical Engineers" },
+  { a: "chemists", b: "materials-scientists", label: "Chemists vs Materials Scientists" },
+  { a: "bioinformatics-scientists", b: "geneticists", label: "Bioinformatics Scientists vs Geneticists" },
+  { a: "proofreaders-and-copy-markers", b: "desktop-publishers", label: "Proofreaders vs Desktop Publishers" },
+  { a: "credit-analysts", b: "financial-quantitative-analysts", label: "Credit Analysts vs Financial Quantitative Analysts" },
 ];
 
 export default async function ComparePage() {

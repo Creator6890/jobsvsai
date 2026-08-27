@@ -173,8 +173,9 @@
   .score-badge.safe, .chip.safe { background: var(--green-soft); color: var(--green); }
   .score-badge.neutral, .chip.neutral { background: var(--violet-soft); color: var(--violet); }
   .score-badge.accent, .chip.accent { background: var(--violet-soft); color: var(--violet); }
+  .home-ranking-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); }
   .hero-actions-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
-  .proof-strip-card { display: flex; align-items: center; justify-content: space-around; gap: 16px; flex-wrap: wrap; background: white; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px 24px; margin-top: 32px; box-shadow: 0 4px 16px rgba(0,0,0,.03); }
+  .proof-strip-card { display: flex; align-items: center; justify-content: space-around; gap: 16px; flex-wrap: wrap; background: white; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px 24px; margin-top: 32px; box-shadow: 0 4px 16px rgba(0,0,0,.03); max-width: 100%; box-sizing: border-box; }
   .proof-metric { display: flex; flex-direction: column; align-items: center; text-align: center; }
   .proof-metric strong { font-size: 1.6rem; color: var(--violet); letter-spacing: -.03em; line-height: 1.1; }
   .proof-metric span { font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
@@ -230,7 +231,7 @@
   .mini-score strong { font-size: 2.2rem; }
   .section-heading-row { align-items: flex-start; }
   .desktop-only { display: none; }
-  .ranking-grid { grid-template-columns: 1fr; }
+  .ranking-grid, .home-ranking-grid { grid-template-columns: 1fr; }
   .mobile-ranking-link { display: flex; width: 100%; }
   .footer-inner nav { flex-wrap: wrap; }
 }
@@ -385,8 +386,8 @@
 .finder-card legend { font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: -.04em; }
 .finder-card fieldset > p { margin: 10px 0 28px; }
 .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.form-grid label, .compare-selector label { display: grid; gap: 8px; font-size: .82rem; font-weight: 800; }
-.form-grid input, .form-grid select, .form-grid textarea, .compare-selector select { width: 100%; min-height: var(--control); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 13px; background: white; outline: 0; }
+.form-grid label, .compare-selector label { display: grid; gap: 8px; font-size: .82rem; font-weight: 800; min-width: 0; max-width: 100%; }
+.form-grid input, .form-grid select, .form-grid textarea, .compare-selector select { width: 100%; max-width: 100%; min-width: 0; min-height: var(--control); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 13px; background: white; outline: 0; box-sizing: border-box; }
 .form-grid textarea { resize: vertical; }
 .form-grid .full-field { grid-column: 1 / -1; }
 .option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -541,8 +542,10 @@
   .finder-card fieldset { min-height: 390px; }
   .form-actions .button { flex: 1; padding-inline: 10px; }
   .featured-match { gap: 28px; }
-  .comparison-card { padding: 18px; }
-  .compare-selector { grid-template-columns: 1fr; }
+  .comparison-card { padding: 18px; max-width: 100%; box-sizing: border-box; overflow-x: auto; }
+  .compare-selector { grid-template-columns: 1fr; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+  .compare-selector label { width: 100%; max-width: 100%; min-width: 0; }
+  .compare-selector select { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
   .compare-selector .vs-badge { align-self: center; justify-self: center; }
   .comparison-head { grid-template-columns: 1fr; padding-top: 8px; }
   .comparison-head .vs-badge { justify-self: center; }

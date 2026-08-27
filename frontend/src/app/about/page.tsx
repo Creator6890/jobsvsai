@@ -82,7 +82,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="factor-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", marginTop: "24px" }}>
+            <div className="factor-grid" style={{ marginTop: "24px" }}>
               <article className="card factor-card">
                 <strong>01</strong>
                 <h3>Evidence before inference</h3>

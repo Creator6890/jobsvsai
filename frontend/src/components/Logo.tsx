@@ -14,7 +14,14 @@ import Link from "next/link";
 export function Logo() {
   return (
     <Link className="logo" href="/" aria-label="JobsVsAI home">
-      <Image src="/logo.png" alt="" width={1674} height={297} loading="eager" />
+      <Image
+        src="/logo.png"
+        alt=""
+        width={1674}
+        height={297}
+        loading="eager"
+        style={{ height: "30px", width: "auto", maxWidth: "100%", objectFit: "contain" }}
+      />
     </Link>
   );
 }

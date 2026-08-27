@@ -162,7 +162,7 @@ export function getOccupationContent(job: Occupation): OccupationVerdictData {
       answer: `AI Exposure (${job.aiExposure}/100) measures how much of the work overlaps with what current AI systems can perform technically. Replacement Risk (${job.replacementRisk}/100) measures whether that capability actually threatens human employment after accounting for physical constraints (${job.physicalDependency}/100), human dependency (${job.humanDependency}/100), adoption costs, and professional accountability.`,
     },
     {
-      question: `Does a Replacement Risk score of ${job.replacementRisk} mean a ${job.replacementRisk}% chance of losing my job?`,
+      question: `Does a Replacement Risk score of ${job.replacementRisk} mean a ${job.replacementRisk}% probability of job loss?`,
       answer: `No. JobsVsAI scores are index ratings on a 0–100 scale, not probabilities or unemployment percentages. A score of ${job.replacementRisk}/100 indicates that ${job.title} exhibits ${riskSem.label.toLowerCase()} structural vulnerability relative to other occupations across the labour market.`,
     },
     {

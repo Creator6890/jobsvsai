@@ -102,7 +102,7 @@ export default async function Home() {
               <div className="proof-metric-divider" aria-hidden="true" />
               <div className="proof-metric">
                 <strong>{totalTasks.toLocaleString()}</strong>
-                <span>Assessed O*NET tasks</span>
+                <span>Assessed tasks (verified)</span>
               </div>
               <div className="proof-metric-divider" aria-hidden="true" />
               <div className="proof-metric">
@@ -208,7 +208,7 @@ export default async function Home() {
                 Explore all rankings →
               </Link>
             </div>
-            <div className="ranking-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+            <div className="ranking-grid home-ranking-grid">
               <RankingPreview title="Most AI-Exposed" jobs={exposed} score="aiExposure" />
               <RankingPreview title="Lowest Replacement Risk" jobs={resilient} score="replacementRisk" />
               <RankingPreview title="Largest Exposure Gap" jobs={gapLeaders} score="aiExposure" />
@@ -291,7 +291,7 @@ export default async function Home() {
                 answer="Replacement Risk (0–100) estimates whether technical AI exposure translates into reduced human demand. It accounts for real-world friction—including physical constraints, human dependency, professional accountability, adoption economics, and institutional regulations."
               />
               <FaqItem
-                question="Does a Replacement Risk score of 70 mean a 70% chance of losing my job?"
+                question="Does a Replacement Risk score of 70 mean a 70% probability of job loss?"
                 answer="No. JobsVsAI scores are index ratings on a 0–100 scale, not probabilities or unemployment forecasts. A score of 70 indicates that the occupation exhibits higher structural vulnerability compared to lower-scoring occupations across the economy."
               />
               <FaqItem
