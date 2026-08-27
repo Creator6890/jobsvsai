@@ -40,46 +40,48 @@ export function RankingsExplorer({
 
         <div className="card ranking-table">
           <div className="ranking-row ranking-header">
-            <b>#</b>
-            <b>Occupation</b>
-            <b>Category</b>
-            <b>Replacement Risk</b>
-            <b>AI Exposure</b>
-            <span></span>
+            <span className="ranking-col-rank">#</span>
+            <span className="ranking-col-title">Occupation</span>
+            <span className="ranking-col-cat">Category</span>
+            <span className="ranking-col-risk">Replacement Risk</span>
+            <span className="ranking-col-exp">AI Exposure</span>
+            <span className="ranking-col-action"></span>
           </div>
           {highestRisk.map((job, index) => {
             const riskSem = getScoreSemantics("replacement_risk", job.replacementRisk);
             const expSem = getScoreSemantics("ai_exposure", job.aiExposure);
             return (
               <div className="ranking-row" key={`high-${job.slug}`}>
-                <strong className="rank-number">{index + 1}</strong>
-                <div>
+                <strong className="rank-number ranking-col-rank">{index + 1}</strong>
+                <div className="ranking-col-title">
                   <b>{job.title}</b>
                   <span className="mobile-category">{job.category}</span>
                 </div>
-                <span>{job.category}</span>
-                <b>
+                <span className="ranking-col-cat">{job.category}</span>
+                <div className="ranking-col-risk">
                   <span className={riskSem.badgeClass} title={riskSem.label}>
                     {job.replacementRisk}
                   </span>
-                </b>
-                <b>
+                </div>
+                <div className="ranking-col-exp">
                   <span className={expSem.badgeClass} title={expSem.label}>
                     {job.aiExposure}
                   </span>
-                </b>
-                <Link
-                  className="button secondary"
-                  href={`/jobs/${job.slug}`}
-                  onClick={() =>
-                    trackEvent("rankings_job_opened", {
-                      occupation_slug: job.slug,
-                      sort_by: "Highest replacement risk",
-                    })
-                  }
-                >
-                  View <span aria-hidden="true">→</span>
-                </Link>
+                </div>
+                <div className="ranking-col-action">
+                  <Link
+                    className="button secondary"
+                    href={`/jobs/${job.slug}`}
+                    onClick={() =>
+                      trackEvent("rankings_job_opened", {
+                        occupation_slug: job.slug,
+                        sort_by: "Highest replacement risk",
+                      })
+                    }
+                  >
+                    View <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
               </div>
             );
           })}
@@ -107,46 +109,48 @@ export function RankingsExplorer({
 
         <div className="card ranking-table">
           <div className="ranking-row ranking-header">
-            <b>#</b>
-            <b>Occupation</b>
-            <b>Category</b>
-            <b>Replacement Risk</b>
-            <b>AI Exposure</b>
-            <span></span>
+            <span className="ranking-col-rank">#</span>
+            <span className="ranking-col-title">Occupation</span>
+            <span className="ranking-col-cat">Category</span>
+            <span className="ranking-col-risk">Replacement Risk</span>
+            <span className="ranking-col-exp">AI Exposure</span>
+            <span className="ranking-col-action"></span>
           </div>
           {lowestRisk.map((job, index) => {
             const riskSem = getScoreSemantics("replacement_risk", job.replacementRisk);
             const expSem = getScoreSemantics("ai_exposure", job.aiExposure);
             return (
               <div className="ranking-row" key={`low-${job.slug}`}>
-                <strong className="rank-number">{index + 1}</strong>
-                <div>
+                <strong className="rank-number ranking-col-rank">{index + 1}</strong>
+                <div className="ranking-col-title">
                   <b>{job.title}</b>
                   <span className="mobile-category">{job.category}</span>
                 </div>
-                <span>{job.category}</span>
-                <b>
+                <span className="ranking-col-cat">{job.category}</span>
+                <div className="ranking-col-risk">
                   <span className={riskSem.badgeClass} title={riskSem.label}>
                     {job.replacementRisk}
                   </span>
-                </b>
-                <b>
+                </div>
+                <div className="ranking-col-exp">
                   <span className={expSem.badgeClass} title={expSem.label}>
                     {job.aiExposure}
                   </span>
-                </b>
-                <Link
-                  className="button secondary"
-                  href={`/jobs/${job.slug}`}
-                  onClick={() =>
-                    trackEvent("rankings_job_opened", {
-                      occupation_slug: job.slug,
-                      sort_by: "Lowest replacement risk",
-                    })
-                  }
-                >
-                  View <span aria-hidden="true">→</span>
-                </Link>
+                </div>
+                <div className="ranking-col-action">
+                  <Link
+                    className="button secondary"
+                    href={`/jobs/${job.slug}`}
+                    onClick={() =>
+                      trackEvent("rankings_job_opened", {
+                        occupation_slug: job.slug,
+                        sort_by: "Lowest replacement risk",
+                      })
+                    }
+                  >
+                    View <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
               </div>
             );
           })}
