@@ -311,6 +311,21 @@
 .method-steps li { min-height: 88px; display: grid; grid-template-columns: 52px 1fr; gap: var(--gap); align-items: center; border-top: 1px solid var(--line); }
 .method-steps li > b { color: var(--violet); }
 .method-steps p { font-size: .9rem; margin-top: 5px; }
+.method-list { margin: 16px 0; padding-left: 20px; display: grid; gap: 10px; }
+.method-list li { font-size: .95rem; line-height: 1.55; color: var(--muted); }
+.method-list li strong { color: var(--ink); }
+#preliminary-estimates { scroll-margin-top: 96px; }
+
+/* Methodology page vertical rhythm */
+.methodology-section { padding: clamp(38px, 4.5vw, 60px) 0; }
+.methodology-section .section-head { margin-bottom: var(--gap); }
+.methodology-notice { margin-top: var(--gap); }
+.methodology-closing-section { padding: clamp(36px, 4vw, 52px) 0 clamp(40px, 4.5vw, 56px); }
+.methodology-closing-stack { display: flex; flex-direction: column; gap: var(--gap); }
+.methodology-attribution-card { border-radius: var(--radius-md); padding: 22px 24px; background: #18121f; color: white; border: 0; }
+.methodology-attribution-card strong { display: block; margin-bottom: 6px; color: white; font-size: .95rem; }
+.methodology-attribution-card p { color: #aaa3b2; font-size: .84rem; line-height: 1.55; margin: 0; }
+
 .data-list > div { min-height: 56px; display: flex; justify-content: space-between; align-items: center; gap: var(--gap); border-top: 1px solid var(--line); }
 .data-list > div:first-child { border-top: 0; }
 .data-list dt { font-weight: 750; }

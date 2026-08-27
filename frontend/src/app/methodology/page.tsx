@@ -41,28 +41,28 @@ export default function MethodologyPage() {
         copy="Every score is reproducible from stored inputs, versioned, and explainable down to the individual task. Where the evidence is weak, we say so on the page rather than in a footnote."
       />
       <main>
-        <section className="content-section">
-          <div className="container two-column">
-            <article className="card definition-card">
-              <span className="metric-label">AI Exposure</span>
-              <div className="score-number">0–100</div>
-              <p>How much of this occupation&rsquo;s actual task mix current AI can meaningfully act on. It is a statement about the work, not about your job.</p>
-            </article>
-            <article className="card definition-card">
-              <span className="metric-label">Replacement Risk</span>
-              <div className="score-number">0–100</div>
-              <p>How likely that exposure is to become reduced human demand, once physical reality, human dependency, accountability, regulation and adoption are accounted for.</p>
-            </article>
-          </div>
+        <section className="content-section methodology-section">
           <div className="container">
-            <div className="notice">
+            <div className="two-column">
+              <article className="card definition-card">
+                <span className="metric-label">AI Exposure</span>
+                <div className="score-number">0–100</div>
+                <p>How much of this occupation&rsquo;s actual task mix current AI can meaningfully act on. It is a statement about the work, not about your job.</p>
+              </article>
+              <article className="card definition-card">
+                <span className="metric-label">Replacement Risk</span>
+                <div className="score-number">0–100</div>
+                <p>How likely that exposure is to become reduced human demand, once physical reality, human dependency, accountability, regulation and adoption are accounted for.</p>
+              </article>
+            </div>
+            <div className="notice methodology-notice">
               <strong>These two are not the same number, and the gap is the point.</strong>
               <p>A surgeon has tasks current AI can assist with, and a replacement risk that stays low because the work requires physical presence, carries severe consequences, and someone has to be accountable for the outcome. A collapsing of exposure into replacement would get that backwards. Both scores are indices, not probabilities.</p>
             </div>
           </div>
         </section>
 
-        <section className="content-section section-tint">
+        <section className="content-section section-tint methodology-section">
           <div className="container">
             <div className="section-kicker">Task level</div>
             <div className="section-head">
@@ -82,7 +82,7 @@ export default function MethodologyPage() {
           </div>
         </section>
 
-        <section className="content-section">
+        <section className="content-section methodology-section">
           <div className="container">
             <div className="section-kicker">Occupation level · JVS 2.0.0-phase4b</div>
             <div className="section-head">
@@ -103,7 +103,7 @@ export default function MethodologyPage() {
           </div>
         </section>
 
-        <section className="content-section section-tint">
+        <section className="content-section section-tint methodology-section">
           <div className="container outlook-grid">
             <div>
               <div className="section-kicker">The bottleneck principle</div>
@@ -118,7 +118,7 @@ export default function MethodologyPage() {
           </div>
         </section>
 
-        <section className="content-section">
+        <section className="content-section methodology-section">
           <div className="container outlook-grid">
             <div>
               <div className="section-kicker">Coverage and confidence</div>
@@ -135,7 +135,7 @@ export default function MethodologyPage() {
           </div>
         </section>
 
-        <section className="content-section" id="preliminary-estimates">
+        <section className="content-section methodology-section" id="preliminary-estimates">
           <div className="container two-column">
             <div>
               <div className="section-kicker">Two score classes</div>
@@ -160,7 +160,7 @@ export default function MethodologyPage() {
           </div>
         </section>
 
-        <section className="content-section section-tint">
+        <section className="content-section section-tint methodology-section">
           <div className="container two-column">
             <div>
               <div className="section-kicker">Versioning</div>
@@ -179,17 +179,15 @@ export default function MethodologyPage() {
           </div>
         </section>
 
-        <section className="content-section">
-          <div className="container">
+        <section className="content-section methodology-section methodology-closing-section">
+          <div className="container methodology-closing-stack">
             <div className="notice">
               <strong>What these scores are not.</strong>
               <p>They are decision-support indices, not probabilities that any individual will lose their job. Job content varies by employer, seniority and country. Adoption pressure and labour-market resilience remain provisional models, and occupations whose scores depend heavily on them are held back from publication rather than shipped with a caveat. Where our evidence is thin, the occupation does not appear at all.</p>
             </div>
-            <div className="source-strip">
-              <div>
-                <strong>Source attribution</strong>
-                <p>Occupational data from O*NET 30.3 by the U.S. Department of Labor, Employment and Training Administration. Used under CC BY 4.0. O*NET® is a trademark of USDOL/ETA. JobsVsAI scores, capability taxonomy and structural models are our own interpretation and are not endorsed by USDOL/ETA.</p>
-              </div>
+            <div className="card methodology-attribution-card">
+              <strong>Source attribution</strong>
+              <p>Occupational data from O*NET 30.3 by the U.S. Department of Labor, Employment and Training Administration. Used under CC BY 4.0. O*NET® is a trademark of USDOL/ETA. JobsVsAI scores, capability taxonomy and structural models are our own interpretation and are not endorsed by USDOL/ETA.</p>
             </div>
           </div>
         </section>
