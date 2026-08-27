@@ -6,7 +6,16 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   // /career-finder is excluded from launch: it still depends on legacy demo score columns.
-  const staticRoutes = ["", "/rankings", "/news", "/compare", "/methodology", "/about"];
+  const staticRoutes = [
+    "",
+    "/rankings",
+    "/career-fit",
+    "/compare",
+    "/methodology",
+    "/methodology/technical",
+    "/methodology/changelog",
+    "/about",
+  ];
   const jobs = await getOccupations();
   // Published articles only: the API's own predicate decides, so draft, review_required
   // and rejected articles cannot reach the sitemap even by mistake.

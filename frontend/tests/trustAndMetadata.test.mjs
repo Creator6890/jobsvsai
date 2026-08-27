@@ -60,3 +60,49 @@ test("No JobPosting schema exists anywhere in the frontend codebase", () => {
   }
   scan(appDir);
 });
+
+test("Technical methodology page exists with verified formulas and canonical metadata", () => {
+  const techPath = path.join(srcRoot, "app", "methodology", "technical", "page.tsx");
+  assert.ok(fs.existsSync(techPath), "methodology/technical/page.tsx must exist");
+  const source = fs.readFileSync(techPath, "utf8");
+
+  assert.match(source, /Technical Methodology & Scoring Architecture/);
+  assert.match(source, /canonical:\s*"https:\/\/jobsvsai\.com\/methodology\/technical"/);
+  assert.match(source, /15 AI Capability Dimensions/);
+  assert.match(source, /CapabilityFit/);
+  assert.match(source, /BottleneckCap/);
+  assert.match(source, /href="\/methodology"/);
+  assert.match(source, /href="\/methodology\/changelog"/);
+});
+
+test("Methodology changelog page exists with public version entries and canonical metadata", () => {
+  const changelogPath = path.join(srcRoot, "app", "methodology", "changelog", "page.tsx");
+  assert.ok(fs.existsSync(changelogPath), "methodology/changelog/page.tsx must exist");
+  const source = fs.readFileSync(changelogPath, "utf8");
+
+  assert.match(source, /JobsVsAI methodology changelog/);
+  assert.match(source, /canonical:\s*"https:\/\/jobsvsai\.com\/methodology\/changelog"/);
+  assert.match(source, /Direction-Aware Semantic System/);
+  assert.match(source, /Multi-Factor Calibration & Proxy Pipeline/);
+  assert.match(source, /Initial Ingestion Baseline/);
+  assert.match(source, /href="\/methodology"/);
+  assert.match(source, /href="\/methodology\/technical"/);
+});
+
+test("Sitemap includes technical methodology, changelog, and career-fit, and excludes preliminary estimates", () => {
+  const sitemapPath = path.join(srcRoot, "app", "sitemap.ts");
+  const source = fs.readFileSync(sitemapPath, "utf8");
+
+  assert.match(source, /"\/methodology\/technical"/);
+  assert.match(source, /"\/methodology\/changelog"/);
+  assert.match(source, /"\/career-fit"/);
+  assert.doesNotMatch(source, /getOccupationEstimate/);
+});
+
+test("News route preserves noindex, follow robots policy", () => {
+  const newsPath = path.join(srcRoot, "app", "news", "page.tsx");
+  const source = fs.readFileSync(newsPath, "utf8");
+
+  assert.match(source, /index:\s*false/);
+  assert.match(source, /follow:\s*true/);
+});
