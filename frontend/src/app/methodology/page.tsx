@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHero, PageShell } from "@/components/PageShell";
 
 export const metadata: Metadata = {
@@ -76,12 +77,25 @@ export default function MethodologyPage() {
   return (
     <PageShell>
       <PageHero
-        dark
-        eyebrow="Transparent by design"
+        eyebrow="Scoring Architecture"
         title="How JobsVsAI scores work."
-        copy="Every score is reproducible from stored inputs, versioned, and explainable down to the individual task. Where the evidence is weak, we say so on the page rather than in a footnote."
+        copy="A calm, evidence-led breakdown of what our scores measure, how they are calculated from task-level data, and where the boundaries of certainty lie."
       />
-      <main>
+      <main className="page-main" id="main-content">
+        <div className="container" style={{ paddingTop: "16px" }}>
+          <div className="card" style={{ padding: "16px 24px", marginBottom: "32px", display: "flex", gap: "20px", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--ink)" }}>Detailed Documentation</span>
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <Link className="text-link" href="/methodology/technical">
+                Read Technical Methodology →
+              </Link>
+              <Link className="text-link" href="/methodology/changelog">
+                View Methodology Changelog →
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Core definitions */}
         <section className="content-section methodology-section">
           <div className="container">
@@ -388,6 +402,14 @@ export default function MethodologyPage() {
                 </div>
               </dl>
             </article>
+            <div style={{ marginTop: "24px", textAlign: "center" }}>
+              <Link className="button secondary" href="/methodology/technical" style={{ marginRight: "12px" }}>
+                Read Technical Methodology →
+              </Link>
+              <Link className="button secondary" href="/methodology/changelog">
+                View Methodology Changelog →
+              </Link>
+            </div>
           </div>
         </section>
 
