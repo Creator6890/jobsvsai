@@ -29,8 +29,8 @@ test("OccupationDetail integrates multi-dimensional verdict, direct answer, and 
 
   assert.match(detailSource, /getOccupationContent/);
   assert.match(detailSource, /direct-answer-card/);
-  assert.match(detailSource, /breadcrumbs/);
-  assert.match(detailSource, /Evidence behind this analysis/);
+  assert.match(detailSource, /<Breadcrumbs/);
+  assert.match(detailSource, /<EvidenceReceipt/);
   assert.match(detailSource, /Questions about \{job\.title\} and AI/);
   assert.match(detailSource, /<ActionPlanSection job=\{job\} \/>/);
 });

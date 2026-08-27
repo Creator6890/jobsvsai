@@ -7,6 +7,7 @@ export function ScoreCard({
   metric,
   tone,
   isEstimated = false,
+  percentileLabel,
 }: {
   label: string;
   value: number;
@@ -14,6 +15,7 @@ export function ScoreCard({
   metric?: string;
   tone?: "violet" | "green" | "red" | "safe" | "moderate" | "risk" | "neutral";
   isEstimated?: boolean;
+  percentileLabel?: string;
 }) {
   const metricKey = metric ?? label;
   const semantics = getScoreSemantics(metricKey, value, { isEstimated });
@@ -27,6 +29,9 @@ export function ScoreCard({
         <small>/100</small>
       </div>
       <span className={semantics.chipClass}>{semantics.label}</span>
+      {percentileLabel && (
+        <div className="score-percentile-label">{percentileLabel}</div>
+      )}
       {description && (
         <>
           <hr />

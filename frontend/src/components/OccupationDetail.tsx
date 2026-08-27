@@ -1,12 +1,15 @@
 import Link from "next/link";
 import type { Occupation } from "@/types/occupation";
 import { AdSlot } from "./AdSlot";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { EvidenceReceipt } from "./EvidenceReceipt";
 import { MetricBar, ScoreCard } from "./ScoreCard";
 import { RelatedOccupationLink } from "./RelatedOccupationLink";
 import { ActionPlanSection } from "./actionPlan/ActionPlanSection";
 import { OccupationViewTracker } from "./analytics/AnalyticsTrackers";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
 import { getOccupationContent } from "@/lib/occupationContent";
+import { formatExposurePercentile, formatReplacementRiskPercentile } from "@/lib/scorePercentiles";
 
 const RELATEDNESS_LABELS: Record<string, string> = {
   "Primary-Short": "Closely related work",
@@ -18,8 +21,22 @@ function relatednessLabel(tier: string): string {
   return RELATEDNESS_LABELS[tier] ?? "Related work";
 }
 
-export function OccupationDetail({ job }: { job: Occupation }) {
+export function OccupationDetail({
+  job,
+  exposurePercentile,
+  replacementRiskPercentile,
+}: {
+  job: Occupation;
+  exposurePercentile?: number;
+  replacementRiskPercentile?: number;
+}) {
   const content = getOccupationContent(job);
+
+  const breadcrumbItems = [
+    { name: "Home", item: "/" },
+    { name: "Occupations", item: "/rankings" },
+    { name: job.title, item: `/jobs/${job.slug}` },
+  ];
 
   return (
     <>
@@ -31,17 +48,7 @@ export function OccupationDetail({ job }: { job: Occupation }) {
 
       {/* Breadcrumbs */}
       <div className="container" style={{ paddingTop: "16px" }}>
-        <nav className="breadcrumbs" aria-label="Breadcrumbs" style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-          <Link href="/" className="text-link" style={{ minHeight: "auto", color: "var(--muted)" }}>
-            Home
-          </Link>
-          <span style={{ margin: "0 8px" }} aria-hidden="true">/</span>
-          <span>{job.category}</span>
-          <span style={{ margin: "0 8px" }} aria-hidden="true">/</span>
-          <span aria-current="page" style={{ color: "var(--ink)", fontWeight: 700 }}>
-            {job.title}
-          </span>
-        </nav>
+        <Breadcrumbs items={breadcrumbItems} />
       </div>
 
       {/* Direct Answer Hero Callout */}
@@ -62,9 +69,21 @@ export function OccupationDetail({ job }: { job: Occupation }) {
       {/* Headline Scores */}
       <section className="score-section">
         <div className="container score-grid">
-          <ScoreCard label="AI Exposure" value={job.aiExposure} metric="ai_exposure" description="How much of this occupation's daily workload can be materially assisted or executed by current AI systems." />
+          <ScoreCard
+            label="AI Exposure"
+            value={job.aiExposure}
+            metric="ai_exposure"
+            percentileLabel={exposurePercentile !== undefined ? formatExposurePercentile(exposurePercentile) : undefined}
+            description="How much of this occupation's daily workload can be materially assisted or executed by current AI systems."
+          />
           <div className="score-card-stack">
-            <ScoreCard label="Replacement Risk" value={job.replacementRisk} metric="replacement_risk" description="Relative structural vulnerability of the human role after accounting for real-world friction and constraints." />
+            <ScoreCard
+              label="Replacement Risk"
+              value={job.replacementRisk}
+              metric="replacement_risk"
+              percentileLabel={replacementRiskPercentile !== undefined ? formatReplacementRiskPercentile(replacementRiskPercentile) : undefined}
+              description="Relative structural vulnerability of the human role after accounting for real-world friction and constraints."
+            />
             <p className="score-footnote">
               Includes provisional estimates for AI adoption pressure and labour-market resilience.{" "}
               <Link className="text-link" href="/methodology#provisional-factors">
@@ -289,31 +308,18 @@ export function OccupationDetail({ job }: { job: Occupation }) {
       </section>
 
       {/* Evidence Receipt */}
-      <section className="source-strip">
-        <div className="container">
-          <div>
-            <strong>Evidence behind this analysis</strong>
-            <p>
-              O*NET 30.3 occupational data evaluated through the JobsVsAI Capability Index and structural constraints model ({job.modelVersion}).
-            </p>
-          </div>
-          <div>
-            <span className="metric-label">Confidence</span>
-            <strong>{Math.round(job.confidence)}/100</strong>
-          </div>
-          <div>
-            <span className="metric-label">Task Coverage</span>
-            <strong>{Math.round(job.weightedTaskCoverage)}%</strong>
-          </div>
-          <div>
-            <span className="metric-label">Calculated</span>
-            <strong>{new Date(job.updatedAt).toLocaleDateString("en", { dateStyle: "medium" })}</strong>
-          </div>
-          <Link className="text-link" href="/methodology">
-            Read methodology →
-          </Link>
-        </div>
-      </section>
+      <div className="container">
+        <EvidenceReceipt
+          status="verified"
+          onetVersion="O*NET 30.3"
+          capabilityModel="15 Structural Capability Dimensions"
+          scoringModel={job.modelVersion}
+          taskCount={job.tasks.length}
+          coveragePercent={job.weightedTaskCoverage}
+          confidenceScore={job.confidence}
+          updatedAt={job.updatedAt}
+        />
+      </div>
 
       {/* Occupation FAQ Section */}
       <section className="section" aria-labelledby="occupation-faq-heading">

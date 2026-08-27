@@ -17,8 +17,8 @@ test("Verified page structure remains intact and free of preliminary styles", ()
   const verifiedSource = fs.readFileSync(path.join(srcRoot, "components", "OccupationDetail.tsx"), "utf8");
   assert.match(verifiedSource, /className="score-section"/);
   assert.match(verifiedSource, /className="container score-grid"/);
-  assert.match(verifiedSource, /<ScoreCard label="AI Exposure"/);
-  assert.match(verifiedSource, /<ScoreCard label="Replacement Risk"/);
+  assert.match(verifiedSource, /<ScoreCard\s+[\s\S]*?label="AI Exposure"/);
+  assert.match(verifiedSource, /<ScoreCard\s+[\s\S]*?label="Replacement Risk"/);
   assert.match(verifiedSource, /className="card task-table"/);
   assert.match(verifiedSource, /<ActionPlanSection/);
   assert.match(verifiedSource, /Related occupations/);
@@ -67,7 +67,7 @@ test("EstimatedOccupationDetail reuses verified containers, grids, and card sizi
   assert.match(estSource, /<section className="content-section">/);
   assert.match(estSource, /<div className="card estimate-evidence-card">/);
   assert.match(estSource, /<div className="card estimate-pending-card">/);
-  assert.match(estSource, /<section className="source-strip">/);
+  assert.match(estSource, /<EvidenceReceipt/);
 });
 
 // ---------------------------------------------------------------------------
