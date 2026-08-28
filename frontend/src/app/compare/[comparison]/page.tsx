@@ -5,6 +5,7 @@ import { CareerComparison } from "@/components/CareerComparison";
 import { CompareSelector } from "@/components/CompareSelector";
 import { PageHero, PageShell } from "@/components/PageShell";
 import { getOccupation, getOccupations } from "@/lib/api";
+import { isComparisonAllowlisted } from "@/lib/comparisonAllowlist";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,13 @@ export async function generateMetadata({ params }: PageProps<"/compare/[comparis
   if (!a || !b) {
     return { title: "Career Comparison" };
   }
+
+  const isAllowlisted = isComparisonAllowlisted(comparison);
+
   return {
     title: `${a.title} vs ${b.title}: Which Career Is Safer From AI?`,
     description: `Compare ${a.title} (AI Exposure ${a.aiExposure}/100, Replacement Risk ${a.replacementRisk}/100) and ${b.title} (AI Exposure ${b.aiExposure}/100, Replacement Risk ${b.replacementRisk}/100). See task automation and human advantages side by side.`,
+    robots: isAllowlisted ? { index: true, follow: true } : { index: false, follow: true },
     alternates: {
       canonical: `https://jobsvsai.com/compare/${comparison}`,
     },

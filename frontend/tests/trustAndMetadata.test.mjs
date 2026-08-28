@@ -89,13 +89,17 @@ test("Methodology changelog page exists with public version entries and canonica
   assert.match(source, /href="\/methodology\/technical"/);
 });
 
-test("Sitemap includes technical methodology, changelog, and career-fit, and excludes preliminary estimates", () => {
+test("Sitemap includes technical methodology, changelog, career-fit, career fields, research, and allowlisted comparisons, and excludes preliminary estimates", () => {
   const sitemapPath = path.join(srcRoot, "app", "sitemap.ts");
   const source = fs.readFileSync(sitemapPath, "utf8");
 
   assert.match(source, /"\/methodology\/technical"/);
   assert.match(source, /"\/methodology\/changelog"/);
   assert.match(source, /"\/career-fit"/);
+  assert.match(source, /"\/research"/);
+  assert.match(source, /CANONICAL_CAREER_FIELDS/);
+  assert.match(source, /getAllResearchArticles/);
+  assert.match(source, /getAllowlistedComparisons/);
   assert.doesNotMatch(source, /getOccupationEstimate/);
 });
 

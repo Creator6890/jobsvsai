@@ -11,6 +11,7 @@ import { getScoreSemantics } from "@/lib/scoreSemantics";
 import { getOccupationContent } from "@/lib/occupationContent";
 import { formatExposurePercentile, formatReplacementRiskPercentile } from "@/lib/scorePercentiles";
 import { getCanonicalField, getCanonicalFieldSlug } from "@/lib/careerFields";
+import { getResearchArticle } from "@/lib/researchArticles";
 
 const RELATEDNESS_LABELS: Record<string, string> = {
   "Primary-Short": "Closely related work",
@@ -20,6 +21,19 @@ const RELATEDNESS_LABELS: Record<string, string> = {
 
 function relatednessLabel(tier: string): string {
   return RELATEDNESS_LABELS[tier] ?? "Related work";
+}
+
+function getRecommendedResearchArticle(exposure: number, replacementRisk: number) {
+  if (exposure - replacementRisk >= 20) {
+    return getResearchArticle("ai-exposure-vs-replacement-risk");
+  }
+  if (replacementRisk >= 67) {
+    return getResearchArticle("what-to-do-if-your-job-has-high-ai-risk");
+  }
+  if (replacementRisk <= 33) {
+    return getResearchArticle("which-jobs-are-safest-from-ai");
+  }
+  return getResearchArticle("why-ai-automates-tasks-before-whole-jobs");
 }
 
 export function OccupationDetail({
@@ -35,6 +49,7 @@ export function OccupationDetail({
 
   const fieldSlug = getCanonicalFieldSlug(job.slug, job.category);
   const fieldDef = getCanonicalField(fieldSlug);
+  const recommendedArticle = getRecommendedResearchArticle(job.aiExposure, job.replacementRisk);
 
   const breadcrumbItems = [
     { name: "Home", item: "/" },
@@ -310,6 +325,31 @@ export function OccupationDetail({
           )}
         </div>
       </section>
+
+      {/* Contextual Research Explainer */}
+      {recommendedArticle && (
+        <section className="section" aria-labelledby="research-explainer-heading" style={{ paddingTop: 0, paddingBottom: "24px" }}>
+          <div className="container">
+            <div className="card" style={{ padding: "24px 28px", background: "linear-gradient(135deg, #fbfaff, #fff)", borderColor: "var(--violet-soft)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
+                <span className="section-kicker">Related Research & Evidence</span>
+                <span className="chip" style={{ fontSize: "0.72rem" }}>{recommendedArticle.readTime}</span>
+              </div>
+              <h3 id="research-explainer-heading" style={{ fontSize: "1.15rem", margin: "4px 0 8px" }}>
+                <Link href={`/research/${recommendedArticle.slug}`} style={{ color: "var(--ink)", textDecoration: "none" }}>
+                  {recommendedArticle.title} →
+                </Link>
+              </h3>
+              <p style={{ fontSize: "0.92rem", color: "var(--text)", lineHeight: 1.6, margin: "0 0 16px" }}>
+                {recommendedArticle.description}
+              </p>
+              <Link href={`/research/${recommendedArticle.slug}`} className="button secondary small">
+                Read Research Explainer →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Evidence Receipt */}
       <div className="container">
