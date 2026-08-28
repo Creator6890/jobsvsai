@@ -72,10 +72,12 @@ export default async function Home() {
             <OccupationSearch popularOccupations={occupations.slice(0, 3)} />
             <div className="hero-actions-row">
               <Link className="button secondary" href="/rankings">
-                Explore AI Job Risk Rankings →
+                <span>Explore AI Job Risk Rankings</span>
+                <span aria-hidden="true">→</span>
               </Link>
               <Link className="button secondary" href="/career-fit">
-                Take Career Fit Assessment →
+                <span>Take Career Fit Assessment</span>
+                <span aria-hidden="true">→</span>
               </Link>
             </div>
 

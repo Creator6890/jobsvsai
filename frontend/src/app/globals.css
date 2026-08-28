@@ -262,6 +262,8 @@
   .autocomplete { top: 139px; }
   .popular-searches { justify-content: flex-start; }
   .popular-searches span { width: 100%; }
+  .hero-actions-row { flex-direction: column; align-items: stretch; width: 100%; max-width: 440px; margin-inline: auto; gap: 10px; }
+  .hero-actions-row .button { width: 100%; box-sizing: border-box; justify-content: center; text-align: center; white-space: nowrap; }
   .analysis-state { padding: 25px 18px; flex-direction: column; text-align: center; }
   .search-result-card { padding: var(--pad-card-sm); }
   .result-heading { align-items: flex-start; }
