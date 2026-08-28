@@ -87,20 +87,13 @@ export default function ResearchHubPage() {
                   </p>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
+                <div className="research-grid">
                   {clusterArticles.map((article) => (
                     <article
                       key={article.slug}
-                      className="card"
-                      style={{
-                        padding: "28px",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        transition: "transform 0.15s ease, border-color 0.15s ease",
-                      }}
+                      className="card research-article-card"
                     >
-                      <div>
+                      <div className="research-card-content">
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                           <span className="chip" style={{ fontSize: "0.75rem" }}>
                             {article.readTime}
@@ -121,13 +114,13 @@ export default function ResearchHubPage() {
                         </p>
                       </div>
 
-                      <div>
+                      <div className="research-card-action">
                         <Link
                           href={`/research/${article.slug}`}
-                          className="button secondary small"
-                          style={{ display: "inline-block" }}
+                          className="button secondary research-card-cta"
                         >
-                          Read Research Explainer →
+                          <span>Read Research Explainer</span>
+                          <span aria-hidden="true" className="research-cta-arrow">→</span>
                         </Link>
                       </div>
                     </article>

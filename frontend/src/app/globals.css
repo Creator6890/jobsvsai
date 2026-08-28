@@ -966,3 +966,69 @@
 .search-unavailable-related { margin: 0.35rem 0 0; padding-left: 1.1rem; }
 .search-unavailable-related li { margin: 0.15rem 0; }
 .search-unavailable-related a { text-decoration: underline; }
+
+/* Research Hub Grid & Card CTA Alignment */
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.research-article-card {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.research-article-card:hover {
+  border-color: var(--violet-soft);
+  transform: translateY(-2px);
+}
+
+.research-card-content {
+  flex: 1 0 auto;
+}
+
+.research-card-action {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.research-card-cta {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.research-card-cta .research-cta-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.research-card-cta:hover .research-cta-arrow {
+  transform: translateX(2px);
+}
+
+@media (max-width: 640px) {
+  .research-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .research-article-card {
+    padding: 20px;
+  }
+}
