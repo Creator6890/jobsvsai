@@ -80,3 +80,18 @@ test("calculateFieldAnalytics - computes accurate aggregates on verified occupat
   assert.equal(result.analytics.riskDistribution.moderate, 1);
   assert.equal(result.analytics.riskDistribution.high, 1);
 });
+
+test("Career Field Breadcrumbs & Links - verified routes and destinations", () => {
+  const accountantFieldSlug = getCanonicalFieldSlug("accountant", "business-finance");
+  const field = getCanonicalField(accountantFieldSlug);
+  assert.ok(field);
+  assert.equal(field.slug, "business-finance");
+  assert.equal(field.name, "Business & Finance");
+
+  const techFieldSlug = getCanonicalFieldSlug("software-developer", "technology-data");
+  const techField = getCanonicalField(techFieldSlug);
+  assert.ok(techField);
+  assert.equal(techField.slug, "technology-data");
+  assert.equal(techField.name, "Technology & Data");
+});
+

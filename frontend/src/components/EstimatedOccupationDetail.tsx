@@ -5,6 +5,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import { EvidenceReceipt } from "./EvidenceReceipt";
 import { MetricBar } from "./ScoreCard";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
+import { getCanonicalField, getCanonicalFieldSlug } from "@/lib/careerFields";
 
 /** Estimated occupation detail page.
  *
@@ -24,9 +25,12 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
   const exposureSemantics = getScoreSemantics("ai_exposure", job.aiExposure, { isEstimated: true });
   const riskSemantics = getScoreSemantics("replacement_risk", job.replacementRisk, { isEstimated: true });
 
+  const fieldSlug = getCanonicalFieldSlug(job.slug, job.category);
+  const fieldDef = getCanonicalField(fieldSlug);
+
   const breadcrumbItems = [
     { name: "Home", item: "/" },
-    { name: "Occupations", item: "/rankings" },
+    ...(fieldDef ? [{ name: fieldDef.name, item: `/careers/${fieldDef.slug}` }] : [{ name: "Occupations", item: "/rankings" }]),
     { name: job.title, item: `/jobs/${job.slug}` },
   ];
 

@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { getOccupations } from "@/lib/api";
 import type { Occupation } from "@/types/occupation";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
+import { CANONICAL_CAREER_FIELDS, getCanonicalFieldSlug } from "@/lib/careerFields";
 
 export const dynamic = "force-dynamic";
 
@@ -39,29 +40,18 @@ export default async function Home() {
 
   const totalTasks = occupations.reduce((acc, curr) => acc + (curr.tasks?.length || 0), 0);
 
-  // Field counts for directory preview
-  const fieldDefinitions = [
-    { title: "Technology & Data", slug: "technology-data", match: (c: string) => c.includes("Technology") || c.includes("Data") },
-    { title: "Business & Finance", slug: "business-finance", match: (c: string) => c.includes("Business") || c.includes("Finance") },
-    { title: "Healthcare", slug: "healthcare", match: (c: string) => c.includes("Healthcare") },
-    { title: "Creative & Media", slug: "creative-media", match: (c: string) => c.includes("Creative") || c.includes("Media") },
-    { title: "Education & Training", slug: "education", match: (c: string) => c.includes("Education") || c.includes("Training") },
-    { title: "Legal", slug: "legal", match: (c: string) => c.includes("Legal") },
-    { title: "Management & Leadership", slug: "management", match: (c: string) => c.includes("Management") || c.includes("Leadership") },
-    { title: "Sales", slug: "sales", match: (c: string) => c.includes("Sales") },
-    { title: "Engineering & Architecture", slug: "engineering", match: (c: string) => c.includes("Engineering") || c.includes("Architecture") },
-    { title: "Skilled Trades", slug: "skilled-trades", match: (c: string) => c.includes("Installation") || c.includes("Construction") || c.includes("Repair") },
-    { title: "Transport & Logistics", slug: "transportation", match: (c: string) => c.includes("Transport") || c.includes("Logistics") },
-    { title: "Manufacturing & Production", slug: "production", match: (c: string) => c.includes("Manufacturing") || c.includes("Production") },
-  ];
+  // Field counts for directory preview from canonical taxonomy
+  const fieldCounts: Record<string, number> = {};
+  for (const job of occupations) {
+    const fSlug = getCanonicalFieldSlug(job.slug, job.category);
+    fieldCounts[fSlug] = (fieldCounts[fSlug] || 0) + 1;
+  }
 
-  const fieldStats = fieldDefinitions.map((fd) => {
-    const matching = occupations.filter((o) => fd.match(o.category));
-    return {
-      ...fd,
-      count: matching.length,
-    };
-  });
+  const fieldStats = Object.values(CANONICAL_CAREER_FIELDS).map((field) => ({
+    slug: field.slug,
+    name: field.name,
+    count: fieldCounts[field.slug] || 0,
+  }));
 
   return (
     <>
@@ -237,12 +227,17 @@ export default async function Home() {
             </div>
             <div className="career-grid" style={{ marginTop: "20px" }}>
               {fieldStats.map((field) => (
-                <article className="card" key={field.slug} style={{ padding: "20px" }}>
-                  <h3>{field.title}</h3>
+                <Link
+                  href={`/careers/${field.slug}`}
+                  key={field.slug}
+                  className="card career-field-link-card"
+                  style={{ padding: "20px", textDecoration: "none", color: "inherit", display: "block" }}
+                >
+                  <h3 style={{ fontSize: "1.05rem", color: "var(--ink)", margin: 0 }}>{field.name}</h3>
                   <p className="muted" style={{ fontSize: "0.85rem", marginTop: "6px" }}>
-                    {field.count} verified {field.count === 1 ? "occupation" : "occupations"}
+                    {field.count} verified {field.count === 1 ? "occupation" : "occupations"} →
                   </p>
-                </article>
+                </Link>
               ))}
             </div>
             <div style={{ marginTop: "24px", textAlign: "center" }}>

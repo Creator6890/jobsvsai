@@ -10,6 +10,7 @@ import { OccupationViewTracker } from "./analytics/AnalyticsTrackers";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
 import { getOccupationContent } from "@/lib/occupationContent";
 import { formatExposurePercentile, formatReplacementRiskPercentile } from "@/lib/scorePercentiles";
+import { getCanonicalField, getCanonicalFieldSlug } from "@/lib/careerFields";
 
 const RELATEDNESS_LABELS: Record<string, string> = {
   "Primary-Short": "Closely related work",
@@ -32,9 +33,12 @@ export function OccupationDetail({
 }) {
   const content = getOccupationContent(job);
 
+  const fieldSlug = getCanonicalFieldSlug(job.slug, job.category);
+  const fieldDef = getCanonicalField(fieldSlug);
+
   const breadcrumbItems = [
     { name: "Home", item: "/" },
-    { name: "Occupations", item: "/rankings" },
+    ...(fieldDef ? [{ name: fieldDef.name, item: `/careers/${fieldDef.slug}` }] : [{ name: "Occupations", item: "/rankings" }]),
     { name: job.title, item: `/jobs/${job.slug}` },
   ];
 

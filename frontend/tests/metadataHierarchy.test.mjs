@@ -44,12 +44,12 @@ test("Metadata Hierarchy - No route source files contain duplicate brand suffixe
   scanDir(appDir);
 });
 
-test("Homepage Career Field cards are non-navigational with a single Rankings CTA", () => {
+test("Homepage Career Field cards link to canonical career field routes", () => {
   const homePath = path.join(srcRoot, "app", "page.tsx");
   const homeSource = fs.readFileSync(homePath, "utf8");
 
-  // In the career-grid section, cards should not contain <Link>
   assert.match(homeSource, /className="career-grid"/);
+  assert.match(homeSource, /href=\{`\/careers\/\$\{field\.slug\}`\}/);
   assert.match(homeSource, /Explore AI job risk rankings →/);
   assert.match(homeSource, /href="\/rankings"/);
   assert.match(homeSource, /Occupation tasks assessed/);
