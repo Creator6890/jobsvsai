@@ -16,6 +16,7 @@ export function SiteFooter() {
           <div className="footer-group">
             <span className="footer-group-title">Explore</span>
             <nav aria-label="Explore navigation">
+              <Link href="/explore">Occupation Map</Link>
               <Link href="/careers">Career Fields</Link>
               <Link href="/rankings">Rankings</Link>
               <Link href="/compare">Compare Careers</Link>
