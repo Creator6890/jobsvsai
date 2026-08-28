@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState, useRef } from "react";
+import { useId, useMemo, useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
@@ -17,26 +17,53 @@ export interface ExplorerOccupation {
   confidence?: number;
 }
 
+interface SearchSuggestionItem {
+  slug: string;
+  title: string;
+  category: string;
+  isPreliminary: boolean;
+  aiExposure: number;
+  replacementRisk: number;
+  confidenceLabel?: string;
+}
+
+interface ApiVerifiedResult {
+  slug: string;
+  title: string;
+  category: string;
+  aiExposure: number;
+  replacementRisk: number;
+}
+
+interface ApiEstimatedResult {
+  slug: string;
+  title: string;
+  category: string;
+  aiExposure: number;
+  replacementRisk: number;
+  confidenceLabel?: string;
+}
+
 const FIELD_COLORS: Record<string, string> = {
   "business-finance": "#3b82f6",
   "technology-data": "#6366f1",
   "office-administration": "#64748b",
-  "healthcare": "#06b6d4",
-  "science-research": "#8b5cf6",
+  "healthcare": "#0891b2",
+  "science-research": "#7c3aed",
   "engineering": "#0284c7",
-  "education": "#10b981",
-  "community-social-services": "#14b8a6",
+  "education": "#059669",
+  "community-social-services": "#0d9488",
   "legal": "#d97706",
   "management": "#4f46e5",
-  "sales": "#f59e0b",
-  "creative-media": "#ec4899",
-  "protective-services": "#ef4444",
-  "food-hospitality": "#f97316",
-  "personal-care-services": "#a855f7",
-  "agriculture-environment": "#84cc16",
+  "sales": "#ea580c",
+  "creative-media": "#db2777",
+  "protective-services": "#dc2626",
+  "food-hospitality": "#e11d48",
+  "personal-care-services": "#9333ea",
+  "agriculture-environment": "#65a30d",
   "skilled-trades": "#78716c",
-  "transportation": "#0ea5e9",
-  "production": "#6b7280",
+  "transportation": "#2563eb",
+  "production": "#475569",
 };
 
 function getFieldColor(fieldSlug: string): string {
@@ -45,18 +72,18 @@ function getFieldColor(fieldSlug: string): string {
 
 function getDynamicInterpretation(aiExposure: number, replacementRisk: number): string {
   if (aiExposure >= 60 && replacementRisk < 50) {
-    return "High AI capability overlap, but human, regulatory, or physical moats significantly buffer replacement pressure.";
+    return "High capability overlap with AI, but physical constraints, accountability, or regulatory factors significantly buffer structural replacement pressure.";
   }
   if (aiExposure >= 60 && replacementRisk >= 60) {
-    return "High exposure coupled with high structural vulnerability across repetitive or routine digital workflows.";
+    return "High capability exposure coupled with elevated structural replacement vulnerability across standardized digital workflows.";
   }
   if (aiExposure < 40 && replacementRisk < 40) {
-    return "Low AI overlap; physical execution, unpredictable environments, or manual dexterity remain dominant.";
+    return "Lower AI capability overlap; physical execution, unpredictable environments, or manual tradecraft remain primary.";
   }
   if (aiExposure < 50 && replacementRisk >= 50) {
-    return "Moderate technical capability overlap with elevated structural vulnerability from commercial consolidation.";
+    return "Lower overall AI capability overlap, but specialized structural pressure or commercial consolidation in specific task areas.";
   }
-  return "Balanced profile where AI accelerates specific tasks while human supervision governs final outcomes.";
+  return "Moderate task capability overlap balanced with structural oversight and human responsibility.";
 }
 
 export function OccupationMapExplorer({
@@ -69,15 +96,103 @@ export function OccupationMapExplorer({
   const fieldSelectId = useId();
   const riskSelectId = useId();
   const exposureSelectId = useId();
+
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [apiSuggestions, setApiSuggestions] = useState<SearchSuggestionItem[]>([]);
   const [selectedField, setSelectedField] = useState<string>("all");
   const [selectedRiskBand, setSelectedRiskBand] = useState<string>("all");
   const [selectedExposureBand, setSelectedExposureBand] = useState<string>("all");
+
   const [hoveredJob, setHoveredJob] = useState<ExplorerOccupation | null>(null);
   const [selectedJob, setSelectedJob] = useState<ExplorerOccupation | null>(null);
+  const [selectedPreliminaryJob, setSelectedPreliminaryJob] = useState<SearchSuggestionItem | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  // SVG Geometry Constants (Clean 4:3 near-square aspect ratio)
+  const SVG_WIDTH = 760;
+  const SVG_HEIGHT = 560;
+  const PAD_LEFT = 55;
+  const PAD_RIGHT = 30;
+  const PAD_TOP = 30;
+  const PAD_BOTTOM = 55;
+
+  const PLOT_WIDTH = SVG_WIDTH - PAD_LEFT - PAD_RIGHT; // 675
+  const PLOT_HEIGHT = SVG_HEIGHT - PAD_TOP - PAD_BOTTOM; // 475
+
+  const getSvgX = useCallback(
+    (exposure: number) => PAD_LEFT + (Math.max(0, Math.min(100, exposure)) / 100) * PLOT_WIDTH,
+    [PAD_LEFT, PLOT_WIDTH]
+  );
+  const getSvgY = useCallback(
+    (risk: number) => PAD_TOP + PLOT_HEIGHT - (Math.max(0, Math.min(100, risk)) / 100) * PLOT_HEIGHT,
+    [PAD_TOP, PLOT_HEIGHT]
+  );
+
+  // Search V2 Query with Debounce
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/occupations/search/resolve?q=${encodeURIComponent(q)}`);
+        if (!res.ok) throw new Error("Search failed");
+        const data = await res.json();
+
+        const suggestions: SearchSuggestionItem[] = [];
+        const resultOrder: string[] = data.resultOrder || [];
+        const verifiedMap = new Map<string, ApiVerifiedResult>(
+          (data.results || []).map((r: ApiVerifiedResult) => [r.slug, r])
+        );
+        const estimatedMap = new Map<string, ApiEstimatedResult>(
+          (data.estimatedResults || []).map((r: ApiEstimatedResult) => [r.slug, r])
+        );
+
+        for (const slug of resultOrder) {
+          const verified = verifiedMap.get(slug);
+          const estimated = estimatedMap.get(slug);
+
+          if (verified) {
+            suggestions.push({
+              slug: verified.slug,
+              title: verified.title,
+              category: verified.category,
+              isPreliminary: false,
+              aiExposure: Math.round(Number(verified.aiExposure)),
+              replacementRisk: Math.round(Number(verified.replacementRisk)),
+            });
+          } else if (estimated) {
+            suggestions.push({
+              slug: estimated.slug,
+              title: estimated.title,
+              category: estimated.category,
+              isPreliminary: true,
+              aiExposure: Math.round(Number(estimated.aiExposure)),
+              replacementRisk: Math.round(Number(estimated.replacementRisk)),
+              confidenceLabel: estimated.confidenceLabel,
+            });
+          }
+          if (suggestions.length >= 7) break;
+        }
+
+        setApiSuggestions(suggestions);
+      } catch (err) {
+        console.error("Search error:", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Filter occupations
   const filteredOccupations = useMemo(() => {
@@ -100,26 +215,6 @@ export function OccupationMapExplorer({
     });
   }, [occupations, selectedField, selectedRiskBand, selectedExposureBand]);
 
-  // Autocomplete search suggestions
-  const searchSuggestions = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return [];
-    return occupations
-      .filter((j) => j.title.toLowerCase().includes(q) || j.slug.toLowerCase().includes(q))
-      .slice(0, 6);
-  }, [occupations, searchQuery]);
-
-  // Highlighted matching jobs from search
-  const searchMatchedSlugs = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return new Set<string>();
-    return new Set(
-      occupations
-        .filter((j) => j.title.toLowerCase().includes(q) || j.slug.toLowerCase().includes(q))
-        .map((j) => j.slug)
-    );
-  }, [occupations, searchQuery]);
-
   const hasActiveFilters =
     selectedField !== "all" ||
     selectedRiskBand !== "all" ||
@@ -132,24 +227,13 @@ export function OccupationMapExplorer({
     setSelectedExposureBand("all");
     setSearchQuery("");
     setSelectedJob(null);
+    setSelectedPreliminaryJob(null);
     setHoveredJob(null);
+    setApiSuggestions([]);
   };
 
-  // SVG Dimension Constants
-  const SVG_WIDTH = 800;
-  const SVG_HEIGHT = 540;
-  const PAD_LEFT = 60;
-  const PAD_RIGHT = 30;
-  const PAD_TOP = 30;
-  const PAD_BOTTOM = 50;
-
-  const PLOT_WIDTH = SVG_WIDTH - PAD_LEFT - PAD_RIGHT; // 710
-  const PLOT_HEIGHT = SVG_HEIGHT - PAD_TOP - PAD_BOTTOM; // 460
-
-  const getSvgX = (exposure: number) => PAD_LEFT + (Math.max(0, Math.min(100, exposure)) / 100) * PLOT_WIDTH;
-  const getSvgY = (risk: number) => PAD_TOP + PLOT_HEIGHT - (Math.max(0, Math.min(100, risk)) / 100) * PLOT_HEIGHT;
-
   const handleDotClick = (job: ExplorerOccupation) => {
+    setSelectedPreliminaryJob(null);
     setSelectedJob(job);
     if (typeof window !== "undefined" && window.innerWidth > 900) {
       router.push(`/jobs/${job.slug}`);
@@ -173,15 +257,57 @@ export function OccupationMapExplorer({
     setTooltipPos(null);
   };
 
-  // Select job from search
-  const handleSelectSearchJob = (job: ExplorerOccupation) => {
-    setSelectedJob(job);
-    setHoveredJob(job);
-    setSearchQuery(job.title);
-    setIsSearchFocused(false);
+  // Robust Nearest-Point Touch / Click on SVG Canvas
+  const handleSvgCanvasClick = (e: React.MouseEvent<SVGSVGElement> | React.TouchEvent<SVGSVGElement>) => {
+    if (!svgRef.current) return;
+    const svgRect = svgRef.current.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+
+    const xRatio = (clientX - svgRect.left) / svgRect.width;
+    const yRatio = (clientY - svgRect.top) / svgRect.height;
+
+    const svgClickX = xRatio * SVG_WIDTH;
+    const svgClickY = yRatio * SVG_HEIGHT;
+
+    // Find nearest point within 26px radius in SVG space
+    let minDistance = 26;
+    let closestJob: ExplorerOccupation | null = null;
+
+    for (const job of filteredOccupations) {
+      const dotX = getSvgX(job.aiExposure);
+      const dotY = getSvgY(job.replacementRisk);
+      const dist = Math.sqrt(Math.pow(svgClickX - dotX, 2) + Math.pow(svgClickY - dotY, 2));
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestJob = job;
+      }
+    }
+
+    if (closestJob) {
+      setSelectedPreliminaryJob(null);
+      setSelectedJob(closestJob);
+      setHoveredJob(closestJob);
+    }
   };
 
-  const activeJob = hoveredJob || selectedJob;
+  // Select item from Search V2 suggestions
+  const handleSelectSuggestion = (item: SearchSuggestionItem) => {
+    setSearchQuery(item.title);
+    setIsSearchFocused(false);
+
+    if (item.isPreliminary) {
+      setSelectedJob(null);
+      setSelectedPreliminaryJob(item);
+    } else {
+      setSelectedPreliminaryJob(null);
+      const matched = occupations.find((o) => o.slug === item.slug);
+      if (matched) {
+        setSelectedJob(matched);
+        setHoveredJob(matched);
+      }
+    }
+  };
 
   return (
     <div className="map-explorer-wrapper" ref={containerRef}>
@@ -196,39 +322,68 @@ export function OccupationMapExplorer({
               id={searchInputId}
               type="search"
               className="input map-search-input"
-              placeholder="Search occupation (e.g. Accountant, Software Developer)..."
+              placeholder="Search verified occupation (e.g. Accountant, Teacher)..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchQuery(val);
+                if (val.trim().length < 2) {
+                  setApiSuggestions([]);
+                  setIsSearching(false);
+                }
+              }}
               onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 280)}
               autoComplete="off"
             />
             {searchQuery && (
               <button
                 type="button"
                 className="map-search-clear"
-                onClick={() => setSearchQuery("")}
+                onClick={() => {
+                  setSearchQuery("");
+                  setApiSuggestions([]);
+                  setSelectedJob(null);
+                  setSelectedPreliminaryJob(null);
+                }}
                 aria-label="Clear search"
               >
                 ×
               </button>
             )}
 
-            {/* Suggestions dropdown */}
-            {(isSearchFocused || searchQuery.trim().length > 0) && searchSuggestions.length > 0 && (
+            {/* Search V2 Dropdown Suggestions */}
+            {(isSearchFocused || searchQuery.trim().length >= 2) && (
               <ul className="map-search-dropdown" role="listbox">
-                {searchSuggestions.map((job) => (
+                {isSearching && apiSuggestions.length === 0 && (
+                  <li className="map-search-status muted small" style={{ padding: "10px 14px" }}>
+                    Searching occupations...
+                  </li>
+                )}
+                {!isSearching && apiSuggestions.length === 0 && searchQuery.trim().length >= 2 && (
+                  <li className="map-search-status muted small" style={{ padding: "10px 14px" }}>
+                    No matching occupations found.
+                  </li>
+                )}
+                {apiSuggestions.map((item) => (
                   <li
-                    key={job.slug}
+                    key={item.slug}
                     role="option"
-                    aria-selected={selectedJob?.slug === job.slug}
+                    aria-selected={selectedJob?.slug === item.slug || selectedPreliminaryJob?.slug === item.slug}
                     className="map-search-option"
-                    onMouseDown={() => handleSelectSearchJob(job)}
-                    onClick={() => handleSelectSearchJob(job)}
+                    onMouseDown={() => handleSelectSuggestion(item)}
+                    onClick={() => handleSelectSuggestion(item)}
                   >
-                    <span className="option-title">{job.title}</span>
+                    <div className="option-main">
+                      <span className="option-title">{item.title}</span>
+                      {item.isPreliminary ? (
+                        <span className="badge-preliminary-tag">Preliminary</span>
+                      ) : (
+                        <span className="badge-verified-tag">Verified</span>
+                      )}
+                    </div>
                     <span className="option-meta">
-                      Exp: {job.aiExposure} | Risk: {job.replacementRisk}
+                      Exp: {item.aiExposure} | Risk: {item.replacementRisk}
                     </span>
                   </li>
                 ))}
@@ -313,7 +468,7 @@ export function OccupationMapExplorer({
           Showing <strong>{filteredOccupations.length}</strong> of {occupations.length} verified occupations
         </span>
         {hasActiveFilters && (
-          <span className="muted small"> (Filtered dataset active)</span>
+          <span className="muted small"> (Filtered cohort active)</span>
         )}
       </div>
 
@@ -321,35 +476,36 @@ export function OccupationMapExplorer({
       <div className="map-chart-card card">
         <div className="map-svg-container">
           <svg
+            ref={svgRef}
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
             className="map-svg"
             role="img"
             aria-label="2D Scatter plot comparing AI Exposure on the X-axis and Replacement Risk on the Y-axis across occupations"
+            onClick={handleSvgCanvasClick}
           >
             <defs>
-              {/* Drop shadow filter for active point */}
               <filter id="dot-shadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.25" />
+                <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.28" />
               </filter>
             </defs>
 
             {/* Quadrant Background Tints */}
-            {/* Top-Right: High Exposure / High Risk */}
+            {/* Top-Right: High Exposure / Elevated Risk */}
             <rect
               x={getSvgX(50)}
               y={getSvgY(100)}
               width={PLOT_WIDTH / 2}
               height={PLOT_HEIGHT / 2}
-              fill="rgba(239, 68, 68, 0.035)"
+              fill="rgba(239, 68, 68, 0.032)"
               className="quadrant-rect"
             />
-            {/* Bottom-Right: High Exposure / Lower Risk (Moat Zone) */}
+            {/* Bottom-Right: High Exposure / Lower Replacement Pressure */}
             <rect
               x={getSvgX(50)}
               y={getSvgY(50)}
               width={PLOT_WIDTH / 2}
               height={PLOT_HEIGHT / 2}
-              fill="rgba(99, 102, 241, 0.04)"
+              fill="rgba(99, 102, 241, 0.038)"
               className="quadrant-rect"
             />
             {/* Bottom-Left: Low Exposure / Low Risk */}
@@ -358,16 +514,16 @@ export function OccupationMapExplorer({
               y={getSvgY(50)}
               width={PLOT_WIDTH / 2}
               height={PLOT_HEIGHT / 2}
-              fill="rgba(16, 185, 129, 0.035)"
+              fill="rgba(16, 185, 129, 0.032)"
               className="quadrant-rect"
             />
-            {/* Top-Left: Low Exposure / Moderate-High Risk */}
+            {/* Top-Left: Lower Exposure / Higher Structural Pressure */}
             <rect
               x={getSvgX(0)}
               y={getSvgY(100)}
               width={PLOT_WIDTH / 2}
               height={PLOT_HEIGHT / 2}
-              fill="rgba(245, 158, 11, 0.03)"
+              fill="rgba(245, 158, 11, 0.028)"
               className="quadrant-rect"
             />
 
@@ -383,7 +539,7 @@ export function OccupationMapExplorer({
                     y1={PAD_TOP}
                     x2={xPos}
                     y2={PAD_TOP + PLOT_HEIGHT}
-                    stroke={val === 50 ? "rgba(99, 102, 241, 0.25)" : "var(--line)"}
+                    stroke={val === 50 ? "rgba(99, 102, 241, 0.22)" : "var(--line)"}
                     strokeWidth={val === 50 ? 1.5 : 1}
                     strokeDasharray={val === 50 ? "4 4" : undefined}
                   />
@@ -393,29 +549,29 @@ export function OccupationMapExplorer({
                     y1={yPos}
                     x2={PAD_LEFT + PLOT_WIDTH}
                     y2={yPos}
-                    stroke={val === 50 ? "rgba(99, 102, 241, 0.25)" : "var(--line)"}
+                    stroke={val === 50 ? "rgba(99, 102, 241, 0.22)" : "var(--line)"}
                     strokeWidth={val === 50 ? 1.5 : 1}
                     strokeDasharray={val === 50 ? "4 4" : undefined}
                   />
-                  {/* X-axis numeric label */}
+                  {/* X-axis numeric tick label */}
                   <text
                     x={xPos}
-                    y={PAD_TOP + PLOT_HEIGHT + 20}
+                    y={PAD_TOP + PLOT_HEIGHT + 18}
                     textAnchor="middle"
                     fill="var(--muted)"
                     fontSize="11"
-                    fontWeight="600"
+                    fontWeight="650"
                   >
                     {val}
                   </text>
-                  {/* Y-axis numeric label */}
+                  {/* Y-axis numeric tick label */}
                   <text
-                    x={PAD_LEFT - 12}
+                    x={PAD_LEFT - 10}
                     y={yPos + 4}
                     textAnchor="end"
                     fill="var(--muted)"
                     fontSize="11"
-                    fontWeight="600"
+                    fontWeight="650"
                   >
                     {val}
                   </text>
@@ -423,58 +579,69 @@ export function OccupationMapExplorer({
               );
             })}
 
-            {/* Diagonal Parity Line: Y = X (where Exposure == Risk) */}
+            {/* Exposure–Replacement Parity Line (Y = X) */}
             <line
               x1={getSvgX(0)}
               y1={getSvgY(0)}
               x2={getSvgX(100)}
               y2={getSvgY(100)}
-              stroke="rgba(154, 150, 162, 0.35)"
+              stroke="rgba(148, 163, 184, 0.45)"
               strokeWidth="1.5"
               strokeDasharray="5 5"
             />
 
-            {/* Diagonal Parity Label */}
+            {/* Parity Line Label */}
             <text
-              x={getSvgX(88)}
-              y={getSvgY(85) + 14}
-              fill="#9a96a2"
+              x={getSvgX(84)}
+              y={getSvgY(82) + 14}
+              fill="#94a3b8"
               fontSize="10"
               fontWeight="700"
               textAnchor="start"
-              transform={`rotate(-33, ${getSvgX(88)}, ${getSvgY(85)})`}
+              transform={`rotate(-35, ${getSvgX(84)}, ${getSvgY(82)})`}
             >
-              Parity (Risk = Exposure)
+              Parity (Exposure = Risk)
             </text>
 
-            {/* Quadrant Subtitle Annotations */}
+            {/* Quadrant Zone Labels */}
             <text
               x={getSvgX(75)}
-              y={getSvgY(96)}
-              fill="rgba(220, 38, 38, 0.6)"
-              fontSize="11"
+              y={getSvgY(97)}
+              fill="rgba(220, 38, 38, 0.65)"
+              fontSize="10.5"
               fontWeight="800"
               textAnchor="middle"
               letterSpacing="0.04em"
             >
-              HIGH EXPOSURE / HIGH RISK
+              HIGH EXPOSURE / ELEVATED RISK
             </text>
             <text
               x={getSvgX(75)}
-              y={getSvgY(6)}
-              fill="rgba(79, 70, 229, 0.7)"
-              fontSize="11"
+              y={getSvgY(5)}
+              fill="rgba(79, 70, 229, 0.75)"
+              fontSize="10.5"
               fontWeight="800"
               textAnchor="middle"
               letterSpacing="0.04em"
             >
-              HIGH EXPOSURE / HUMAN MOATS
+              HIGH EXPOSURE / LOWER RISK
             </text>
             <text
               x={getSvgX(25)}
-              y={getSvgY(6)}
-              fill="rgba(16, 185, 129, 0.7)"
-              fontSize="11"
+              y={getSvgY(97)}
+              fill="rgba(217, 119, 6, 0.65)"
+              fontSize="10.5"
+              fontWeight="800"
+              textAnchor="middle"
+              letterSpacing="0.04em"
+            >
+              LOWER EXPOSURE / HIGHER RISK
+            </text>
+            <text
+              x={getSvgX(25)}
+              y={getSvgY(5)}
+              fill="rgba(16, 185, 129, 0.75)"
+              fontSize="10.5"
               fontWeight="800"
               textAnchor="middle"
               letterSpacing="0.04em"
@@ -488,82 +655,104 @@ export function OccupationMapExplorer({
               y={SVG_HEIGHT - 12}
               textAnchor="middle"
               fill="var(--ink)"
-              fontSize="13"
+              fontSize="12.5"
               fontWeight="800"
               letterSpacing="0.02em"
             >
               AI Exposure (0–100) →
             </text>
             <text
-              x={18}
+              x={16}
               y={PAD_TOP + PLOT_HEIGHT / 2}
               textAnchor="middle"
               fill="var(--ink)"
-              fontSize="13"
+              fontSize="12.5"
               fontWeight="800"
               letterSpacing="0.02em"
-              transform={`rotate(-90, 18, ${PAD_TOP + PLOT_HEIGHT / 2})`}
+              transform={`rotate(-90, 16, ${PAD_TOP + PLOT_HEIGHT / 2})`}
             >
               ↑ Replacement Risk (0–100)
             </text>
 
-            {/* Plotted Dots */}
+            {/* Plotted Dots (507 Verified Points) */}
             {occupations.map((job) => {
               const cx = getSvgX(job.aiExposure);
               const cy = getSvgY(job.replacementRisk);
               const isFiltered = filteredOccupations.some((f) => f.slug === job.slug);
-              const isSearchMatch = searchMatchedSlugs.size > 0 && searchMatchedSlugs.has(job.slug);
               const isSelected = selectedJob?.slug === job.slug;
               const isHovered = hoveredJob?.slug === job.slug;
-              const isHighlighted = isSelected || isHovered || isSearchMatch;
 
-              let opacity = 0.85;
-              if (!isFiltered) opacity = 0.1;
-              if (searchMatchedSlugs.size > 0 && !isSearchMatch) opacity = 0.15;
-              if (isHighlighted) opacity = 1;
+              let opacity = 0.72;
+              if (!isFiltered) opacity = 0.08;
+              if (selectedJob && !isSelected) opacity = 0.22;
+              if (isSelected || isHovered) opacity = 1;
 
-              const radius = isHighlighted ? 8.5 : 4.8;
+              const radius = 3.8;
               const color = getFieldColor(job.fieldSlug);
 
               return (
-                <circle
-                  key={job.slug}
-                  cx={cx}
-                  cy={cy}
-                  r={radius}
-                  fill={color}
-                  opacity={opacity}
-                  stroke={isHighlighted ? "white" : "rgba(255,255,255,0.8)"}
-                  strokeWidth={isHighlighted ? 2.5 : 1}
-                  filter={isHighlighted ? "url(#dot-shadow)" : undefined}
-                  className="map-dot"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${job.title}: AI Exposure ${job.aiExposure}, Replacement Risk ${job.replacementRisk}`}
-                  onClick={() => handleDotClick(job)}
-                  onMouseEnter={(e) => handleDotHover(job, e)}
-                  onMouseLeave={handleDotLeave}
-                  onFocus={() => {
-                    setHoveredJob(job);
-                    setSelectedJob(job);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleDotClick(job);
-                    }
-                  }}
-                />
+                <g key={job.slug} className="dot-group">
+                  {/* Larger Invisible Hit Target (Radius 14px) for robust touch interaction */}
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={14}
+                    fill="transparent"
+                    className="touch-hit-target"
+                    onClick={() => handleDotClick(job)}
+                    onMouseEnter={(e) => handleDotHover(job, e)}
+                    onMouseLeave={handleDotLeave}
+                  />
+
+                  {/* Visible Plotted Dot */}
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={radius}
+                    fill={color}
+                    opacity={opacity}
+                    stroke="rgba(255, 255, 255, 0.85)"
+                    strokeWidth={0.8}
+                    className="map-dot"
+                    pointerEvents="none"
+                  />
+                </g>
               );
             })}
 
-            {/* Active Selected Highlight Label in SVG for extra clarity */}
-            {activeJob && (
-              <g
-                pointerEvents="none"
-                transform={`translate(${getSvgX(activeJob.aiExposure)}, ${getSvgY(activeJob.replacementRisk) - 12})`}
-              >
+            {/* Active Selected Marker Layer (Always on top) */}
+            {selectedJob && (
+              <g className="active-selected-marker" pointerEvents="none">
+                {/* Outer pulsing ring */}
+                <circle
+                  cx={getSvgX(selectedJob.aiExposure)}
+                  cy={getSvgY(selectedJob.replacementRisk)}
+                  r={16}
+                  fill="none"
+                  stroke="var(--violet)"
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                  opacity={0.8}
+                />
+                {/* Inner white border */}
+                <circle
+                  cx={getSvgX(selectedJob.aiExposure)}
+                  cy={getSvgY(selectedJob.replacementRisk)}
+                  r={9.5}
+                  fill="white"
+                  filter="url(#dot-shadow)"
+                />
+                {/* Core colored point */}
+                <circle
+                  cx={getSvgX(selectedJob.aiExposure)}
+                  cy={getSvgY(selectedJob.replacementRisk)}
+                  r={7.5}
+                  fill={getFieldColor(selectedJob.fieldSlug)}
+                />
+                {/* Callout Title Label */}
                 <text
+                  x={getSvgX(selectedJob.aiExposure)}
+                  y={getSvgY(selectedJob.replacementRisk) - 14}
                   textAnchor="middle"
                   fill="var(--ink)"
                   fontSize="12"
@@ -572,14 +761,14 @@ export function OccupationMapExplorer({
                   strokeWidth="3"
                   paintOrder="stroke"
                 >
-                  {activeJob.title}
+                  {selectedJob.title}
                 </text>
               </g>
             )}
           </svg>
 
           {/* Desktop Hover Tooltip */}
-          {hoveredJob && tooltipPos && (
+          {hoveredJob && tooltipPos && !selectedJob && (
             <div
               className="map-tooltip"
               style={{
@@ -614,13 +803,13 @@ export function OccupationMapExplorer({
         </div>
       </div>
 
-      {/* Selected Occupation Card (Sticky / Responsive Inspector for Mobile & Click) */}
+      {/* Selected Verified Occupation Card */}
       {selectedJob && (
         <div className="map-selected-card card">
           <div className="selected-card-header">
             <div>
               <span className="section-kicker" style={{ color: getFieldColor(selectedJob.fieldSlug) }}>
-                {selectedJob.fieldName}
+                {selectedJob.fieldName} · Verified Analysis
               </span>
               <h3>{selectedJob.title}</h3>
             </div>
@@ -650,12 +839,12 @@ export function OccupationMapExplorer({
               <small className="muted">Structural labour vulnerability</small>
             </div>
             <div className="selected-metric">
-              <span className="metric-title">Capability Gap</span>
+              <span className="metric-title">Score Gap</span>
               <strong className="gap-value">
                 {selectedJob.aiExposure - selectedJob.replacementRisk > 0 ? "+" : ""}
                 {selectedJob.aiExposure - selectedJob.replacementRisk} pts
               </strong>
-              <small className="muted">Human moat differential</small>
+              <small className="muted">Exposure − Risk differential</small>
             </div>
           </div>
 
@@ -671,15 +860,73 @@ export function OccupationMapExplorer({
         </div>
       )}
 
-      {/* Quadrant Legend & Educational Reference */}
+      {/* Preliminary Search Result Banner / Card */}
+      {selectedPreliminaryJob && (
+        <div className="map-selected-card card preliminary-info-card">
+          <div className="selected-card-header">
+            <div>
+              <span className="section-kicker" style={{ color: "var(--amber)" }}>
+                {selectedPreliminaryJob.category} · Preliminary Estimate
+              </span>
+              <h3>{selectedPreliminaryJob.title}</h3>
+            </div>
+            <button
+              type="button"
+              className="selected-card-close"
+              onClick={() => setSelectedPreliminaryJob(null)}
+              aria-label="Close message"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="preliminary-notice-box">
+            <p>
+              <strong>{selectedPreliminaryJob.title}</strong> currently has a Preliminary estimate and is not included in this Verified occupation map.
+            </p>
+          </div>
+
+          <div className="selected-card-metrics">
+            <div className="selected-metric">
+              <span className="metric-title">Estimated Exposure</span>
+              <span className={getScoreSemantics("aiExposure", selectedPreliminaryJob.aiExposure, { isEstimated: true }).badgeClass}>
+                ~{selectedPreliminaryJob.aiExposure} / 100
+              </span>
+              <small className="muted">Preliminary model estimate</small>
+            </div>
+            <div className="selected-metric">
+              <span className="metric-title">Estimated Risk</span>
+              <span className={getScoreSemantics("replacementRisk", selectedPreliminaryJob.replacementRisk, { isEstimated: true }).badgeClass}>
+                ~{selectedPreliminaryJob.replacementRisk} / 100
+              </span>
+              <small className="muted">Preliminary model estimate</small>
+            </div>
+            <div className="selected-metric">
+              <span className="metric-title">Evidence Status</span>
+              <span className="badge-preliminary-tag">
+                {selectedPreliminaryJob.confidenceLabel || "Preliminary"}
+              </span>
+              <small className="muted">Task breakdown pending</small>
+            </div>
+          </div>
+
+          <div className="selected-card-action">
+            <Link className="button primary" href={`/jobs/${selectedPreliminaryJob.slug}`}>
+              View {selectedPreliminaryJob.title} Analysis →
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Quadrant Guide & Educational Reference */}
       <div className="quadrant-guide-grid">
         <div className="card quadrant-card q-moat">
           <div className="quadrant-header">
-            <span className="q-badge q-moat-badge">Shielded</span>
-            <h4>High Exposure, Strong Human Moats</h4>
+            <span className="q-badge q-moat-badge">Buffered</span>
+            <h4>High Exposure / Lower Replacement Pressure</h4>
           </div>
           <p className="small">
-            AI can assist with substantial analysis or drafting, but statutory accountability, high-stakes physical presence, or human trust limit direct workforce displacement.
+            AI can assist with substantial analysis or drafting, but human dependency, physical requirements, accountability, regulation, adoption, or labour-market friction buffer structural displacement.
           </p>
           <span className="muted small">e.g. Software Engineers, Nurse Practitioners, Financial Advisors</span>
         </div>
@@ -687,10 +934,10 @@ export function OccupationMapExplorer({
         <div className="card quadrant-card q-risk">
           <div className="quadrant-header">
             <span className="q-badge q-risk-badge">Elevated</span>
-            <h4>High Exposure, Elevated Replacement Risk</h4>
+            <h4>High Exposure / Elevated Replacement Risk</h4>
           </div>
           <p className="small">
-            High task overlap with algorithmic models, paired with standardized digital workflows and low physical or regulatory barriers to commercial automation.
+            High task overlap with algorithmic models, paired with standardized digital workflows and lower physical or regulatory barriers to commercial automation.
           </p>
           <span className="muted small">e.g. Telemarketers, Data Entry Keyers, Title Examiners</span>
         </div>
@@ -698,7 +945,7 @@ export function OccupationMapExplorer({
         <div className="card quadrant-card q-safe">
           <div className="quadrant-header">
             <span className="q-badge q-safe-badge">Resilient</span>
-            <h4>Low Exposure, Low Replacement Risk</h4>
+            <h4>Low Exposure / Low Replacement Risk</h4>
           </div>
           <p className="small">
             Occupations centered around unpredictable physical environments, fine manual manipulation, emergency intervention, or specialized tactile tradecraft.
@@ -708,13 +955,13 @@ export function OccupationMapExplorer({
 
         <div className="card quadrant-card q-mixed">
           <div className="quadrant-header">
-            <span className="q-badge q-mixed-badge">Moderate</span>
-            <h4>Moderate / Mixed Constraints</h4>
+            <span className="q-badge q-mixed-badge">Structural</span>
+            <h4>Lower Exposure / Higher Structural Pressure</h4>
           </div>
           <p className="small">
-            Hybrid occupations balancing specialized localized judgment, physical logistics, and moderate digital coordination.
+            Lower overall AI capability overlap, but specialized structural or commercial vulnerability in specific routine or consolidating tasks.
           </p>
-          <span className="muted small">e.g. Construction Managers, Logistics Planners</span>
+          <span className="muted small">e.g. Specialized Clerks, Dispatchers</span>
         </div>
       </div>
     </div>

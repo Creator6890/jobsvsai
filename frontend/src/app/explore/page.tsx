@@ -75,7 +75,7 @@ export default async function ExplorePage() {
     };
   });
 
-  // Derived Cohort: Largest Exposure Gap Leaders (High Exposure, Lower Risk)
+  // Derived Cohort: Largest Exposure vs Risk Score Gap Leaders
   const gapLeaders = [...mappedOccupations]
     .sort((a, b) => b.aiExposure - b.replacementRisk - (a.aiExposure - a.replacementRisk))
     .slice(0, 5);
@@ -96,35 +96,15 @@ export default async function ExplorePage() {
     .sort((a, b) => a.replacementRisk - b.replacementRisk)
     .slice(0, 4);
 
-  // Structured Data Schema
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQ_ITEMS.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  };
-
   const breadcrumbsList = [
     { name: "Home", item: "/" },
-    { name: "Explore AI Job Risk Map", item: "/explore" },
+    { name: "Occupation Map", item: "/explore" },
   ];
 
   return (
     <>
       <SiteHeader />
       <main id="main-content" className="explore-page">
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-
         {/* Hero Section */}
         <section className="explore-hero">
           <div className="container">
@@ -154,29 +134,29 @@ export default async function ExplorePage() {
                 <div className="intro-bullet">
                   <strong className="bullet-num">01</strong>
                   <div>
-                    <strong>Upper-Right Quadrant:</strong>
-                    <p className="small muted">Jobs in this zone are both highly exposed and under elevated structural replacement pressure.</p>
+                    <strong>Upper-Right Zone:</strong>
+                    <p className="small muted">Jobs in this zone are both highly exposed to AI tasks and under elevated structural replacement pressure.</p>
                   </div>
                 </div>
                 <div className="intro-bullet">
                   <strong className="bullet-num">02</strong>
                   <div>
-                    <strong>Bottom-Right (Moat Zone):</strong>
-                    <p className="small muted">Jobs far to the right but lower on the chart prove why exposure is not the same as replacement.</p>
+                    <strong>Bottom-Right (Buffered):</strong>
+                    <p className="small muted">Occupations below the parity line show lower replacement pressure due to physical, accountability, and regulatory friction.</p>
                   </div>
                 </div>
                 <div className="intro-bullet">
                   <strong className="bullet-num">03</strong>
                   <div>
-                    <strong>Bottom-Left Quadrant:</strong>
-                    <p className="small muted">Occupations anchored in tactile trades and physical reality have low exposure and low risk.</p>
+                    <strong>Bottom-Left Zone:</strong>
+                    <p className="small muted">Occupations anchored in tactile trades and physical reality have lower exposure and lower replacement risk.</p>
                   </div>
                 </div>
                 <div className="intro-bullet">
                   <strong className="bullet-num">04</strong>
                   <div>
-                    <strong>Interactive Exploration:</strong>
-                    <p className="small muted">Search or click any point on the chart to inspect task breakdown and full verified analysis.</p>
+                    <strong>Search &amp; Filter:</strong>
+                    <p className="small muted">Search any occupation or filter by career field to inspect full task breakdowns and verified scores.</p>
                   </div>
                 </div>
               </div>
@@ -210,12 +190,12 @@ export default async function ExplorePage() {
             </div>
 
             <div className="explore-curated-grid">
-              {/* Group 1: Human Moats */}
+              {/* Group 1: Lower Replacement Pressure */}
               <article className="card curated-group-card">
-                <span className="section-kicker" style={{ color: "var(--violet)" }}>High Exposure / High Shield</span>
-                <h3>Strong Human &amp; Regulatory Moats</h3>
+                <span className="section-kicker" style={{ color: "var(--violet)" }}>High Exposure / Lower Pressure</span>
+                <h3>High Exposure, Lower Replacement Pressure</h3>
                 <p className="small muted">
-                  Substantial cognitive and documentation tasks overlap with AI, but statutory accountability, client advisory, or physical presence limit workforce reduction.
+                  Substantial cognitive and documentation tasks overlap with AI, but statutory accountability, physical constraints, or institutional regulation buffer structural reduction.
                 </p>
                 <div className="curated-links-list">
                   {humanMoatsCohort.map((job) => (
@@ -236,7 +216,7 @@ export default async function ExplorePage() {
 
               {/* Group 2: Elevated Risk */}
               <article className="card curated-group-card">
-                <span className="section-kicker" style={{ color: "var(--red)" }}>High Exposure / High Risk</span>
+                <span className="section-kicker" style={{ color: "var(--red)" }}>High Exposure / Elevated Risk</span>
                 <h3>Elevated Replacement Pressure</h3>
                 <p className="small muted">
                   Standardized, screen-based transactional workflows facing aggressive commercial automation pressure with few regulatory or physical moats.
@@ -285,14 +265,14 @@ export default async function ExplorePage() {
           </div>
         </section>
 
-        {/* Biggest Gap Leaderboard */}
+        {/* Biggest Score Gap Leaderboard */}
         <section className="section" aria-labelledby="gap-leaders-title">
           <div className="container">
             <div className="section-kicker">Differential Analysis</div>
             <div className="section-heading-row">
               <div>
-                <h2 id="gap-leaders-title">Largest Exposure vs. Risk Gaps</h2>
-                <p>Occupations where AI task capability overlap is highest relative to actual labour-market vulnerability.</p>
+                <h2 id="gap-leaders-title">Largest Exposure vs. Risk Score Gaps</h2>
+                <p>Occupations where AI task capability overlap is highest relative to actual structural vulnerability (AI Exposure − Replacement Risk score points).</p>
               </div>
               <Link className="text-link desktop-only" href="/rankings">
                 View all rankings →
@@ -307,7 +287,7 @@ export default async function ExplorePage() {
                   <span>Career Field</span>
                   <span style={{ textAlign: "center" }}>AI Exposure</span>
                   <span style={{ textAlign: "center" }}>Replacement Risk</span>
-                  <span style={{ textAlign: "right" }}>Protection Gap</span>
+                  <span style={{ textAlign: "right" }}>Score Gap</span>
                 </div>
                 {gapLeaders.map((job, idx) => {
                   const gap = job.aiExposure - job.replacementRisk;
@@ -329,7 +309,7 @@ export default async function ExplorePage() {
                         </span>
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        <span className="score-badge safe" title="Structural Protection Differential">
+                        <span className="score-badge safe" title="Exposure − Risk Score Differential">
                           +{gap} pts
                         </span>
                       </div>
@@ -346,7 +326,7 @@ export default async function ExplorePage() {
           <AdSlot slot="rankings" format="horizontal" />
         </div>
 
-        {/* Comprehensive FAQ Section */}
+        {/* Comprehensive FAQ Section (Visible Crawlable HTML) */}
         <section className="section section-tint" aria-labelledby="explore-faq-title">
           <div className="container">
             <div className="section-kicker">Frequently Asked Questions</div>
