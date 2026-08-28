@@ -49,11 +49,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     name: "JobsVsAI",
     url: "https://jobsvsai.com",
     description: "The intelligence layer for navigating your career through AI.",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: "https://jobsvsai.com/?q={search_term_string}",
-      "query-input": "required name=search_term_string",
-    },
   };
 
   return (

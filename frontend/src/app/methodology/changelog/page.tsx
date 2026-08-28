@@ -6,62 +6,48 @@ import { PageHero, PageShell } from "@/components/PageShell";
 export const metadata: Metadata = {
   title: "Methodology Changelog & Version History",
   description:
-    "Public version history and methodological updates for the JobsVsAI scoring pipeline, taxonomy revisions, and calibration snapshots.",
+    "Public analytical version history and methodological updates for the JobsVsAI scoring pipeline, taxonomy revisions, and calibration snapshots.",
   alternates: {
     canonical: "https://jobsvsai.com/methodology/changelog",
   },
   openGraph: {
     title: "Methodology Changelog & Version History | JobsVsAI",
     description:
-      "Historical record of methodological releases, calibration adjustments, and taxonomy upgrades in the JobsVsAI career intelligence platform.",
+      "Public record of analytical methodology releases, capability taxonomy updates, and estimation frameworks in JobsVsAI.",
     url: "https://jobsvsai.com/methodology/changelog",
   },
 };
 
 const RELEASES = [
   {
-    version: "2026 Q3 — Direction-Aware Semantic System",
+    version: "Preliminary Estimate Methodology — 2026 Q3",
     date: "August 2026",
     summary:
-      "Implemented direction-aware semantic visual layers to clearly distinguish adverse risk metrics (higher score = greater exposure/risk) from protective capability metrics (higher score = greater human resilience).",
+      "Introduced a transparent, multi-tiered estimation methodology to provide provisional AI exposure and replacement risk indicators for 390 occupations undergoing full task analysis.",
     whatChanged: [
-      "Explicit direction classification across 10 distinct metric types.",
-      "Calibrated 3-tier boundary thresholds [0–33 low/weak, 34–66 moderate, 67–100 high/strong].",
-      "Added percentile population ranks on verified occupation analyses.",
+      "Deployed three-tier estimation framework: E1 (point estimates from high task coverage), E2 (bounded range intervals from partial task coverage), and E3 (cluster proxy mapping from closest analysed occupations).",
+      "Explicitly separated Preliminary estimates from Verified analyses across all public interfaces and sitemaps.",
+      "Established strict evidence-basis disclosures and confidence interval boundaries.",
     ],
     whyChanged:
-      "Usability research showed users occasionally misread protective metrics (e.g. Human Dependency) under a universal high=danger mental model.",
-    affectedScope: "All public score cards, comparison views, rankings, and transition recommendations.",
+      "To provide users with directional career clarity across hundreds of searchable occupations while preserving strict methodological integrity and preventing provisional estimates from being mistaken for validated task analyses.",
+    affectedScope: "390 preliminary occupation estimates published; 507 Verified scores remained completely unaltered.",
     status: "Active Production",
   },
   {
-    version: "2026 Q3 — Multi-Factor Calibration & Proxy Pipeline",
+    version: "Multi-Factor Occupational Scoring Model — 2026 Q3",
     date: "July 2026",
     summary:
-      "Completed Phase 4 multi-factor calibration, introducing the 15-dimension capability taxonomy, geometric bottleneck caps, and provisional proxy estimation framework (E1, E2, E3).",
+      "Launched the production multi-factor scoring architecture, evaluating occupational tasks across 15 capability dimensions with geometric bottleneck modeling and four structural friction layers.",
     whatChanged: [
-      "Upgraded baseline capability evaluation to 15 discrete structural dimensions.",
-      "Introduced geometric mean aggregation to prevent high cognitive scores from averaging away physical bottlenecks.",
-      "Deployed three-tier preliminary estimation framework covering 390 unverified occupations.",
+      "Expanded capability evaluation from linear proximity to 15 discrete structural dimensions spanning cognitive, perceptual, physical, and governance domains.",
+      "Implemented weighted geometric mean aggregation with critical bottleneck caps to prevent cognitive strengths from masking physical or legal impossibilities.",
+      "Integrated four structural friction layers: Environmental & Physical Dependency, Human Accountability & Trust, Adoption Economics, and Labour-Market Resilience.",
     ],
     whyChanged:
-      "Linear score aggregation previously underestimated the barrier posed by specialized physical, legal, and stakeholder requirements.",
-    affectedScope: "507 verified occupations recalculated; 390 preliminary estimates generated.",
-    status: "Active Production Snapshot",
-  },
-  {
-    version: "2026 Q1 — Initial Ingestion Baseline",
-    date: "March 2026",
-    summary:
-      "Initial production baseline ingesting O*NET 30.3 task statements, importance and frequency weights, and initial AI capability proximity assessments.",
-    whatChanged: [
-      "Parsed and weighted 8,218 occupation task statements from O*NET 30.3.",
-      "Established foundational AI Exposure and Replacement Risk two-score separation.",
-    ],
-    whyChanged:
-      "Established initial evidence-based dataset separating software capability from economic human replacement.",
-    affectedScope: "Foundational verified cohort.",
-    status: "Archived Baseline",
+      "Task automation cannot be modeled as a simple linear average; specialized physical requirements, legal liability, and economic friction represent real-world barriers that separate software capability from actual human displacement.",
+    affectedScope: "507 verified occupations published under the versioned scoring pipeline.",
+    status: "Active Production Baseline",
   },
 ];
 
@@ -77,7 +63,7 @@ export default function MethodologyChangelogPage() {
       <PageHero
         eyebrow="Version History"
         title="JobsVsAI methodology changelog"
-        copy="A public historical record of model updates, taxonomy revisions, calibration milestones, and scoring snapshot releases."
+        copy="A public historical record of analytical model updates, capability taxonomy revisions, and estimation framework releases."
       />
 
       <main className="page-main" id="main-content">
@@ -118,7 +104,7 @@ export default function MethodologyChangelogPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
                   <div style={{ background: "var(--soft)", padding: "18px 20px", borderRadius: "var(--radius-xs)" }}>
                     <h3 style={{ fontSize: "0.88rem", fontWeight: 750, color: "var(--violet)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "8px" }}>
-                      Key Changes
+                      Key Methodological Changes
                     </h3>
                     <ul style={{ listStyle: "disc", paddingLeft: "20px", fontSize: "0.88rem", lineHeight: 1.6, margin: 0 }}>
                       {rel.whatChanged.map((c) => (
@@ -129,7 +115,7 @@ export default function MethodologyChangelogPage() {
 
                   <div style={{ background: "var(--soft)", padding: "18px 20px", borderRadius: "var(--radius-xs)" }}>
                     <h3 style={{ fontSize: "0.88rem", fontWeight: 750, color: "var(--violet)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "8px" }}>
-                      Rationale &amp; Scope
+                      Rationale &amp; Analytical Scope
                     </h3>
                     <p style={{ fontSize: "0.88rem", lineHeight: 1.6, margin: "0 0 10px 0" }}>
                       <strong>Why: </strong>{rel.whyChanged}

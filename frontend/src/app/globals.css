@@ -195,11 +195,11 @@
 
   /* Evidence Receipt */
   .evidence-receipt-card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: var(--pad-card); margin-top: 36px; box-shadow: 0 4px 20px rgba(0,0,0,.03); }
-  .receipt-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 20px; }
+  .receipt-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; }
   .receipt-title { font-size: 1.15rem; margin-top: 4px; }
-  .receipt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; }
+  .receipt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px 24px; }
   .receipt-item dt { font-size: .78rem; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; }
-  .receipt-item dd { font-size: .95rem; font-weight: 600; color: var(--ink); margin: 0; }
+  .receipt-item dd { font-size: .95rem; font-weight: 600; color: var(--ink); margin: 0; word-break: break-word; }
   .receipt-footer { margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
   .receipt-note { font-size: .84rem; color: var(--muted); margin: 0; max-width: 600px; }
 
@@ -228,6 +228,8 @@
   .mobile-menu summary span { width: 19px; height: 2px; background: var(--ink); }
   .result-score-grid { grid-template-columns: 1fr 1fr; }
   .result-verdict { grid-column: 1 / -1; }
+  .home-ranking-grid { grid-template-columns: 1fr; }
+  .receipt-grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; text-align: left; }
   .footer-inner > :last-child { text-align: left; }
 }

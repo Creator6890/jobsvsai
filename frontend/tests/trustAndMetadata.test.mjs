@@ -82,9 +82,9 @@ test("Methodology changelog page exists with public version entries and canonica
 
   assert.match(source, /JobsVsAI methodology changelog/);
   assert.match(source, /canonical:\s*"https:\/\/jobsvsai\.com\/methodology\/changelog"/);
-  assert.match(source, /Direction-Aware Semantic System/);
-  assert.match(source, /Multi-Factor Calibration & Proxy Pipeline/);
-  assert.match(source, /Initial Ingestion Baseline/);
+  assert.match(source, /Preliminary Estimate Methodology — 2026 Q3/);
+  assert.match(source, /Multi-Factor Occupational Scoring Model — 2026 Q3/);
+  assert.doesNotMatch(source, /Semantic Direction System/);
   assert.match(source, /href="\/methodology"/);
   assert.match(source, /href="\/methodology\/technical"/);
 });
