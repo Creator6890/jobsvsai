@@ -393,7 +393,8 @@ test("Navigation contains Career Fit link", () => {
   const homeContent = fs.readFileSync(path.join(srcRoot, "app", "page.tsx"), "utf8");
 
   assert.ok(
-    headerContent.includes("CareerToolsDropdown") && dropdownContent.includes('href="/career-fit"'),
+    headerContent.includes("CareerToolsDropdown") &&
+      (dropdownContent.includes('href="/career-fit"') || dropdownContent.includes('href: "/career-fit"')),
     "SiteHeader dropdown must link to /career-fit"
   );
   assert.ok(headerContent.includes('href="/career-fit"'), "SiteHeader mobile navigation must include Career Fit link");
