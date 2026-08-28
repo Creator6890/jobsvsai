@@ -60,7 +60,17 @@ export function FieldExplorer({ occupations, fieldName }: FieldExplorerProps) {
 
   return (
     <div className="field-explorer">
-      <div className="rankings-controls" style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", marginBottom: "20px" }}>
+      {/* Search and Filters */}
+      <div
+        className="field-controls"
+        style={{
+          display: "flex",
+          gap: "16px",
+          flexWrap: "wrap",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
         <div style={{ flex: "1 1 240px" }}>
           <input
             type="search"
@@ -68,7 +78,14 @@ export function FieldExplorer({ occupations, fieldName }: FieldExplorerProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="input"
-            style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-xs)", border: "1px solid var(--line)" }}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              borderRadius: "var(--radius-xs)",
+              border: "1px solid var(--line)",
+              background: "white",
+              fontSize: "0.9rem",
+            }}
             aria-label={`Filter ${fieldName} careers`}
           />
         </div>
@@ -79,7 +96,13 @@ export function FieldExplorer({ occupations, fieldName }: FieldExplorerProps) {
             value={filterRiskBand}
             onChange={(e) => setFilterRiskBand(e.target.value)}
             className="select"
-            style={{ padding: "8px 12px", borderRadius: "var(--radius-xs)", border: "1px solid var(--line)", background: "white", fontSize: "0.88rem" }}
+            style={{
+              padding: "8px 12px",
+              borderRadius: "var(--radius-xs)",
+              border: "1px solid var(--line)",
+              background: "white",
+              fontSize: "0.88rem",
+            }}
             aria-label="Filter by replacement risk band"
           >
             <option value="all">All Risk Bands</option>
@@ -90,84 +113,117 @@ export function FieldExplorer({ occupations, fieldName }: FieldExplorerProps) {
         </div>
       </div>
 
-      <div className="rankings-table-wrap">
-        <table className="rankings-table">
-          <thead>
-            <tr>
-              <th scope="col" style={{ width: "60px", textAlign: "center" }}>#</th>
-              <th scope="col">
-                <button
-                  type="button"
-                  onClick={() => handleSort("title")}
-                  style={{ background: "none", border: "none", font: "inherit", fontWeight: 800, cursor: "pointer", color: "inherit", display: "inline-flex", alignItems: "center", gap: "4px" }}
+      {/* Shared Responsive Rankings Table */}
+      <div className="card ranking-table">
+        <div className="ranking-row ranking-header">
+          <span className="ranking-col-rank">#</span>
+          <span className="ranking-col-title">
+            <button
+              type="button"
+              onClick={() => handleSort("title")}
+              style={{
+                background: "none",
+                border: "none",
+                font: "inherit",
+                fontWeight: "inherit",
+                color: "inherit",
+                cursor: "pointer",
+                padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              Occupation {sortBy === "title" ? (sortOrder === "desc" ? "↓" : "↑") : ""}
+            </button>
+          </span>
+          <span className="ranking-col-cat">Domain</span>
+          <span className="ranking-col-risk">
+            <button
+              type="button"
+              onClick={() => handleSort("replacementRisk")}
+              style={{
+                background: "none",
+                border: "none",
+                font: "inherit",
+                fontWeight: "inherit",
+                color: "inherit",
+                cursor: "pointer",
+                padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              Replacement Risk {sortBy === "replacementRisk" ? (sortOrder === "desc" ? "↓" : "↑") : ""}
+            </button>
+          </span>
+          <span className="ranking-col-exp">
+            <button
+              type="button"
+              onClick={() => handleSort("aiExposure")}
+              style={{
+                background: "none",
+                border: "none",
+                font: "inherit",
+                fontWeight: "inherit",
+                color: "inherit",
+                cursor: "pointer",
+                padding: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              AI Exposure {sortBy === "aiExposure" ? (sortOrder === "desc" ? "↓" : "↑") : ""}
+            </button>
+          </span>
+          <span className="ranking-col-action"></span>
+        </div>
+
+        {filteredAndSorted.map((job, index) => {
+          const riskSem = getScoreSemantics("replacement_risk", job.replacementRisk);
+          const expSem = getScoreSemantics("ai_exposure", job.aiExposure);
+
+          return (
+            <div className="ranking-row" key={job.slug}>
+              <strong className="rank-number ranking-col-rank">{index + 1}</strong>
+              <div className="ranking-col-title">
+                <Link
+                  href={`/jobs/${job.slug}`}
+                  style={{ color: "var(--ink)", textDecoration: "none", fontWeight: 700 }}
                 >
-                  Occupation {sortBy === "title" ? (sortOrder === "desc" ? "↓" : "↑") : ""}
-                </button>
-              </th>
-              <th scope="col" style={{ textAlign: "center" }}>
-                <button
-                  type="button"
-                  onClick={() => handleSort("replacementRisk")}
-                  style={{ background: "none", border: "none", font: "inherit", fontWeight: 800, cursor: "pointer", color: "inherit", display: "inline-flex", alignItems: "center", gap: "4px" }}
-                >
-                  Replacement Risk {sortBy === "replacementRisk" ? (sortOrder === "desc" ? "↓" : "↑") : ""}
-                </button>
-              </th>
-              <th scope="col" style={{ textAlign: "center" }}>
-                <button
-                  type="button"
-                  onClick={() => handleSort("aiExposure")}
-                  style={{ background: "none", border: "none", font: "inherit", fontWeight: 800, cursor: "pointer", color: "inherit", display: "inline-flex", alignItems: "center", gap: "4px" }}
-                >
-                  AI Exposure {sortBy === "aiExposure" ? (sortOrder === "desc" ? "↓" : "↑") : ""}
-                </button>
-              </th>
-              <th scope="col" style={{ textAlign: "right" }}>Analysis</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAndSorted.length === 0 ? (
-              <tr>
-                <td colSpan={5} style={{ textAlign: "center", padding: "32px", color: "var(--muted)" }}>
-                  No verified occupations match your filter criteria.
-                </td>
-              </tr>
-            ) : (
-              filteredAndSorted.map((job, idx) => {
-                const riskSem = getScoreSemantics("replacement_risk", job.replacementRisk);
-                const expSem = getScoreSemantics("ai_exposure", job.aiExposure);
-                return (
-                  <tr key={job.slug}>
-                    <td style={{ textAlign: "center", color: "var(--muted)", fontWeight: 700 }}>
-                      {idx + 1}
-                    </td>
-                    <td>
-                      <Link href={`/jobs/${job.slug}`} style={{ fontWeight: 700, color: "var(--ink)", textDecoration: "none" }}>
-                        {job.title}
-                      </Link>
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      <span className={`score-badge ${riskSem.tone}`} title={riskSem.label}>
-                        {Math.round(job.replacementRisk)}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      <span className={`score-badge ${expSem.tone}`} title={expSem.label}>
-                        {Math.round(job.aiExposure)}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <Link href={`/jobs/${job.slug}`} className="button secondary small" style={{ fontSize: "0.8rem", padding: "4px 10px" }}>
-                        View →
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                  {job.title}
+                </Link>
+                <span className="mobile-category">{fieldName}</span>
+              </div>
+              <span className="ranking-col-cat">{fieldName}</span>
+              <div className="ranking-col-risk">
+                <span className={riskSem.badgeClass} title={riskSem.label}>
+                  {Math.round(job.replacementRisk)}
+                </span>
+              </div>
+              <div className="ranking-col-exp">
+                <span className={expSem.badgeClass} title={expSem.label}>
+                  {Math.round(job.aiExposure)}
+                </span>
+              </div>
+              <div className="ranking-col-action">
+                <Link className="button secondary" href={`/jobs/${job.slug}`}>
+                  View <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+
+        {filteredAndSorted.length === 0 && (
+          <div className="empty-state" style={{ padding: "32px", textAlign: "center", color: "var(--muted)" }}>
+            No verified occupations match your filter criteria.
+          </div>
+        )}
       </div>
+
       <div style={{ marginTop: "12px", fontSize: "0.82rem", color: "var(--muted)", textAlign: "right" }}>
         Showing {filteredAndSorted.length} of {occupations.length} verified {fieldName} occupations
       </div>

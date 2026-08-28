@@ -1,5 +1,5 @@
 import type { Occupation } from "@/types/occupation";
-import type { RankingOccupation, EstimatedOccupation } from "@/lib/api";
+import type { RankingOccupation } from "@/lib/api";
 
 export type CareerFieldSlug =
   | "business-finance"
