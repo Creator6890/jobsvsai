@@ -1048,3 +1048,586 @@
     padding: 20px;
   }
 }
+
+/* ==========================================================================
+   Interactive Occupation Map Explorer (/explore)
+   ========================================================================== */
+
+.explore-hero {
+  padding: 40px 0 24px;
+}
+
+.explore-hero-inner {
+  margin-top: 16px;
+}
+
+.explore-intro-card {
+  padding: 28px 32px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.intro-bullets-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.intro-bullet {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.bullet-num {
+  font-size: 1.15rem;
+  color: var(--violet);
+  font-weight: 850;
+  line-height: 1;
+}
+
+.map-explorer-wrapper {
+  position: relative;
+  margin-top: 20px;
+}
+
+/* Toolbar: Search & Filter Controls */
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+
+.map-search-col {
+  flex: 1 1 280px;
+  min-width: 240px;
+  position: relative;
+}
+
+.map-search-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.map-search-input {
+  width: 100%;
+  padding-right: 32px;
+  height: 42px;
+  font-size: 0.92rem;
+  border-radius: var(--radius-xs);
+}
+
+.map-search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.map-search-dropdown {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 100;
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+}
+
+.map-search-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--soft);
+}
+
+.map-search-option:last-child {
+  border-bottom: none;
+}
+
+.map-search-option:hover {
+  background: var(--violet-soft);
+  color: var(--violet);
+}
+
+.option-meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.map-filters-col {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-select-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-label {
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.select-input {
+  height: 40px;
+  padding: 0 10px;
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: var(--ink);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.reset-btn {
+  font-size: 0.85rem;
+  padding: 0 8px;
+  cursor: pointer;
+}
+
+.map-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 4px 10px;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+/* SVG Chart Container */
+.map-chart-card {
+  padding: 16px 12px 12px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.map-svg-container {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+}
+
+.map-dot {
+  cursor: pointer;
+  transition: r 0.15s ease, opacity 0.15s ease, stroke-width 0.15s ease;
+}
+
+.map-dot:hover, .map-dot:focus {
+  outline: none;
+}
+
+/* Desktop Hover Tooltip */
+.map-tooltip {
+  position: absolute;
+  width: 240px;
+  background: rgba(26, 23, 36, 0.96);
+  color: white;
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  pointer-events: none;
+  z-index: 90;
+  backdrop-filter: blur(8px);
+}
+
+.tooltip-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.tooltip-header strong {
+  font-size: 0.96rem;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.tooltip-field {
+  font-size: 0.76rem;
+  color: #c7d2fe;
+  margin-top: 2px;
+  font-weight: 650;
+}
+
+.tooltip-scores {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tooltip-score-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.tooltip-score-item .score-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.tooltip-interpretation {
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  line-height: 1.4;
+  margin: 6px 0 8px;
+}
+
+.tooltip-hint {
+  font-size: 0.72rem;
+  color: #a5b4fc;
+  font-weight: 750;
+  text-align: right;
+}
+
+/* Selected Occupation Card (Mobile / Click Inspector) */
+.map-selected-card {
+  margin-top: 18px;
+  padding: 22px 24px;
+  background: white;
+  border: 1.5px solid var(--violet);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.08);
+}
+
+.selected-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.selected-card-header h3 {
+  font-size: 1.3rem;
+  margin: 4px 0 0;
+  color: var(--ink);
+}
+
+.selected-card-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+
+.selected-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+  padding: 14px 16px;
+  background: var(--soft);
+  border-radius: var(--radius-xs);
+}
+
+.selected-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.metric-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gap-value {
+  font-size: 1.15rem;
+  color: var(--green);
+  font-weight: 850;
+}
+
+.selected-card-interpretation {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+.selected-card-action {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Quadrant Guide Grid */
+.quadrant-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.quadrant-card {
+  padding: 18px 20px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quadrant-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quadrant-header h4 {
+  font-size: 0.96rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.q-badge {
+  font-size: 0.72rem;
+  font-weight: 850;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.q-moat-badge { background: var(--violet-soft); color: var(--violet); }
+.q-risk-badge { background: var(--red-soft); color: var(--red); }
+.q-safe-badge { background: var(--green-soft); color: var(--green); }
+.q-mixed-badge { background: var(--amber-soft); color: var(--amber); }
+
+/* Curated Insight Groups */
+.explore-curated-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+  margin-top: 24px;
+}
+
+.curated-group-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.curated-group-card h3 {
+  font-size: 1.1rem;
+  margin: 6px 0 8px;
+}
+
+.curated-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.curated-job-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--soft);
+  border-radius: var(--radius-xs);
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 750;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.curated-job-link:hover {
+  background: var(--violet-soft);
+  color: var(--violet);
+}
+
+.curated-job-scores {
+  display: flex;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+/* Biggest Gap Leaderboard Table */
+.gap-leaders-card {
+  padding: 8px var(--pad-card);
+  margin-top: 20px;
+}
+
+.gap-leaders-table {
+  width: 100%;
+}
+
+.gap-table-header {
+  display: grid;
+  grid-template-columns: 36px minmax(180px, 2fr) minmax(140px, 1fr) 120px 140px 120px;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.gap-table-row {
+  display: grid;
+  grid-template-columns: 36px minmax(180px, 2fr) minmax(140px, 1fr) 120px 140px 120px;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.gap-job-link {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.gap-job-link:hover {
+  color: var(--violet);
+}
+
+.gap-job-field {
+  font-size: 0.88rem;
+}
+
+/* Responsive Overrides */
+@media (max-width: 950px) {
+  .intro-bullets-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .explore-curated-grid {
+    grid-template-columns: 1fr;
+  }
+  .gap-table-header, .gap-table-row {
+    grid-template-columns: 32px minmax(140px, 1fr) 110px 110px 90px;
+  }
+  .gap-table-header > :nth-child(3), .gap-table-row > :nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .explore-hero {
+    padding: 24px 0 16px;
+  }
+  .explore-intro-card {
+    padding: 20px 16px;
+  }
+  .intro-bullets-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .map-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+    gap: 12px;
+  }
+  .map-search-col {
+    width: 100%;
+  }
+  .map-filters-col {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .filter-select-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .select-input {
+    width: 100%;
+  }
+  .map-chart-card {
+    padding: 8px 4px 6px;
+  }
+  .quadrant-guide-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .selected-card-metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .gap-leaders-card {
+    padding: 6px 14px;
+  }
+  .gap-table-header, .gap-table-row {
+    grid-template-columns: 24px minmax(100px, 1fr) 46px 46px 60px;
+    gap: 6px;
+  }
+  .gap-table-header > :nth-child(4), .gap-table-header > :nth-child(5) {
+    font-size: 0;
+  }
+  .gap-table-header > :nth-child(4)::after {
+    content: "EXP";
+    font-size: 0.68rem;
+  }
+  .gap-table-header > :nth-child(5)::after {
+    content: "RISK";
+    font-size: 0.68rem;
+  }
+  .gap-table-header > :nth-child(6) {
+    font-size: 0;
+  }
+  .gap-table-header > :nth-child(6)::after {
+    content: "GAP";
+    font-size: 0.68rem;
+  }
+}
+

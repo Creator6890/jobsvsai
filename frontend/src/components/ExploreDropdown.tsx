@@ -4,6 +4,11 @@ import { NavDropdown } from "./NavDropdown";
 
 const EXPLORE_ITEMS = [
   {
+    href: "/explore",
+    title: "Occupation Map",
+    description: "Interactive 2D AI risk & exposure scatter map",
+  },
+  {
     href: "/careers",
     title: "Career Fields",
     description: "Browse 19 canonical industry domains",

@@ -29,6 +29,7 @@ export function SiteHeader() {
           </summary>
           <nav className="mobile-nav-inner" aria-label="Mobile navigation">
             <Link href="/rankings">Rankings</Link>
+            <Link href="/explore">Occupation Map</Link>
             <Link href="/careers">Career Fields</Link>
             <div className="mobile-nav-section">
               <span className="mobile-nav-section-title">Career Tools</span>
