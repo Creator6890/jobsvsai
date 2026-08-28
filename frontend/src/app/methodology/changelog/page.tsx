@@ -25,7 +25,7 @@ const RELEASES = [
     summary:
       "Introduced a transparent, multi-tiered estimation methodology to provide provisional AI exposure and replacement risk indicators for 390 occupations undergoing full task analysis.",
     whatChanged: [
-      "Deployed three-tier estimation framework: E1 (point estimates from high task coverage), E2 (bounded range intervals from partial task coverage), and E3 (cluster proxy mapping from closest analysed occupations).",
+      "Deployed three-tier estimation framework: E1 (point estimates from high task coverage), E2 (bounded range intervals from partial task coverage), and E3 — related-occupation proxy estimates derived from the closest fully analysed occupations supported by O*NET relationships.",
       "Explicitly separated Preliminary estimates from Verified analyses across all public interfaces and sitemaps.",
       "Established strict evidence-basis disclosures and confidence interval boundaries.",
     ],

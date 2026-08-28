@@ -111,7 +111,7 @@ export default function MethodologyPage() {
                 <span className="metric-label">Replacement Risk</span>
                 <div className="score-number">0–100</div>
                 <p>
-                  How likely that exposure is to become reduced human demand, once physical reality, human dependency, accountability, regulation and adoption are accounted for.
+                  How structurally vulnerable the human role is to reduced labour demand after physical reality, human dependency, accountability, regulation and adoption are accounted for.
                 </p>
               </article>
             </div>

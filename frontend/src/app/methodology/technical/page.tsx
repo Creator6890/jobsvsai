@@ -277,10 +277,10 @@ export default function TechnicalMethodologyPage() {
                 </div>
                 <div className="factor-card card" style={{ padding: "20px" }}>
                   <strong>E3</strong>
-                  <h3 style={{ fontSize: "1rem", marginTop: "8px" }}>Cluster Proxy</h3>
+                  <h3 style={{ fontSize: "1rem", marginTop: "8px" }}>Related-Occupation Proxy</h3>
                   <p style={{ fontSize: "0.88rem" }}>
-                    Structural proxy mapping derived from nearest-neighbor verified occupational
-                    clusters.
+                    Related-occupation proxy estimates derived from the closest fully analysed
+                    occupations supported by O*NET relationships.
                   </p>
                 </div>
               </div>

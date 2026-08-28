@@ -95,7 +95,7 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
                 </div>
                 <span className={riskSemantics.chipClass}>{riskSemantics.label}</span>
                 <hr />
-                <p>How likely exposure is to translate into reduced human demand.</p>
+                <p>Structural vulnerability of the human role after accounting for real-world friction and constraints.</p>
               </article>
               <p className="score-footnote">
                 Preliminary estimate based on available occupational evidence.{" "}
