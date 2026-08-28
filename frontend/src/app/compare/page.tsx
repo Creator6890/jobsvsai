@@ -1,9 +1,98 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CompareSelector } from "@/components/CompareSelector";
 import { PageHero, PageShell } from "@/components/PageShell";
 import { getOccupations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Compare careers", description: "Compare two careers across AI exposure, replacement risk, human dependency, demand, and resilience." };
-export default async function ComparePage() { const occupations = await getOccupations(); return <PageShell><PageHero dark eyebrow="Career comparison" title="Put two careers head to head." copy="Compare AI exposure, replacement risk, future demand, and the human advantage of different occupations." /><main className="page-main"><div className="container"><CompareSelector occupations={occupations} /><div className="compare-empty"><span className="vs-badge">VS</span><h2>Choose two careers to see the full comparison.</h2><p>We will keep technical exposure separate from real-world replacement risk.</p></div></div></main></PageShell>; }
+export const metadata: Metadata = {
+  title: "Compare Careers by AI Risk, Exposure & Resilience",
+  description:
+    "Compare two careers side by side across AI Exposure, Replacement Risk, human dependency, physical constraints, and long-term resilience.",
+  alternates: {
+    canonical: "https://jobsvsai.com/compare",
+  },
+  openGraph: {
+    title: "Compare Careers by AI Risk, Exposure & Resilience | JobsVsAI",
+    description:
+      "Transparent side-by-side AI career comparisons. Compare AI Exposure and Replacement Risk across verified occupations.",
+    url: "https://jobsvsai.com/compare",
+  },
+};
+
+const CURATED_COMPARISONS = [
+  { a: "accountant", b: "advertising-sales-agents", label: "Accountant vs Advertising Sales Agents" },
+  { a: "civil-engineers", b: "mechanical-engineers", label: "Civil Engineers vs Mechanical Engineers" },
+  { a: "chemists", b: "materials-scientists", label: "Chemists vs Materials Scientists" },
+  { a: "bioinformatics-scientists", b: "geneticists", label: "Bioinformatics Scientists vs Geneticists" },
+  { a: "proofreaders-and-copy-markers", b: "desktop-publishers", label: "Proofreaders vs Desktop Publishers" },
+  { a: "credit-analysts", b: "financial-quantitative-analysts", label: "Credit Analysts vs Financial Quantitative Analysts" },
+];
+
+export default async function ComparePage() {
+  const occupations = await getOccupations();
+  return (
+    <PageShell>
+      <PageHero
+        dark
+        eyebrow="Side-by-Side Analysis"
+        title="Compare two careers in the age of AI"
+        copy="Compare AI Exposure, Replacement Risk, human advantage, and structural career resilience side by side across verified occupations."
+      />
+      <main className="page-main" id="main-content">
+        <div className="container">
+          <CompareSelector occupations={occupations} />
+
+          <div className="compare-empty" style={{ marginTop: "24px" }}>
+            <span className="vs-badge">VS</span>
+            <h2>Choose any two careers to see the full evidence comparison</h2>
+            <p style={{ maxWidth: "600px", margin: "10px auto 0", lineHeight: 1.6 }}>
+              We keep technical task exposure separate from real-world replacement risk, so you can see where AI assists work versus where it threatens human employment.
+            </p>
+          </div>
+
+          {/* Curated comparisons */}
+          <section className="section" aria-labelledby="curated-comparisons-title" style={{ marginTop: "40px" }}>
+            <div className="section-kicker">Popular Comparisons</div>
+            <h2 id="curated-comparisons-title">Common career path comparisons</h2>
+            <div className="career-grid" style={{ marginTop: "18px" }}>
+              {CURATED_COMPARISONS.map((pair) => (
+                <article className="card" key={`${pair.a}-vs-${pair.b}`} style={{ padding: "18px 22px" }}>
+                  <h3 style={{ fontSize: "1.05rem", marginBottom: "8px" }}>{pair.label}</h3>
+                  <Link className="text-link" href={`/compare/${pair.a}-vs-${pair.b}`}>
+                    Compare these careers →
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section className="section" aria-labelledby="compare-faq-heading" style={{ marginTop: "32px" }}>
+            <div className="section-kicker">Comparison FAQ</div>
+            <h2 id="compare-faq-heading">How comparisons work</h2>
+            <div className="faq-stack" style={{ marginTop: "20px" }}>
+              <details className="card faq-item" style={{ padding: "18px 24px" }}>
+                <summary style={{ fontWeight: 750, fontSize: "1.02rem", cursor: "pointer" }}>
+                  How does JobsVsAI determine which career has the advantage?
+                </summary>
+                <p style={{ marginTop: "12px", color: "var(--ink)", lineHeight: 1.6, fontSize: "0.95rem" }}>
+                  Advantage is direction-aware: for adverse metrics (AI Exposure, Replacement Risk, Adoption Pressure), the occupation with the LOWER score has the advantage. For protective metrics (Human Dependency, Physical Dependency, Labour-Market Resilience), the occupation with the HIGHER score has the advantage.
+                </p>
+              </details>
+              <details className="card faq-item" style={{ padding: "18px 24px" }}>
+                <summary style={{ fontWeight: 750, fontSize: "1.02rem", cursor: "pointer" }}>
+                  Can I compare any occupation on the site?
+                </summary>
+                <p style={{ marginTop: "12px", color: "var(--ink)", lineHeight: 1.6, fontSize: "0.95rem" }}>
+                  Full multi-factor comparisons are supported across all verified occupations with complete task ratings. Preliminary estimates are evaluated individually on their dedicated pages.
+                </p>
+              </details>
+            </div>
+          </section>
+        </div>
+      </main>
+    </PageShell>
+  );
+}

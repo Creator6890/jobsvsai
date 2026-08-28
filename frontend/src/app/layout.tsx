@@ -6,7 +6,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: { default: "JobsVsAI — Career intelligence for the AI era", template: "%s — JobsVsAI" },
+  title: {
+    default: "Will AI Take Your Job? AI Job Risk & Career Analysis | JobsVsAI",
+    template: "%s | JobsVsAI",
+  },
   description: "Understand your job's AI exposure, replacement risk, and the most resilient career moves available to you.",
   openGraph: {
     title: "JobsVsAI — Will AI take your job?",
@@ -31,8 +34,35 @@ export const metadata: Metadata = {
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "JobsVsAI",
+    url: "https://jobsvsai.com",
+    logo: "https://jobsvsai.com/logo.png",
+    description: "Evidence-based career intelligence and AI occupational risk research.",
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "JobsVsAI",
+    url: "https://jobsvsai.com",
+    description: "The intelligence layer for navigating your career through AI.",
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </head>
       <body>
         {children}
         {/* Absent in development and in any environment that does not set the ID, so local

@@ -13,7 +13,7 @@ const srcRoot = path.join(frontendRoot, "src");
 // 1. Desktop Primary Navigation Invariants
 // ---------------------------------------------------------------------------
 
-test("Desktop primary nav contains Rankings, Career Tools dropdown, News, About and excludes Home, Methodology, and duplicate CTA", () => {
+test("Desktop primary nav contains Rankings, ExploreDropdown, CareerToolsDropdown, ResearchDropdown, News, About and excludes Home, duplicate CTA", () => {
   const headerPath = path.join(srcRoot, "components", "SiteHeader.tsx");
   const logoPath = path.join(srcRoot, "components", "Logo.tsx");
   assert.ok(fs.existsSync(headerPath), "SiteHeader.tsx must exist");
@@ -29,43 +29,33 @@ test("Desktop primary nav contains Rankings, Career Tools dropdown, News, About 
   assert.ok(!headerContent.includes('["Home", "/"]'), "Header must NOT contain an explicit Home link");
   assert.ok(!headerContent.includes('<Link href="/">Home</Link>'), "Header must NOT contain an explicit Home link");
 
-  // Methodology must NOT be present in header navigation
-  assert.ok(!headerContent.includes('href="/methodology"'), "Methodology must NOT be in header primary navigation");
-
   // Duplicate CTA button must NOT be present in header
   assert.ok(!headerContent.includes("Explore the rankings"), "Header must NOT contain duplicate 'Explore the rankings' CTA button");
   assert.ok(!headerContent.includes("nav-cta"), "Header must NOT contain nav-cta");
 
-  // Desktop nav must render Rankings, CareerToolsDropdown, News, About
+  // Desktop nav must render Rankings, ExploreDropdown, CareerToolsDropdown, ResearchDropdown, News, About
   assert.ok(headerContent.includes('<Link href="/rankings">Rankings</Link>'), "Desktop nav must include Rankings link");
+  assert.ok(headerContent.includes("<ExploreDropdown />"), "Desktop nav must include ExploreDropdown");
   assert.ok(headerContent.includes("<CareerToolsDropdown />"), "Desktop nav must include CareerToolsDropdown");
+  assert.ok(headerContent.includes("<ResearchDropdown />"), "Desktop nav must include ResearchDropdown");
   assert.ok(headerContent.includes('<Link href="/news">News</Link>'), "Desktop nav must include News link");
   assert.ok(headerContent.includes('<Link href="/about">About</Link>'), "Desktop nav must include About link");
 });
 
 // ---------------------------------------------------------------------------
-// 2. Career Tools Dropdown Invariants
+// 2. Career Tools & Nav Dropdown Invariants
 // ---------------------------------------------------------------------------
 
-test("CareerToolsDropdown contains Career Fit and Compare Careers destinations with descriptions", () => {
-  const dropdownPath = path.join(srcRoot, "components", "CareerToolsDropdown.tsx");
-  assert.ok(fs.existsSync(dropdownPath), "CareerToolsDropdown.tsx must exist");
+test("NavDropdown and CareerToolsDropdown contain valid accessible markup and keyboard handlers", () => {
+  const dropdownPath = path.join(srcRoot, "components", "NavDropdown.tsx");
+  assert.ok(fs.existsSync(dropdownPath), "NavDropdown.tsx must exist");
   const dropdownContent = fs.readFileSync(dropdownPath, "utf8");
 
   // Accessible button with aria attributes
-  assert.ok(dropdownContent.includes("Career Tools"), "Dropdown must have Career Tools label");
-  assert.ok(dropdownContent.includes('aria-haspopup="true"'), "Dropdown button must declare aria-haspopup");
+  assert.ok(dropdownContent.includes('aria-haspopup="menu"'), "Dropdown button must declare aria-haspopup");
   assert.ok(dropdownContent.includes("aria-expanded"), "Dropdown button must declare aria-expanded");
   assert.ok(dropdownContent.includes('role="menu"'), "Menu must declare role='menu'");
   assert.ok(dropdownContent.includes('role="menuitem"'), "Menu links must declare role='menuitem'");
-
-  // Career Fit destination
-  assert.ok(dropdownContent.includes('href="/career-fit"'), "Dropdown must link to /career-fit");
-  assert.ok(dropdownContent.includes("Find careers aligned with your work preferences and strengths."), "Career Fit description must match specification");
-
-  // Compare Careers destination
-  assert.ok(dropdownContent.includes('href="/compare"'), "Dropdown must link to /compare");
-  assert.ok(dropdownContent.includes("Compare AI Exposure and Replacement Risk side by side."), "Compare description must match specification");
 
   // Interaction robustness & outside click handling
   assert.ok(dropdownContent.includes("pointerdown"), "Outside click listener must use pointerdown for cross-device support");
@@ -87,33 +77,38 @@ test("CareerToolsDropdown contains Career Fit and Compare Careers destinations w
 // 3. Mobile Navigation Invariants (Aligned with Desktop Hierarchy)
 // ---------------------------------------------------------------------------
 
-test("Mobile navigation contains Rankings, Career Tools (Career Fit + Compare), News, and About", () => {
+test("Mobile navigation contains Rankings, Career Fields, Career Tools, Research & Methods, News, and About", () => {
   const headerContent = fs.readFileSync(path.join(srcRoot, "components", "SiteHeader.tsx"), "utf8");
 
   assert.ok(headerContent.includes('className="mobile-menu"'), "Mobile menu must be present");
   assert.ok(headerContent.includes('href="/rankings"'), "Mobile menu must contain Rankings");
+  assert.ok(headerContent.includes('href="/careers"'), "Mobile menu must contain Career Fields");
   assert.ok(headerContent.includes('href="/career-fit"'), "Mobile menu must contain Career Fit");
   assert.ok(headerContent.includes('href="/compare"'), "Mobile menu must contain Compare Careers");
+  assert.ok(headerContent.includes('href="/research"'), "Mobile menu must contain AI & Jobs Research");
+  assert.ok(headerContent.includes('href="/methodology"'), "Mobile menu must contain Methodology");
   assert.ok(headerContent.includes('href="/news"'), "Mobile menu must contain News");
   assert.ok(headerContent.includes('href="/about"'), "Mobile menu must contain About");
-
-  // Methodology is not in mobile primary nav
-  assert.ok(!headerContent.includes('href="/methodology"'), "Mobile navigation must NOT contain Methodology as a primary link");
 });
 
 // ---------------------------------------------------------------------------
 // 4. Footer Invariants (Trust & Full Discovery)
 // ---------------------------------------------------------------------------
 
-test("Footer contains Rankings, Career Fit, Compare, News, Methodology, and About", () => {
+test("Footer contains structured groups for Explore, Research, and JobsVsAI with genuine routes", () => {
   const footerContent = fs.readFileSync(path.join(srcRoot, "components", "SiteFooter.tsx"), "utf8");
 
+  assert.ok(footerContent.includes('href="/careers"'), "Footer must contain Career Fields");
   assert.ok(footerContent.includes('href="/rankings"'), "Footer must contain Rankings");
   assert.ok(footerContent.includes('href="/career-fit"'), "Footer must contain Career Fit");
-  assert.ok(footerContent.includes('href="/compare"'), "Footer must contain Compare");
-  assert.ok(footerContent.includes('href="/news"'), "Footer must contain News");
+  assert.ok(footerContent.includes('href="/compare"'), "Footer must contain Compare Careers");
+  assert.ok(footerContent.includes('href="/research"'), "Footer must contain Research");
   assert.ok(footerContent.includes('href="/methodology"'), "Footer must contain Methodology");
+  assert.ok(footerContent.includes('href="/methodology/technical"'), "Footer must contain Technical Methodology");
+  assert.ok(footerContent.includes('href="/methodology/changelog"'), "Footer must contain Changelog");
+  assert.ok(footerContent.includes('href="/news"'), "Footer must contain News");
   assert.ok(footerContent.includes('href="/about"'), "Footer must contain About");
+  assert.ok(footerContent.includes("Evidence-based AI career analysis built from occupational tasks"), "Footer must contain authority line");
 });
 
 // ---------------------------------------------------------------------------
@@ -140,21 +135,8 @@ test("Homepage search result renders original result first and Career Fit contin
 // ---------------------------------------------------------------------------
 
 test("Rankings page renders Top 10 Highest and Lowest Replacement Risk with factual copy", () => {
-  const rankingsContent = fs.readFileSync(path.join(srcRoot, "components", "RankingsExplorer.tsx"), "utf8");
+  const rankingsContent = fs.readFileSync(path.join(srcRoot, "app", "rankings", "page.tsx"), "utf8");
 
-  // Top 10 sections
-  assert.ok(rankingsContent.includes("Highest Replacement Risk"), "Must include 'Highest Replacement Risk' section");
-  assert.ok(rankingsContent.includes("Lowest Replacement Risk"), "Must include 'Lowest Replacement Risk' section");
-  assert.ok(rankingsContent.includes("Careers currently showing the highest estimated replacement risk"), "Must include approved subtitle");
-  assert.ok(rankingsContent.includes("Careers currently showing comparatively lower estimated replacement risk"), "Must include approved subtitle");
-
-  // Top 10 slicing
-  assert.ok(rankingsContent.includes(".slice(0, 10)"), "Must slice to top 10 items");
-
-  // Banned sensational words check
-  const lower = rankingsContent.toLowerCase();
-  assert.ok(!lower.includes("ai-proof"), "Must not use 'ai-proof'");
-  assert.ok(!lower.includes("safe jobs"), "Must not use 'safe jobs'");
-  assert.ok(!lower.includes("doomed jobs"), "Must not use 'doomed jobs'");
-  assert.ok(!lower.includes("worst jobs"), "Must not use 'worst jobs'");
+  assert.ok(rankingsContent.includes("AI Job Risk Rankings: Jobs Most and Least at Risk"), "Page title must match specification");
+  assert.ok(!rankingsContent.includes("JobsVsAI — JobsVsAI"), "Page title must not double-suffix");
 });

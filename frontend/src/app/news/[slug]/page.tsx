@@ -24,6 +24,10 @@ export async function generateMetadata({ params }: PageProps<"/news/[slug]">): P
     title: article.headline,
     description,
     alternates: { canonical: `/news/${article.slug}` },
+    robots: {
+      index: false,
+      follow: true,
+    },
     openGraph: {
       title: article.headline,
       description,

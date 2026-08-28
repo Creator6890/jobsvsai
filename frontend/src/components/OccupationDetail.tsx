@@ -1,14 +1,18 @@
 import Link from "next/link";
 import type { Occupation } from "@/types/occupation";
 import { AdSlot } from "./AdSlot";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { EvidenceReceipt } from "./EvidenceReceipt";
 import { MetricBar, ScoreCard } from "./ScoreCard";
 import { RelatedOccupationLink } from "./RelatedOccupationLink";
 import { ActionPlanSection } from "./actionPlan/ActionPlanSection";
 import { OccupationViewTracker } from "./analytics/AnalyticsTrackers";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
+import { getOccupationContent } from "@/lib/occupationContent";
+import { formatExposurePercentile, formatReplacementRiskPercentile } from "@/lib/scorePercentiles";
+import { getCanonicalField, getCanonicalFieldSlug } from "@/lib/careerFields";
+import { getResearchArticle } from "@/lib/researchArticles";
 
-// O*NET's relatedness tiers, rendered for readers. The tier is a source fact; the wording
-// is a presentation of it and deliberately claims nothing about transition difficulty.
 const RELATEDNESS_LABELS: Record<string, string> = {
   "Primary-Short": "Closely related work",
   "Primary-Long": "Related work",
@@ -19,36 +23,368 @@ function relatednessLabel(tier: string): string {
   return RELATEDNESS_LABELS[tier] ?? "Related work";
 }
 
-// Reads the production score store only. `trend`, `salaryPotential` and `futureDemand` are
-// gone because the Phase 5 engine produces none of them; `/career-finder` links are gone
-// because that surface is excluded from the initial launch.
-export function OccupationDetail({ job }: { job: Occupation }) {
-  const vulnerable = [...job.tasks].sort((a, b) => b.exposure - a.exposure).slice(0, 4);
-  return <>
-    <OccupationViewTracker slug={job.slug} aiExposure={job.aiExposure} replacementRisk={job.replacementRisk} />
-    <section className="score-section"><div className="container score-grid"><ScoreCard label="AI Exposure" value={job.aiExposure} metric="ai_exposure" description="How much of this occupation's work can be materially affected by current AI systems." /><div className="score-card-stack"><ScoreCard label="Replacement Risk" value={job.replacementRisk} metric="replacement_risk" description="How likely exposure is to translate into reduced human demand." /><p className="score-footnote">Includes provisional estimates for AI adoption pressure and labour-market resilience. <Link className="text-link" href="/methodology#provisional-factors">How this is measured</Link></p></div><article className="card score-card"><span className="metric-label">Evidence quality</span><MetricBar label="Confidence" value={Math.round(job.confidence)} suffix="/100" metric="confidence" /><MetricBar label="Task coverage" value={Math.round(job.weightedTaskCoverage)} suffix="%" metric="task_coverage" /><p>Confidence reflects task coverage, mapping and capability-evidence quality, and how much of the score rests on provisional inputs.</p></article></div></section>
+function getRecommendedResearchArticle(exposure: number, replacementRisk: number) {
+  if (exposure - replacementRisk >= 20) {
+    return getResearchArticle("ai-exposure-vs-replacement-risk");
+  }
+  if (replacementRisk >= 67) {
+    return getResearchArticle("what-to-do-if-your-job-has-high-ai-risk");
+  }
+  if (replacementRisk <= 33) {
+    return getResearchArticle("which-jobs-are-safest-from-ai");
+  }
+  return getResearchArticle("why-ai-automates-tasks-before-whole-jobs");
+}
 
-    {/* Ad 1: after scores + evidence quality, before task-level detail. */}
-    <div className="container ad-break">
-      <AdSlot slot="jobPrimary" format="horizontal" />
-    </div>
+export function OccupationDetail({
+  job,
+  exposurePercentile,
+  replacementRiskPercentile,
+}: {
+  job: Occupation;
+  exposurePercentile?: number;
+  replacementRiskPercentile?: number;
+}) {
+  const content = getOccupationContent(job);
 
-    <section className="content-section"><div className="container"><div className="section-head"><div><div className="section-kicker">Task-level evidence</div><h2>What is driving the score?</h2><p>Occupation scores are built from the task mix—not a single prediction about a job title.</p></div><span className="chip">{job.modelVersion}</span></div><div className="card task-table"><div className="task-row task-header"><b>Task</b><b>Importance</b><b>AI impact</b><b>Exposure</b></div>{job.tasks.map((task) => { const taskSem = getScoreSemantics("task_exposure", task.exposure); return <div className="task-row" key={task.onetTaskId}><strong>{task.name}</strong><span>{task.importance}</span><div className="bar-track"><span className={taskSem.tone} style={{ width: `${task.exposure}%` }} /></div><b className={taskSem.textClass}>{task.exposure}</b></div>; })}</div></div></section>
+  const fieldSlug = getCanonicalFieldSlug(job.slug, job.category);
+  const fieldDef = getCanonicalField(fieldSlug);
+  const recommendedArticle = getRecommendedResearchArticle(job.aiExposure, job.replacementRisk);
 
-    <section className="content-section section-tint"><div className="container two-column"><article className="card"><span className="section-kicker">Most exposed</span><h2>Where AI can do more</h2><p>Routine, digitized, and highly repeatable tasks face the greatest pressure.</p><ol className="insight-list">{vulnerable.map((task) => { const taskSem = getScoreSemantics("task_exposure", task.exposure); return <li key={task.onetTaskId}><span>{task.name}</span><b className={taskSem.textClass}>{task.exposure}</b></li>; })}</ol></article><article className="card human-card"><span className="section-kicker">Hardest to automate</span><h2>Where people still matter</h2><p>These tasks score lowest on automation feasibility—physical presence, judgement, accountability and real-world variability all resist end-to-end automation.</p><ol className="insight-list">{job.hardestToAutomateTasks.map((task, index) => <li key={task}><span>{task}</span><b>0{index + 1}</b></li>)}</ol></article></div></section>
+  const breadcrumbItems = [
+    { name: "Home", item: "/" },
+    { name: "Career Fields", item: "/careers" },
+    ...(fieldDef ? [{ name: fieldDef.name, item: `/careers/${fieldDef.slug}` }] : []),
+    { name: job.title, item: `/jobs/${job.slug}` },
+  ];
 
-    {/* Ad 2: natural content boundary before Action Plan & related occupations. */}
-    <div className="container ad-break">
-      <AdSlot slot="jobSecondary" format="horizontal" />
-    </div>
+  return (
+    <>
+      <OccupationViewTracker
+        slug={job.slug}
+        aiExposure={job.aiExposure}
+        replacementRisk={job.replacementRisk}
+      />
 
-    {/* Action Plan V1 */}
-    <ActionPlanSection job={job} />
+      {/* Breadcrumbs */}
+      <div className="container" style={{ paddingTop: "16px" }}>
+        <Breadcrumbs items={breadcrumbItems} />
+      </div>
 
-    <section className="content-section"><div className="container"><div className="section-head"><div><div className="section-kicker">Where else this work leads</div><h2>Related occupations</h2><p>Occupations O*NET links to this one. Relatedness reflects shared work, not a claim that these roles are safer.</p></div><div className="section-actions"><Link className="button secondary" href={`/jobs/${job.slug}/transitions`}>Explore Career Transitions →</Link></div></div>{job.relatedCareers.length ? <div className="career-grid">{job.relatedCareers.map((career) => { const relSem = getScoreSemantics("replacement_risk", career.replacementRisk); return <article className="card career-card" key={career.slug}><span className={relSem.chipClass}>AI risk {career.replacementRisk} · {relSem.band}</span><h3>{career.title}</h3><p>{relatednessLabel(career.relatednessTier)}</p><RelatedOccupationLink sourceSlug={job.slug} relatedSlug={career.slug} relatedTitle={career.title} href={`/compare/${job.slug}-vs-${career.slug}`}>Compare these careers →</RelatedOccupationLink></article>; })}</div> : <div className="empty-state">No related occupation is published yet.</div>}<div className="card transition-cta-banner"><div><strong>Looking for career alternatives?</strong><p>Explore realistic career transitions with transferable skills and comparative AI replacement risk.</p></div><Link className="button primary" href={`/jobs/${job.slug}/transitions`}>Explore Transitions for {job.title} →</Link></div></div></section>
+      {/* Direct Answer Hero Callout */}
+      <section className="content-section" style={{ paddingBottom: "12px", paddingTop: "20px" }}>
+        <div className="container">
+          <article className="card direct-answer-card" style={{ background: "linear-gradient(135deg, #fbfaff, #fff)", borderColor: "var(--violet-soft)", padding: "24px 28px" }}>
+            <span className="section-kicker">Direct Answer</span>
+            <h2 style={{ fontSize: "1.4rem", marginTop: "4px", marginBottom: "12px" }}>
+              Will AI replace {job.title.toLowerCase()}s?
+            </h2>
+            <p style={{ fontSize: "1.05rem", lineHeight: 1.65, color: "var(--ink)", maxWidth: "var(--measure)" }}>
+              {content.directAnswer}
+            </p>
+          </article>
+        </div>
+      </section>
 
-    <section className="content-section section-tint"><div className="container outlook-grid"><div><div className="section-kicker">Beyond AI capability</div><h2>Adoption and labour-market outlook</h2><p>Structural factors are kept separate from raw capability so you can see what actually resists automation. Adoption pressure and labour-market resilience are still provisional models—{Math.round(job.provisionalWeightShare)}% of this occupation’s replacement-risk weight rests on them.</p></div><article className="card metric-stack"><MetricBar label="Human dependency" value={job.humanDependency} metric="human_dependency" /><MetricBar label="Physical dependency" value={job.physicalDependency} metric="physical_dependency" /><MetricBar label="Adoption pressure" value={job.adoptionPressure} metric="adoption_pressure" /><MetricBar label="Labour-market resilience" value={job.labourMarketResilience} metric="labour_market_resilience" /></article></div></section>
+      {/* Headline Scores */}
+      <section className="score-section">
+        <div className="container score-grid">
+          <ScoreCard
+            label="AI Exposure"
+            value={job.aiExposure}
+            metric="ai_exposure"
+            percentileLabel={exposurePercentile !== undefined ? formatExposurePercentile(exposurePercentile) : undefined}
+            description="How much of this occupation's daily workload can be materially assisted or executed by current AI systems."
+          />
+          <div className="score-card-stack">
+            <ScoreCard
+              label="Replacement Risk"
+              value={job.replacementRisk}
+              metric="replacement_risk"
+              percentileLabel={replacementRiskPercentile !== undefined ? formatReplacementRiskPercentile(replacementRiskPercentile) : undefined}
+              description="Relative structural vulnerability of the human role after accounting for real-world friction and constraints."
+            />
+            <p className="score-footnote">
+              Includes provisional estimates for AI adoption pressure and labour-market resilience.{" "}
+              <Link className="text-link" href="/methodology#provisional-factors">
+                How this is measured
+              </Link>
+            </p>
+          </div>
+          <article className="card score-card">
+            <span className="metric-label">Evidence quality</span>
+            <MetricBar
+              label="Confidence"
+              value={Math.round(job.confidence)}
+              suffix="/100"
+              metric="confidence"
+            />
+            <MetricBar
+              label="Task coverage"
+              value={Math.round(job.weightedTaskCoverage)}
+              suffix="%"
+              metric="task_coverage"
+            />
+            <p>
+              Confidence reflects O*NET task coverage ({Math.round(job.weightedTaskCoverage)}%), AI mapping quality, and reliance on validated structural proxies.
+            </p>
+          </article>
+        </div>
+      </section>
 
-    <section className="source-strip"><div className="container"><div><strong>Methodology & sources</strong><p>O*NET 30.3 occupational data interpreted through the JobsVsAI capability, automation and structural-constraint models.</p></div><div><span className="metric-label">Confidence</span><strong>{Math.round(job.confidence)}/100</strong></div><div><span className="metric-label">Calculated</span><strong>{new Date(job.updatedAt).toLocaleDateString("en", { dateStyle: "medium" })}</strong></div><Link className="text-link" href="/methodology">Read methodology →</Link></div></section>
-  </>;
+      {/* Ad 1: after scores, before deep dive */}
+      <div className="container ad-break">
+        <AdSlot slot="jobPrimary" format="horizontal" />
+      </div>
+
+      {/* The Verdict: What this means */}
+      <section className="content-section">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <div className="section-kicker">Comprehensive Verdict</div>
+              <h2>What this analysis means for {job.title}s</h2>
+              <p>An evidence-led breakdown of structural exposure and real-world replacement constraints.</p>
+            </div>
+          </div>
+          <article className="card" style={{ padding: "28px 32px" }}>
+            {content.verdictParagraphs.map((p, idx) => (
+              <p key={idx} style={{ fontSize: "1.02rem", lineHeight: 1.7, marginBottom: idx === content.verdictParagraphs.length - 1 ? 0 : "16px", color: "var(--ink)" }}>
+                {p}
+              </p>
+            ))}
+            <div className="metric-callout" style={{ marginTop: "20px", background: "var(--soft)", padding: "14px 18px", borderRadius: "var(--radius-xs)" }}>
+              <strong>Exposure vs. Replacement Difference: </strong>
+              <span>{content.exposureVsReplacementContrast}</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      {/* Why This Job Scores This Way: Structural Drivers */}
+      <section className="content-section section-tint">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <div className="section-kicker">Multi-Factor Analysis</div>
+              <h2>Why {job.title} scores this way</h2>
+              <p>How five foundational dimensions shape this occupation&apos;s vulnerability and resilience.</p>
+            </div>
+          </div>
+          <div className="factor-grid">
+            {content.keyDrivers.map((driver, idx) => (
+              <article className="card factor-card" key={idx} style={{ padding: "22px" }}>
+                <span className="section-kicker" style={{ fontSize: "0.75rem" }}>Factor 0{idx + 1}</span>
+                <h3 style={{ fontSize: "1.1rem", margin: "8px 0 6px" }}>{driver.title}</h3>
+                <p style={{ fontSize: "0.92rem", lineHeight: 1.55 }}>{driver.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Task Automation Breakdown */}
+      <section className="content-section">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <div className="section-kicker">Task-level evidence ({job.tasks.length} tasks assessed)</div>
+              <h2>Which parts of {job.title} can AI automate?</h2>
+              <p>Jobs are bundles of tasks. Task exposure does not equal occupation elimination.</p>
+            </div>
+            <span className="chip hero-chip">{job.modelVersion}</span>
+          </div>
+          <div className="card task-table">
+            <div className="task-row task-header">
+              <b>Task Statement</b>
+              <b>Importance</b>
+              <b>AI Impact Track</b>
+              <b>Exposure</b>
+            </div>
+            {job.tasks.map((task) => {
+              const taskSem = getScoreSemantics("task_exposure", task.exposure);
+              return (
+                <div className="task-row" key={task.onetTaskId}>
+                  <strong>{task.name}</strong>
+                  <span>{task.importance}</span>
+                  <div className="bar-track">
+                    <span className={taskSem.tone} style={{ width: `${task.exposure}%` }} />
+                  </div>
+                  <b className={taskSem.textClass}>{task.exposure}</b>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Human Advantage & Anchors */}
+      <section className="content-section section-tint">
+        <div className="container two-column">
+          <article className="card human-card">
+            <span className="section-kicker">Human Strongholds</span>
+            <h2>Where humans remain essential</h2>
+            <p>
+              These tasks score lowest on automation feasibility—physical agility, accountability, and empathy resist automation.
+            </p>
+            <ol className="insight-list" style={{ marginTop: "16px" }}>
+              {job.hardestToAutomateTasks.map((task, index) => (
+                <li key={task}>
+                  <span>{task}</span>
+                  <b>0{index + 1}</b>
+                </li>
+              ))}
+            </ol>
+          </article>
+
+          <article className="card">
+            <span className="section-kicker">Human Advantage Factors</span>
+            <h2>Core protective barriers</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginTop: "16px" }}>
+              {content.humanAdvantages.map((adv, idx) => (
+                <div key={idx} style={{ borderBottom: idx === content.humanAdvantages.length - 1 ? 0 : "1px solid var(--line)", paddingBottom: "12px" }}>
+                  <strong style={{ display: "block", fontSize: "0.95rem", color: "var(--ink)", marginBottom: "4px" }}>
+                    {adv.title}
+                  </strong>
+                  <p style={{ fontSize: "0.88rem", color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>
+                    {adv.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      {/* Ad 2 */}
+      <div className="container ad-break">
+        <AdSlot slot="jobSecondary" format="horizontal" />
+      </div>
+
+      {/* Action Plan V1 */}
+      <ActionPlanSection job={job} />
+
+      {/* Career Fit Assessment CTA Banner */}
+      <section className="content-section" style={{ paddingTop: "12px", paddingBottom: "24px" }}>
+        <div className="container">
+          <div className="card" style={{ background: "var(--soft)", padding: "24px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+            <div>
+              <strong style={{ fontSize: "1.1rem", display: "block", marginBottom: "4px" }}>
+                Looking for careers matching your personal strengths?
+              </strong>
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: "0.92rem", maxWidth: "600px" }}>
+                National occupational analyses reflect typical job roles. Take the Career Fit Assessment to discover careers aligned with your individual work style and verified AI resilience.
+              </p>
+            </div>
+            <Link className="button primary" href="/career-fit">
+              Take Career Fit Assessment →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Related Occupations & Transitions */}
+      <section className="content-section">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <div className="section-kicker">Career Path Mobility</div>
+              <h2>Related occupations and career transitions</h2>
+              <p>Occupations linked by shared O*NET tasks and skills.</p>
+            </div>
+            <div className="section-actions">
+              <Link className="button secondary" href={`/jobs/${job.slug}/transitions`}>
+                Explore Career Transitions →
+              </Link>
+            </div>
+          </div>
+          {job.relatedCareers.length ? (
+            <div className="career-grid">
+              {job.relatedCareers.map((career) => {
+                const relSem = getScoreSemantics("replacement_risk", career.replacementRisk);
+                return (
+                  <article className="card career-card" key={career.slug}>
+                    <span className={relSem.chipClass}>
+                      AI risk {career.replacementRisk} · {relSem.band}
+                    </span>
+                    <h3>{career.title}</h3>
+                    <p>{relatednessLabel(career.relatednessTier)}</p>
+                    <RelatedOccupationLink
+                      sourceSlug={job.slug}
+                      relatedSlug={career.slug}
+                      relatedTitle={career.title}
+                      href={`/compare/${job.slug}-vs-${career.slug}`}
+                    >
+                      Compare these careers →
+                    </RelatedOccupationLink>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty-state">No related occupation is published yet.</div>
+          )}
+        </div>
+      </section>
+
+      {/* Contextual Research Explainer */}
+      {recommendedArticle && (
+        <section className="section" aria-labelledby="research-explainer-heading" style={{ paddingTop: 0, paddingBottom: "24px" }}>
+          <div className="container">
+            <div className="card" style={{ padding: "24px 28px", background: "linear-gradient(135deg, #fbfaff, #fff)", borderColor: "var(--violet-soft)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
+                <span className="section-kicker">Related Research & Evidence</span>
+                <span className="chip" style={{ fontSize: "0.72rem" }}>{recommendedArticle.readTime}</span>
+              </div>
+              <h3 id="research-explainer-heading" style={{ fontSize: "1.15rem", margin: "4px 0 8px" }}>
+                <Link href={`/research/${recommendedArticle.slug}`} style={{ color: "var(--ink)", textDecoration: "none" }}>
+                  {recommendedArticle.title} →
+                </Link>
+              </h3>
+              <p style={{ fontSize: "0.92rem", color: "var(--text)", lineHeight: 1.6, margin: "0 0 16px" }}>
+                {recommendedArticle.description}
+              </p>
+              <Link href={`/research/${recommendedArticle.slug}`} className="button secondary small">
+                Read Research Explainer →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Evidence Receipt */}
+      <div className="container">
+        <EvidenceReceipt
+          status="verified"
+          onetVersion="O*NET 30.3"
+          capabilityModel="15 Structural Capability Dimensions"
+          scoringModel={job.modelVersion}
+          taskCount={job.tasks.length}
+          coveragePercent={job.weightedTaskCoverage}
+          confidenceScore={job.confidence}
+          updatedAt={job.updatedAt}
+        />
+      </div>
+
+      {/* Occupation FAQ Section */}
+      <section className="section" aria-labelledby="occupation-faq-heading">
+        <div className="container">
+          <div className="section-kicker">Frequently Asked Questions</div>
+          <h2 id="occupation-faq-heading">Questions about {job.title} and AI</h2>
+          <div className="faq-stack" style={{ marginTop: "24px" }}>
+            {content.faqs.map((faq, idx) => (
+              <details className="card faq-item" key={idx} style={{ padding: "18px 24px", marginBottom: "10px" }}>
+                <summary style={{ fontWeight: 750, fontSize: "1.02rem", cursor: "pointer" }}>
+                  {faq.question}
+                </summary>
+                <p style={{ marginTop: "12px", color: "var(--ink)", lineHeight: 1.6, fontSize: "0.95rem" }}>
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
 }

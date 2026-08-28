@@ -1,8 +1,11 @@
 import Link from "next/link";
 import type { EstimatedOccupation } from "@/lib/api";
 import { AdSlot } from "./AdSlot";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { EvidenceReceipt } from "./EvidenceReceipt";
 import { MetricBar } from "./ScoreCard";
 import { getScoreSemantics } from "@/lib/scoreSemantics";
+import { getCanonicalField, getCanonicalFieldSlug } from "@/lib/careerFields";
 
 /** Estimated occupation detail page.
  *
@@ -22,8 +25,23 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
   const exposureSemantics = getScoreSemantics("ai_exposure", job.aiExposure, { isEstimated: true });
   const riskSemantics = getScoreSemantics("replacement_risk", job.replacementRisk, { isEstimated: true });
 
+  const fieldSlug = getCanonicalFieldSlug(job.slug, job.category);
+  const fieldDef = getCanonicalField(fieldSlug);
+
+  const breadcrumbItems = [
+    { name: "Home", item: "/" },
+    { name: "Career Fields", item: "/careers" },
+    ...(fieldDef ? [{ name: fieldDef.name, item: `/careers/${fieldDef.slug}` }] : []),
+    { name: job.title, item: `/jobs/${job.slug}` },
+  ];
+
   return (
     <>
+      {/* Breadcrumbs */}
+      <div className="container" style={{ paddingTop: "16px" }}>
+        <Breadcrumbs items={breadcrumbItems} />
+      </div>
+
       <section className="score-section">
         <div className="container">
           <div className="card estimate-banner" role="region" aria-label="Preliminary estimate explanation">
@@ -185,27 +203,14 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
         </div>
       </section>
 
-      <section className="source-strip">
-        <div className="container">
-          <div>
-            <strong>Methodology &amp; sources</strong>
-            <p>
-              O*NET occupational data interpreted through the JobsVsAI preliminary estimation framework.
-            </p>
-          </div>
-          <div>
-            <span className="metric-label">Status</span>
-            <strong>Preliminary estimate</strong>
-          </div>
-          <div>
-            <span className="metric-label">Confidence</span>
-            <strong>{job.confidenceLabel}</strong>
-          </div>
-          <Link className="text-link" href="/methodology#preliminary-estimates">
-            Read methodology →
-          </Link>
-        </div>
-      </section>
+      <div className="container" style={{ paddingBottom: "48px" }}>
+        <EvidenceReceipt
+          status="preliminary"
+          onetVersion="O*NET 30.3"
+          capabilityModel="15 Structural Capability Dimensions"
+          confidenceLabel={job.confidenceLabel}
+        />
+      </div>
     </>
   );
 }

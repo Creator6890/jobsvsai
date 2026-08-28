@@ -14,5 +14,22 @@ export function CompareSelector({ occupations, initialA, initialB }: { occupatio
     router.push(`/compare/${a}-vs-${b}`);
   }
   if (occupations.length < 2) return <p className="empty-state">Career comparisons open up once at least two occupations are published.</p>;
-  return <form className="compare-selector" onSubmit={submit}><label>First career<select value={a} onChange={(e) => setA(e.target.value)}>{occupations.map((job) => <option value={job.slug} key={job.slug}>{job.title}</option>)}</select></label><span className="vs-badge">VS</span><label>Second career<select value={b} onChange={(e) => setB(e.target.value)}>{occupations.map((job) => <option value={job.slug} key={job.slug}>{job.title}</option>)}</select></label><button className="button" disabled={a === b}>Compare careers →</button></form>;
+  return (
+    <form className="compare-selector" onSubmit={submit} style={{ minWidth: 0, maxWidth: "100%", width: "100%" }}>
+      <label style={{ minWidth: 0, maxWidth: "100%", width: "100%", overflow: "hidden" }}>
+        First career
+        <select style={{ minWidth: 0, maxWidth: "100%", width: "100%", textOverflow: "ellipsis" }} value={a} onChange={(e) => setA(e.target.value)}>
+          {occupations.map((job) => <option value={job.slug} key={job.slug}>{job.title}</option>)}
+        </select>
+      </label>
+      <span className="vs-badge">VS</span>
+      <label style={{ minWidth: 0, maxWidth: "100%", width: "100%", overflow: "hidden" }}>
+        Second career
+        <select style={{ minWidth: 0, maxWidth: "100%", width: "100%", textOverflow: "ellipsis" }} value={b} onChange={(e) => setB(e.target.value)}>
+          {occupations.map((job) => <option value={job.slug} key={job.slug}>{job.title}</option>)}
+        </select>
+      </label>
+      <button className="button" disabled={a === b}>Compare careers →</button>
+    </form>
+  );
 }
