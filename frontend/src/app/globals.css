@@ -164,9 +164,13 @@
   .text-link { min-height: 44px; display: inline-flex; align-items: center; color: var(--violet); font-weight: 850; }
   .ranking-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap); }
   .card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: var(--pad-card); }
-  .ranking-list { list-style: none; margin-top: 18px; }
-  .ranking-list li { min-height: 56px; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; border-top: 1px solid var(--line); }
-  .ranking-list a { min-height: var(--control-sm); display: flex; align-items: center; font-weight: 780; }
+  .ranking-preview { padding: 24px 20px; }
+  .ranking-list { list-style: none; margin-top: 16px; padding: 0; }
+  .ranking-list li { min-height: 52px; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding: 8px 0; }
+  .ranking-list .rank-number { color: #9a96a2; font-weight: 850; font-size: .92rem; line-height: 1; text-align: left; }
+  .ranking-list a { display: flex; align-items: center; font-weight: 780; font-size: .94rem; line-height: 1.35; color: var(--ink); text-decoration: none; overflow-wrap: break-word; word-break: break-word; min-width: 0; }
+  .ranking-list a:hover { color: var(--violet); }
+  .ranking-list .score-badge, .ranking-list .chip { justify-self: end; flex-shrink: 0; min-width: 44px; text-align: center; }
   .rank-number { color: #9a96a2; font-weight: 850; }
   .score-badge.risk, .chip.risk { background: var(--red-soft); color: var(--red); }
   .score-badge.moderate, .chip.moderate { background: var(--amber-soft); color: var(--amber); }
@@ -277,6 +281,12 @@
   .section-heading-row { align-items: flex-start; }
   .desktop-only { display: none; }
   .ranking-grid, .home-ranking-grid { grid-template-columns: 1fr; }
+  .ranking-preview { padding: 20px 16px; }
+  .ranking-list { margin-top: 14px; }
+  .ranking-list li { min-height: 50px; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; padding: 7px 0; }
+  .ranking-list .rank-number { font-size: .88rem; }
+  .ranking-list a { font-size: .92rem; line-height: 1.32; }
+  .ranking-list .score-badge, .ranking-list .chip { min-width: 40px; }
   .mobile-ranking-link { display: flex; width: 100%; }
   .footer-inner nav { flex-wrap: wrap; }
 }
