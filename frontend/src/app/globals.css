@@ -175,11 +175,11 @@
   .score-badge.accent, .chip.accent { background: var(--violet-soft); color: var(--violet); }
   .home-ranking-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); }
   .hero-actions-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
-  .proof-strip-card { display: flex; align-items: center; justify-content: space-around; gap: 16px; flex-wrap: wrap; background: white; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px 24px; margin-top: 32px; box-shadow: 0 4px 16px rgba(0,0,0,.03); max-width: 100%; box-sizing: border-box; }
-  .proof-metric { display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .proof-metric strong { font-size: 1.6rem; color: var(--violet); letter-spacing: -.03em; line-height: 1.1; }
-  .proof-metric span { font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
-  .proof-metric-divider { width: 1px; height: 36px; background: var(--line); }
+  .proof-strip-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; background: white; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 22px 24px; margin-top: 32px; box-shadow: 0 4px 16px rgba(0,0,0,.03); max-width: 100%; box-sizing: border-box; }
+  .proof-metric { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .proof-metric strong { font-size: 1.6rem; color: var(--violet); letter-spacing: -.03em; line-height: 1.1; display: block; }
+  .proof-metric span { font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: 6px; line-height: 1.35; display: block; text-align: center; }
+  .proof-metric-divider { width: 1px; height: 38px; background: var(--line); align-self: center; flex-shrink: 0; }
   .metric-callout { margin-top: 16px; padding: 10px 14px; background: var(--soft); border-radius: var(--radius-xs); font-size: .84rem; color: var(--muted); font-weight: 750; }
   .faq-stack { display: flex; flex-direction: column; gap: 10px; }
   .faq-item summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
@@ -265,6 +265,10 @@
   .hero-actions-row { flex-direction: column; align-items: stretch; width: 100%; max-width: 440px; margin-inline: auto; gap: 10px; }
   .hero-actions-row .button { width: 100%; box-sizing: border-box; justify-content: center; text-align: center; white-space: nowrap; }
   .analysis-state { padding: 25px 18px; flex-direction: column; text-align: center; }
+  .proof-strip-card { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; padding: 20px 16px; }
+  .proof-metric-divider { display: none; }
+  .proof-metric { width: 100%; min-width: 0; }
+  .proof-metric:last-child { grid-column: 1 / -1; max-width: 280px; margin-inline: auto; }
   .search-result-card { padding: var(--pad-card-sm); }
   .result-heading { align-items: flex-start; }
   .result-score-grid { grid-template-columns: 1fr; }
