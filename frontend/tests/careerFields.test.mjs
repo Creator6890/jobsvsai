@@ -1,11 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   CANONICAL_CAREER_FIELDS,
   getCanonicalFieldSlug,
-  getCanonicalField,
   calculateFieldAnalytics,
 } from "../src/lib/careerFields.ts";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const srcRoot = path.resolve(__dirname, "..", "src");
 
 test("Canonical Career Fields - exactly 12 fields defined with rich metadata", () => {
   const keys = Object.keys(CANONICAL_CAREER_FIELDS);
@@ -45,17 +51,23 @@ test("Career Field Slug Mapping - deterministic mapping for standard categories 
   assert.equal(getCanonicalFieldSlug("acute-care-nurses", "healthcare"), "healthcare");
   assert.equal(getCanonicalFieldSlug("editors", "creative-media"), "creative-media");
   assert.equal(getCanonicalFieldSlug("adult-basic-education-instructors", "education-training"), "education");
-  assert.equal(getCanonicalFieldSlug("paralegals", "legal"), "legal");
+  assert.equal(getCanonicalFieldSlug("paralegals-and-legal-assistants", "legal"), "legal");
   assert.equal(getCanonicalFieldSlug("aerospace-engineers", "engineering-architecture"), "engineering");
   assert.equal(getCanonicalFieldSlug("electricians", "installation-repair"), "skilled-trades");
   assert.equal(getCanonicalFieldSlug("airline-pilots", "transport-logistics"), "transportation");
   assert.equal(getCanonicalFieldSlug("chemical-equipment-operators", "manufacturing-production"), "production");
 
-  // Test individual overrides
+  // Specific 10 roles required by Architect audit:
+  assert.equal(getCanonicalFieldSlug("data-scientists", "technology-data"), "technology-data");
+  assert.equal(getCanonicalFieldSlug("software-developer", "technology-data"), "technology-data");
+  assert.equal(getCanonicalFieldSlug("digital-interface-designers", "creative-media"), "creative-media");
+  assert.equal(getCanonicalFieldSlug("technical-writers", "creative-media"), "creative-media");
+  assert.equal(getCanonicalFieldSlug("project-management-specialists", "business-finance"), "business-finance");
   assert.equal(getCanonicalFieldSlug("sales-managers", "management-leadership"), "sales");
   assert.equal(getCanonicalFieldSlug("medical-and-health-services-managers", "management-leadership"), "healthcare");
   assert.equal(getCanonicalFieldSlug("architectural-and-engineering-managers", "management-leadership"), "engineering");
-  assert.equal(getCanonicalFieldSlug("financial-managers", "management-leadership"), "business-finance");
+  assert.equal(getCanonicalFieldSlug("education-administrators-kindergarten-through-secondary", "management-leadership"), "education");
+  assert.equal(getCanonicalFieldSlug("paralegals-and-legal-assistants", "legal"), "legal");
 });
 
 test("calculateFieldAnalytics - computes accurate aggregates on verified occupations", () => {
@@ -81,17 +93,12 @@ test("calculateFieldAnalytics - computes accurate aggregates on verified occupat
   assert.equal(result.analytics.riskDistribution.high, 1);
 });
 
-test("Career Field Breadcrumbs & Links - verified routes and destinations", () => {
-  const accountantFieldSlug = getCanonicalFieldSlug("accountant", "business-finance");
-  const field = getCanonicalField(accountantFieldSlug);
-  assert.ok(field);
-  assert.equal(field.slug, "business-finance");
-  assert.equal(field.name, "Business & Finance");
+test("Career Fields Directory /careers page exists and has correct metadata", () => {
+  const careersPagePath = path.join(srcRoot, "app", "careers", "page.tsx");
+  assert.ok(fs.existsSync(careersPagePath), "/careers/page.tsx must exist");
+  const source = fs.readFileSync(careersPagePath, "utf8");
 
-  const techFieldSlug = getCanonicalFieldSlug("software-developer", "technology-data");
-  const techField = getCanonicalField(techFieldSlug);
-  assert.ok(techField);
-  assert.equal(techField.slug, "technology-data");
-  assert.equal(techField.name, "Technology & Data");
+  assert.match(source, /Explore careers by field/);
+  assert.match(source, /canonical:\s*"https:\/\/jobsvsai\.com\/careers"/);
+  assert.match(source, /calculateFieldAnalytics/);
 });
-

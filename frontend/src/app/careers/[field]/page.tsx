@@ -61,7 +61,7 @@ export default async function CareerFieldPage({ params }: CareerFieldPageProps) 
 
   const breadcrumbs = [
     { name: "Home", item: "/" },
-    { name: "Rankings", item: "/rankings" },
+    { name: "Career Fields", item: "/careers" },
     { name: field.name, item: `/careers/${field.slug}` },
   ];
 

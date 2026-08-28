@@ -30,7 +30,8 @@ export function EstimatedOccupationDetail({ job }: { job: EstimatedOccupation })
 
   const breadcrumbItems = [
     { name: "Home", item: "/" },
-    ...(fieldDef ? [{ name: fieldDef.name, item: `/careers/${fieldDef.slug}` }] : [{ name: "Occupations", item: "/rankings" }]),
+    { name: "Career Fields", item: "/careers" },
+    ...(fieldDef ? [{ name: fieldDef.name, item: `/careers/${fieldDef.slug}` }] : []),
     { name: job.title, item: `/jobs/${job.slug}` },
   ];
 

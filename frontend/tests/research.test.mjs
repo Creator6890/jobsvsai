@@ -29,6 +29,8 @@ test("Research Articles - contains 5 foundational evidence-grounded articles", (
     const article = getResearchArticle(slug);
     assert.ok(article, `Article ${slug} must exist`);
     assert.equal(article.slug, slug);
+    assert.equal(article.datePublished, "2026-08-28T00:00:00Z");
+    assert.equal(article.dateModified, "2026-08-28T00:00:00Z");
     assert.ok(article.title.length > 0, "Title must not be empty");
     assert.ok(article.headline.length > 0, "Headline must not be empty");
     assert.ok(article.seoTitle.length > 0, "SeoTitle must not be empty");

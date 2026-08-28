@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/rankings",
+    "/careers",
     "/career-fit",
     "/compare",
     "/methodology",
@@ -55,12 +56,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(job.updatedAt),
       changeFrequency: "monthly" as const,
       priority: 0.8,
-    })),
-    ...jobs.map((job) => ({
-      url: `${origin}/jobs/${job.slug}/transitions`,
-      lastModified: new Date(job.updatedAt),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
     })),
     ...news.map((article) => ({
       url: `${origin}/news/${article.slug}`,
