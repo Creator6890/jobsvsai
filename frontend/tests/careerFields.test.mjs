@@ -13,20 +13,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const srcRoot = path.resolve(__dirname, "..", "src");
 
-test("Canonical Career Fields - exactly 12 fields defined with rich metadata", () => {
+test("Canonical Career Fields - exactly 19 coherent consumer fields defined with rich metadata", () => {
   const keys = Object.keys(CANONICAL_CAREER_FIELDS);
-  assert.equal(keys.length, 12, "Must contain exactly 12 canonical fields");
+  assert.equal(keys.length, 19, "Must contain exactly 19 canonical fields");
 
   const expectedSlugs = [
     "business-finance",
     "technology-data",
+    "office-administration",
     "healthcare",
-    "creative-media",
+    "science-research",
+    "engineering",
     "education",
+    "community-social-services",
     "legal",
     "management",
     "sales",
-    "engineering",
+    "creative-media",
+    "protective-services",
+    "food-hospitality",
+    "personal-care-services",
+    "agriculture-environment",
     "skilled-trades",
     "transportation",
     "production",
@@ -68,6 +75,16 @@ test("Career Field Slug Mapping - deterministic mapping for standard categories 
   assert.equal(getCanonicalFieldSlug("architectural-and-engineering-managers", "management-leadership"), "engineering");
   assert.equal(getCanonicalFieldSlug("education-administrators-kindergarten-through-secondary", "management-leadership"), "education");
   assert.equal(getCanonicalFieldSlug("paralegals-and-legal-assistants", "legal"), "legal");
+
+  // Additional category correctness roles:
+  assert.equal(getCanonicalFieldSlug("child-family-and-school-social-workers", "community-social-services"), "community-social-services");
+  assert.equal(getCanonicalFieldSlug("police-and-sheriffs-patrol-officers", "protective-services"), "protective-services");
+  assert.equal(getCanonicalFieldSlug("physicists", "science-research"), "science-research");
+  assert.equal(getCanonicalFieldSlug("chefs-and-head-cooks", "food-hospitality"), "food-hospitality");
+  assert.equal(getCanonicalFieldSlug("agricultural-inspectors", "agriculture-environment"), "agriculture-environment");
+  assert.equal(getCanonicalFieldSlug("hairdressers-hairstylists-and-cosmetologists", "personal-care-service"), "personal-care-services");
+  assert.equal(getCanonicalFieldSlug("executive-secretaries-and-executive-administrative-assistants", "office-administration"), "office-administration");
+  assert.equal(getCanonicalFieldSlug("data-entry-keyers", "office-administration"), "office-administration");
 });
 
 test("calculateFieldAnalytics - computes accurate aggregates on verified occupations", () => {

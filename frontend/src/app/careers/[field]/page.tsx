@@ -214,7 +214,7 @@ export default async function CareerFieldPage({ params }: CareerFieldPageProps) 
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", color: "var(--muted)" }}>
                     <span>{analytics.largestGapLeader.exposure} Exposure</span>
                     <span>→</span>
-                    <span>{analytics.largestGapLeader.replacementRisk} Risk</span>
+                    <span>{analytics.largestGapLeader.risk} Risk</span>
                     <span className="chip safe" style={{ fontSize: "0.72rem" }}>
                       +{analytics.largestGapLeader.gap} Gap
                     </span>
